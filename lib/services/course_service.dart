@@ -1,0 +1,2 @@
+import 'package:cou_youth_mobile/core/api/api_client.dart';
+class CourseService {CourseService(this.api); final ApiClient api; Future<dynamic> list()=>api.get('/courses'); Future<dynamic> show(int id)=>api.get('/courses/$id'); Future<dynamic> enrol(int id)=>api.post('/courses/$id/enrol',{}); Future<dynamic> completeLesson(int id)=>api.post('/lessons/$id/complete',{});}

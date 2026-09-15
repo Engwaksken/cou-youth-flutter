@@ -1,0 +1,2 @@
+import 'package:cou_youth_mobile/core/api/api_client.dart';
+class AuthService { AuthService(this.api); final ApiClient api; Future<Map<String,dynamic>> login(String email,String password) async => await api.post('/auth/login', {'email':email,'password':password}) as Map<String,dynamic>; Future<void> logout() async { await api.post('/auth/logout', {}); } Future<Map<String,dynamic>> me() async => await api.get('/me') as Map<String,dynamic>; }

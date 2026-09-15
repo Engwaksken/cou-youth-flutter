@@ -1,0 +1,2 @@
+import 'package:flutter/material.dart';
+class PrayerScreen extends StatelessWidget {const PrayerScreen({super.key}); @override Widget build(BuildContext context)=>Scaffold(appBar:AppBar(title:const Text('Prayer & Pastoral Support')),body:const Padding(padding:EdgeInsets.all(16),child:Text('Private prayer requests are supported. Sensitive submissions are flagged for safeguarding review.')));}

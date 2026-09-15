@@ -1,0 +1,2 @@
+import 'package:cou_youth_mobile/core/api/api_client.dart';
+class MediaService {MediaService(this.api); final ApiClient api; Future<dynamic> list({String? type})=>api.get('/media${type==null?'':'?type=$type'}');}

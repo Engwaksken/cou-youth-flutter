@@ -1,0 +1,2 @@
+import 'package:cou_youth_mobile/core/api/api_client.dart';
+class ChurchLocatorService {ChurchLocatorService(this.api); final ApiClient api; Future<dynamic> search(String q)=>api.get('/church-locator?q=${Uri.encodeQueryComponent(q)}');}

@@ -1,0 +1,2 @@
+import 'package:flutter/material.dart';
+class CoursesScreen extends StatelessWidget {const CoursesScreen({super.key}); @override Widget build(BuildContext context)=>Scaffold(appBar:AppBar(title:const Text('Discipleship Courses')),body:const Center(child:Text('Connect CourseService here to show courses, lessons and progress.')));}

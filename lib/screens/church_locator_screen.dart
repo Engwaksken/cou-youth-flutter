@@ -1,0 +1,2 @@
+import 'package:flutter/material.dart';
+class ChurchLocatorScreen extends StatelessWidget {const ChurchLocatorScreen({super.key}); @override Widget build(BuildContext context)=>Scaffold(appBar:AppBar(title:const Text('Church Locator')),body:const Center(child:Text('Search Church of Uganda locations and youth fellowship information.')));}

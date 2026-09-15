@@ -1,0 +1,2 @@
+import 'package:cou_youth_mobile/core/api/api_client.dart';
+class PrayerService {PrayerService(this.api); final ApiClient api; Future<dynamic> mine()=>api.get('/prayer-requests'); Future<dynamic> submit({required String subject,required String message,String visibility='private'})=>api.post('/prayer-requests',{'subject':subject,'message':message,'visibility':visibility});}

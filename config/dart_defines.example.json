@@ -1,0 +1,5 @@
+{
+  "API_BASE_URL": "https://youth.churchofuganda.org/api/v1",
+  "APP_ENV": "production",
+  "ENABLE_DEBUG_LOGS": "false"
+}
