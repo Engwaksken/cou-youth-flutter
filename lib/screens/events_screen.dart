@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../core/api/api_config.dart';
 import '../features/events/data/event_service.dart';
 
 class EventsScreen extends StatefulWidget {
@@ -9,60 +11,126 @@ class EventsScreen extends StatefulWidget {
 }
 
 class _EventsScreenState extends State<EventsScreen> {
-  final EventService _service = EventService();
-  late Future<List<dynamic>> _events;
+  late final EventService _service;
+  late Future<List<Map<String, dynamic>>> _events;
 
   @override
   void initState() {
     super.initState();
+    _service = EventService(ApiConfig.client);
     _events = _service.list();
   }
 
   Future<void> _refresh() async {
-    setState(() => _events = _service.list());
-    await _events;
+    final future = _service.list();
+    setState(() => _events = future);
+    await future;
+  }
+
+  String _formatDate(dynamic value) {
+    if (value == null) return '';
+    final parsed = DateTime.tryParse(value.toString());
+    if (parsed == null) return value.toString();
+
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+
+    return '${parsed.day.toString().padLeft(2, '0')} ${months[parsed.month - 1]} ${parsed.year}';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Events')),
+      appBar: AppBar(
+        title: const Text('Events'),
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
-        child: FutureBuilder<List<dynamic>>(
+        child: FutureBuilder<List<Map<String, dynamic>>>(
           future: _events,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
+
             if (snapshot.hasError) {
-              return ListView(children: const [
-                SizedBox(height: 120),
-                Center(child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text('Events could not be loaded. Pull down to try again.'),
-                )),
-              ]);
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(height: 120),
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Text(
+                        'Events could not be loaded. Pull down to try again.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              );
             }
-            final events = snapshot.data ?? const [];
+
+            final events = snapshot.data ?? const <Map<String, dynamic>>[];
+
             if (events.isEmpty) {
-              return ListView(children: const [
-                SizedBox(height: 120),
-                Center(child: Text('No upcoming events are available.')),
-              ]);
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(height: 120),
+                  Center(child: Text('No upcoming events are available.')),
+                ],
+              );
             }
+
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: events.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
-                final event = Map<String, dynamic>.from(events[index] as Map);
+                final event = events[index];
+                final venue = (event['venue'] ?? '').toString().trim();
+                final date = _formatDate(event['starts_at']);
+
                 return Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.event),
-                    title: Text('${event['name'] ?? event['title'] ?? 'Youth event'}'),
-                    subtitle: Text('${event['venue'] ?? ''}${event['starts_at'] != null ? '\n${event['starts_at']}' : ''}'),
-                    isThreeLine: event['starts_at'] != null,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        child: const Icon(Icons.event_outlined),
+                      ),
+                      title: Text(
+                        (event['title'] ?? event['name'] ?? 'Youth event')
+                            .toString(),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (date.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                const Icon(Icons.calendar_today_outlined, size: 16),
+                                const SizedBox(width: 6),
+                                Flexible(child: Text(date)),
+                              ],
+                            ),
+                          ],
+                          if (venue.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on_outlined, size: 16),
+                                const SizedBox(width: 6),
+                                Flexible(child: Text(venue)),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
                 );
               },
