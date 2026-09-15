@@ -3,7 +3,7 @@ class AppConfig {
 
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://youth.churchofuganda.org/api/v1',
+    defaultValue: 'https://couyp.kemmytech.com/api/v1',
   );
 
   static const String environment = String.fromEnvironment(
@@ -15,6 +15,8 @@ class AppConfig {
     'ENABLE_DEBUG_LOGS',
     defaultValue: false,
   );
+
+  static const Duration apiTimeout = Duration(seconds: 30);
 
   static bool get isProduction => environment == 'production';
 }
