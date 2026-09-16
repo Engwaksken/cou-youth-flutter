@@ -5,28 +5,30 @@ class NotificationService {
 
   final ApiClient apiClient;
 
-  Future<List<dynamic>> list() async {
-    final response = await apiClient.get('/api/v1/notifications');
-
+  Future<List<Map<String, dynamic>>> list() async {
+    final response = await apiClient.get('/notifications');
     final data = response['data'];
 
     if (data is List) {
-      return data;
+      return data
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
     }
 
-    return <dynamic>[];
+    if (data is Map && data['data'] is List) {
+      return (data['data'] as List)
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+    }
+
+    return <Map<String, dynamic>>[];
   }
 
-  Future<Map<String, dynamic>> markAsRead(int id) async {
+  Future<Map<String, dynamic>> markAsRead(int receiptId) async {
     return apiClient.post(
-      '/api/v1/notifications/$id/read',
-      <String, dynamic>{},
-    );
-  }
-
-  Future<Map<String, dynamic>> markAllAsRead() async {
-    return apiClient.post(
-      '/api/v1/notifications/read-all',
+      '/notifications/$receiptId/read',
       <String, dynamic>{},
     );
   }
