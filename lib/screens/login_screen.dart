@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
 import '../services/auth_service.dart';
+import 'auth_recovery_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -51,9 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (mounted) widget.onSignedIn();
     } on ApiException catch (e) {
-      if (mounted) {
-        setState(() => _error = e.message);
-      }
+      if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
         setState(() {
@@ -63,6 +63,33 @@ class _LoginScreenState extends State<LoginScreen> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  Future<void> _openRegister() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (context) => RegisterScreen(
+          authService: widget.authService,
+          onRegistered: () {
+            Navigator.of(context).pop();
+            widget.onSignedIn();
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openRecovery() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (context) => AuthRecoveryScreen(
+          onSignedIn: () {
+            Navigator.of(context).pop();
+            widget.onSignedIn();
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -162,7 +189,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 18),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _loading ? null : _openRecovery,
+                        child: const Text('Forgot password / use OTP'),
+                      ),
+                    ),
                     FilledButton.icon(
                       onPressed: _loading ? null : _submit,
                       icon: _loading
@@ -175,6 +208,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       label: Text(_loading ? 'Signing in...' : 'Sign in'),
                     ),
                     const SizedBox(height: 10),
+                    OutlinedButton.icon(
+                      onPressed: _loading ? null : _openRegister,
+                      icon: const Icon(Icons.person_add_alt_1),
+                      label: const Text('Create youth account'),
+                    ),
+                    const SizedBox(height: 6),
                     TextButton(
                       onPressed: _loading ? null : widget.onContinueAsGuest,
                       child: const Text('Continue as guest'),
