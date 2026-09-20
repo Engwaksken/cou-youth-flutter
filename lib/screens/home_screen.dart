@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'chatbot_screen.dart';
 import 'church_locator_screen.dart';
 import 'courses_screen.dart';
+import 'donation_checkout_screen.dart';
 import 'events_screen.dart';
 import 'notifications_screen.dart';
 import 'prayer_screen.dart';
@@ -21,6 +23,11 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('COU Youth Platform'),
         actions: [
+          IconButton(
+            tooltip: 'Youth Assistant',
+            onPressed: () => _open(context, const ChatbotScreen()),
+            icon: const Icon(Icons.smart_toy_outlined),
+          ),
           IconButton(
             tooltip: 'Notifications',
             onPressed: () => _open(context, const NotificationsScreen()),
@@ -96,20 +103,24 @@ class HomeScreen extends StatelessWidget {
                 onTap: () => _open(context, const ChurchLocatorScreen()),
               ),
               _QuickAccessCard(
+                icon: Icons.handshake_outlined,
+                title: 'Donate',
+                onTap: () => _open(context, const DonationCheckoutScreen()),
+              ),
+              _QuickAccessCard(
+                icon: Icons.smart_toy_outlined,
+                title: 'Youth Assistant',
+                onTap: () => _open(context, const ChatbotScreen()),
+              ),
+              _QuickAccessCard(
                 icon: Icons.notifications_active_outlined,
                 title: 'Notifications',
                 onTap: () => _open(context, const NotificationsScreen()),
               ),
               _QuickAccessCard(
-                icon: Icons.work_outline,
-                title: 'Opportunities',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Opportunities module is being connected.'),
-                    ),
-                  );
-                },
+                icon: Icons.shield_outlined,
+                title: 'Safe Support',
+                onTap: () => _open(context, const PrayerScreen()),
               ),
             ],
           ),
@@ -153,7 +164,11 @@ class _QuickAccessCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary),
+              Icon(
+                icon,
+                size: 32,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(height: 8),
               Text(
                 title,
