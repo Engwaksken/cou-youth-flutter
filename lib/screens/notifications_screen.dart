@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_config.dart';
+import '../core/localization/module_strings.dart';
 import '../services/notification_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -30,7 +31,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Notifications')),
+      appBar: AppBar(
+        title: Text(ModuleStrings.text(context, 'notifications')),
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -43,13 +46,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             if (snapshot.hasError) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 120),
+                children: [
+                  const SizedBox(height: 120),
                   Center(
                     child: Padding(
-                      padding: EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(24),
                       child: Text(
-                        'Notifications could not be loaded. Pull down to try again.',
+                        ModuleStrings.text(context, 'notifications_load_failed'),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -63,9 +66,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             if (rows.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 120),
-                  Center(child: Text('You have no notifications.')),
+                children: [
+                  const SizedBox(height: 120),
+                  Center(
+                    child: Text(
+                      ModuleStrings.text(context, 'no_notifications'),
+                    ),
+                  ),
                 ],
               );
             }
@@ -87,7 +94,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           : Icons.notifications_none,
                     ),
                   ),
-                  title: Text((row['title'] ?? 'Notification').toString()),
+                  title: Text(
+                    (row['title'] ?? ModuleStrings.text(context, 'notification'))
+                        .toString(),
+                  ),
                   subtitle: Text((row['message'] ?? '').toString()),
                   onTap: receiptId is int && readAt == null
                       ? () async {
@@ -99,8 +109,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           } catch (_) {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Could not update the notification.'),
+                                SnackBar(
+                                  content: Text(
+                                    ModuleStrings.text(
+                                      context,
+                                      'notification_update_failed',
+                                    ),
+                                  ),
                                 ),
                               );
                             }
