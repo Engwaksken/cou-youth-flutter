@@ -21,22 +21,49 @@ class AccessibilitySettings {
     bool? grayscale,
     bool? reduceMotion,
     bool? dyslexiaFriendly,
-  }) => AccessibilitySettings(
-        textScale: textScale ?? this.textScale,
-        highContrast: highContrast ?? this.highContrast,
-        grayscale: grayscale ?? this.grayscale,
-        reduceMotion: reduceMotion ?? this.reduceMotion,
-        dyslexiaFriendly: dyslexiaFriendly ?? this.dyslexiaFriendly,
-      );
+  }) {
+    return AccessibilitySettings(
+      textScale: textScale ?? this.textScale,
+      highContrast: highContrast ?? this.highContrast,
+      grayscale: grayscale ?? this.grayscale,
+      reduceMotion: reduceMotion ?? this.reduceMotion,
+      dyslexiaFriendly: dyslexiaFriendly ?? this.dyslexiaFriendly,
+    );
+  }
 }
 
 class AccessibilityController extends ValueNotifier<AccessibilitySettings> {
-  AccessibilityController() : super(const AccessibilitySettings());
+  AccessibilityController._() : super(const AccessibilitySettings());
 
-  void increaseText() => value = value.copyWith(textScale: (value.textScale + .1).clamp(.8, 1.6));
-  void decreaseText() => value = value.copyWith(textScale: (value.textScale - .1).clamp(.8, 1.6));
-  void toggleHighContrast() => value = value.copyWith(highContrast: !value.highContrast);
-  void toggleReduceMotion() => value = value.copyWith(reduceMotion: !value.reduceMotion);
-  void toggleDyslexiaFriendly() => value = value.copyWith(dyslexiaFriendly: !value.dyslexiaFriendly);
-  void reset() => value = const AccessibilitySettings();
+  static final AccessibilityController instance = AccessibilityController._();
+
+  void increaseText() {
+    final next = (value.textScale + .1).clamp(.8, 1.6).toDouble();
+    value = value.copyWith(textScale: next);
+  }
+
+  void decreaseText() {
+    final next = (value.textScale - .1).clamp(.8, 1.6).toDouble();
+    value = value.copyWith(textScale: next);
+  }
+
+  void toggleHighContrast() {
+    value = value.copyWith(highContrast: !value.highContrast);
+  }
+
+  void toggleGrayscale() {
+    value = value.copyWith(grayscale: !value.grayscale);
+  }
+
+  void toggleReduceMotion() {
+    value = value.copyWith(reduceMotion: !value.reduceMotion);
+  }
+
+  void toggleDyslexiaFriendly() {
+    value = value.copyWith(dyslexiaFriendly: !value.dyslexiaFriendly);
+  }
+
+  void reset() {
+    value = const AccessibilitySettings();
+  }
 }
