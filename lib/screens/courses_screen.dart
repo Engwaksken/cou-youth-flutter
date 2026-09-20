@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_config.dart';
+import '../core/localization/module_strings.dart';
 import '../services/course_service.dart';
 
 class CoursesScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Discipleship Courses'),
+        title: Text(ModuleStrings.text(context, 'courses')),
       ),
       body: RefreshIndicator(
         onRefresh: _refresh,
@@ -45,13 +46,13 @@ class _CoursesScreenState extends State<CoursesScreen> {
             if (snapshot.hasError) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 120),
+                children: [
+                  const SizedBox(height: 120),
                   Center(
                     child: Padding(
-                      padding: EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(24),
                       child: Text(
-                        'Courses could not be loaded. Pull down to try again.',
+                        ModuleStrings.text(context, 'courses_load_failed'),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -65,9 +66,11 @@ class _CoursesScreenState extends State<CoursesScreen> {
             if (courses.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 120),
-                  Center(child: Text('No discipleship courses are available yet.')),
+                children: [
+                  const SizedBox(height: 120),
+                  Center(
+                    child: Text(ModuleStrings.text(context, 'no_courses')),
+                  ),
                 ],
               );
             }
@@ -78,9 +81,17 @@ class _CoursesScreenState extends State<CoursesScreen> {
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final course = courses[index];
-                final title = (course['title'] ?? 'Discipleship Course').toString();
+                final title = (course['title'] ??
+                        ModuleStrings.text(context, 'discipleship_course'))
+                    .toString();
                 final description = (course['description'] ?? '').toString().trim();
-                final age = (course['age_category'] ?? 'all').toString().replaceAll('_', ' ');
+                final age = (course['age_category'] ?? 'all')
+                    .toString()
+                    .replaceAll('_', ' ');
+                final audience = age == 'all'
+                    ? ModuleStrings.text(context, 'for_all_ages')
+                    : ModuleStrings.text(context, 'for_age')
+                        .replaceFirst('{age}', age);
 
                 return Card(
                   child: Padding(
@@ -101,13 +112,14 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                 children: [
                                   Text(
                                     title,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w700),
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    age == 'all' ? 'For all age groups' : 'For $age',
+                                    audience,
                                     style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                 ],
