@@ -7,7 +7,12 @@ import '../screens/home_screen.dart';
 import '../screens/profile_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  const MainNavigationScreen({
+    super.key,
+    required this.onExitSession,
+  });
+
+  final Future<void> Function() onExitSession;
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -16,20 +21,20 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    DiscoverScreen(),
-    CoursesScreen(),
-    EventsScreen(),
-    ProfileScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final screens = <Widget>[
+      const HomeScreen(),
+      const DiscoverScreen(),
+      const CoursesScreen(),
+      const EventsScreen(),
+      ProfileScreen(onExitSession: widget.onExitSession),
+    ];
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: screens,
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
