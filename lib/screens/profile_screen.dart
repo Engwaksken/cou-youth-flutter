@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
 import '../core/api/api_config.dart';
+import '../core/localization/app_locale_controller.dart';
+import '../core/localization/app_strings.dart';
 import 'accessibility_screen.dart';
 import 'certificates_screen.dart';
 import 'chatbot_screen.dart';
 import 'notification_preferences_screen.dart';
+import 'opportunities_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({
@@ -56,10 +59,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _chooseLanguage() async {
+    final strings = AppStrings.of(context);
+    final current = AppLocaleController.instance.value.languageCode;
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: Text(strings.text('language')),
+            ),
+            RadioListTile<String>(
+              value: 'en',
+              groupValue: current,
+              title: Text(strings.text('english')),
+              onChanged: (value) => Navigator.of(context).pop(value),
+            ),
+            RadioListTile<String>(
+              value: 'lg',
+              groupValue: current,
+              title: Text(strings.text('luganda')),
+              onChanged: (value) => Navigator.of(context).pop(value),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+
+    if (selected == null || !mounted) return;
+    AppLocaleController.instance.setLocale(Locale(selected));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(strings.text('language_updated'))),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(strings.text('profile'))),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: ListView(
@@ -72,16 +116,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.smart_toy_outlined),
-                    title: const Text('Youth Assistant'),
+                    title: Text(strings.text('youth_assistant')),
                     subtitle: const Text('Ask about youth resources and opportunities.'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => _open(const ChatbotScreen()),
                   ),
                   const Divider(height: 1),
                   ListTile(
+                    leading: const Icon(Icons.work_outline),
+                    title: Text(strings.text('opportunities')),
+                    subtitle: const Text('Jobs, scholarships, training and volunteering.'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _open(const OpportunitiesScreen()),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
                     enabled: _signedIn,
                     leading: const Icon(Icons.workspace_premium_outlined),
-                    title: const Text('Certificates'),
+                    title: Text(strings.text('certificates')),
                     subtitle: Text(
                       _signedIn
                           ? 'View your completed course certificates.'
@@ -96,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ListTile(
                     enabled: _signedIn,
                     leading: const Icon(Icons.notifications_outlined),
-                    title: const Text('Notification preferences'),
+                    title: Text(strings.text('notification_preferences')),
                     subtitle: Text(
                       _signedIn
                           ? 'Choose the updates you want to receive.'
@@ -109,8 +161,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const Divider(height: 1),
                   ListTile(
+                    leading: const Icon(Icons.language_outlined),
+                    title: Text(strings.text('language')),
+                    subtitle: Text(
+                      AppLocaleController.instance.value.languageCode == 'lg'
+                          ? strings.text('luganda')
+                          : strings.text('english'),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: _chooseLanguage,
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
                     leading: const Icon(Icons.accessibility_new_outlined),
-                    title: const Text('Accessibility'),
+                    title: Text(strings.text('accessibility')),
                     subtitle: const Text('Text size, contrast, motion and reading settings.'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => _open(const AccessibilityScreen()),
@@ -132,8 +196,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _exiting
                     ? 'Please wait...'
                     : _signedIn
-                        ? 'Sign out'
-                        : 'Sign in / create account',
+                        ? strings.text('sign_out')
+                        : strings.text('sign_in_create'),
               ),
             ),
           ],
