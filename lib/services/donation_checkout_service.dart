@@ -62,4 +62,24 @@ class DonationCheckoutService {
       if (phone != null && phone.trim().isNotEmpty) 'donor_phone': phone.trim(),
     });
   }
+
+  Future<Map<String, dynamic>> donationStatus(int donationId) async {
+    final response = await api.get('/donations/$donationId');
+    final raw = response['data'];
+
+    if (raw is Map<String, dynamic>) return raw;
+    if (raw is Map) return Map<String, dynamic>.from(raw);
+
+    return const <String, dynamic>{};
+  }
+
+  Future<Map<String, dynamic>> verifyDonation(int donationId) async {
+    final response = await api.post('/donations/$donationId/verify', const {});
+    final raw = response['data'];
+
+    if (raw is Map<String, dynamic>) return raw;
+    if (raw is Map) return Map<String, dynamic>.from(raw);
+
+    return const <String, dynamic>{};
+  }
 }
