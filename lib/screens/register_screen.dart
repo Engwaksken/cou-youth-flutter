@@ -31,6 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   DateTime? _dateOfBirth;
   bool _busy = false;
   bool _obscurePassword = true;
+  bool _guardianConfirmed = false;
   String? _error;
 
   @override
@@ -62,19 +63,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return years;
   }
 
-  bool get _showGuardianFields => (_age ?? 99) < 18;
+  bool get _showGuardianFields {
+    final age = _age;
+    return age != null && age >= 12 && age <= 17;
+  }
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
     final value = await showDatePicker(
       context: context,
-      firstDate: DateTime(now.year - 40),
-      lastDate: now.subtract(const Duration(days: 1)),
-      initialDate: DateTime(now.year - 18),
+      firstDate: DateTime(now.year - 35 - 1),
+      lastDate: DateTime(now.year - 12, now.month, now.day),
+      initialDate: DateTime(now.year - 18, now.month, now.day),
     );
 
     if (value != null && mounted) {
-      setState(() => _dateOfBirth = value);
+      setState(() {
+        _dateOfBirth = value;
+        _guardianConfirmed = false;
+      });
     }
   }
 
@@ -88,6 +95,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_dateOfBirth == null) {
       setState(() => _error = 'Select your date of birth.');
+      return;
+    }
+
+    final age = _age;
+    if (age == null || age < 12 || age > 35) {
+      setState(() => _error = 'Registration is currently available to ages 12–35.');
+      return;
+    }
+
+    if (_showGuardianFields && !_guardianConfirmed) {
+      setState(() => _error = 'Guardian consent must be confirmed for teen accounts.');
       return;
     }
 
@@ -108,6 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             _showGuardianFields ? _guardianRelationship.text : null,
         guardianPhone: _showGuardianFields ? _guardianPhone.text : null,
         guardianEmail: _showGuardianFields ? _guardianEmail.text : null,
+        guardianConfirmed: _showGuardianFields && _guardianConfirmed,
       );
 
       if (mounted) widget.onRegistered();
@@ -142,7 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Create your youth profile. Guardian details are required for minors so safeguarding rules can be applied.',
+                'Registration is available to young people aged 12–35. Teen accounts require guardian consent for safeguarding review.',
               ),
               const SizedBox(height: 20),
               if (_error != null) ...[
@@ -214,6 +233,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       : 'Date of birth: ${_formatDate(_dateOfBirth!)}',
                 ),
               ),
+              if (_age != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Age: $_age',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
               const SizedBox(height: 12),
               TextFormField(
                 controller: _school,
@@ -229,6 +255,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'A parent or guardian must agree to the submission of these details. The consent will remain pending until safeguarding review is completed.',
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
@@ -274,6 +304,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: const InputDecoration(
                     labelText: 'Guardian email (optional)',
                     border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: _guardianConfirmed,
+                  onChanged: _busy
+                      ? null
+                      : (value) => setState(
+                            () => _guardianConfirmed = value ?? false,
+                          ),
+                  title: const Text(
+                    'I confirm that the parent or guardian has provided these details and consented to this account registration.',
                   ),
                 ),
               ],
