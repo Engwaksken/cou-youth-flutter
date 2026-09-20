@@ -6,6 +6,8 @@ import 'chatbot_screen.dart';
 import 'church_locator_screen.dart';
 import 'content_detail_screen.dart';
 import 'donation_checkout_screen.dart';
+import 'life_groups_screen.dart';
+import 'media_resources_screen.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -42,10 +44,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _load() {
-    return _service.list(
-      type: _type,
-      query: _search.text,
-    );
+    return _service.list(type: _type, query: _search.text);
   }
 
   Future<void> _refresh() async {
@@ -128,6 +127,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: [
+                          _ModuleCard(
+                            icon: Icons.groups_2_outlined,
+                            title: 'Life Groups',
+                            onTap: () => _open(const LifeGroupsScreen()),
+                          ),
+                          _ModuleCard(
+                            icon: Icons.folder_open_outlined,
+                            title: 'Media & Resources',
+                            onTap: () => _open(const MediaResourcesScreen()),
+                          ),
                           _ModuleCard(
                             icon: Icons.smart_toy_outlined,
                             title: 'Youth Assistant',
