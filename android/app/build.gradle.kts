@@ -1,12 +1,12 @@
 plugins {
     id("com.android.application")
+    id("com.google.gms.google-services")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.cou_youth_mobile"
+    namespace = "org.churchofuganda.youth"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -16,8 +16,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Replace this example ID with the final Church of Uganda app ID before release.
-        applicationId = "com.example.cou_youth_mobile"
+        applicationId = "org.churchofuganda.youth"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -26,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add the production signing configuration before store release.
+            // Replace with the production signing configuration before Play Store release.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
