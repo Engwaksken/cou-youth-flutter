@@ -154,8 +154,11 @@ class CouYouthApp extends StatelessWidget {
     return theme;
   }
 
-  static Widget _buildMainNavigation(BuildContext context) {
-    return const MainNavigationScreen();
+  static Widget _buildMainNavigation(
+    BuildContext context,
+    Future<void> Function() exitSession,
+  ) {
+    return MainNavigationScreen(onExitSession: exitSession);
   }
 }
 
