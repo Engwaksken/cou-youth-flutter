@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
+import '../core/localization/app_strings.dart';
 import '../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -92,20 +93,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _submit() async {
+    final strings = AppStrings.of(context);
+
     if (!_formKey.currentState!.validate()) return;
     if (_dateOfBirth == null) {
-      setState(() => _error = 'Select your date of birth.');
+      setState(() => _error = strings.text('select_birth_error'));
       return;
     }
 
     final age = _age;
     if (age == null || age < 12 || age > 35) {
-      setState(() => _error = 'Registration is currently available to ages 12–35.');
+      setState(() => _error = strings.text('age_range'));
       return;
     }
 
     if (_showGuardianFields && !_guardianConfirmed) {
-      setState(() => _error = 'Guardian consent must be confirmed for teen accounts.');
+      setState(() => _error = strings.text('guardian_confirmation_required'));
       return;
     }
 
@@ -134,9 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
-        setState(() {
-          _error = 'We could not create your account. Please try again.';
-        });
+        setState(() => _error = strings.text('registration_failed'));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -145,8 +146,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Create account')),
+      appBar: AppBar(title: Text(strings.text('create_account'))),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -154,14 +157,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.all(20),
             children: [
               Text(
-                'Join the COU Youth community',
+                strings.text('join_youth_community'),
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Registration is available to young people aged 12–35. Teen accounts require guardian consent for safeguarding review.',
+              Text(strings.text('registration_intro')),
+              const SizedBox(height: 6),
+              Text(
+                strings.text('age_range'),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 20),
               if (_error != null) ...[
@@ -177,26 +183,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ],
               TextFormField(
                 controller: _name,
-                decoration: const InputDecoration(
-                  labelText: 'Full name',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: strings.text('full_name'),
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (value) => (value ?? '').trim().isEmpty
-                    ? 'Enter your full name.'
+                    ? strings.text('enter_full_name')
                     : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email address',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: strings.text('email_address'),
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
                   final text = (value ?? '').trim();
-                  if (text.isEmpty) return 'Enter your email address.';
-                  if (!text.contains('@')) return 'Enter a valid email address.';
+                  if (text.isEmpty) return strings.text('enter_email');
+                  if (!text.contains('@')) return strings.text('valid_email');
                   return null;
                 },
               ),
@@ -205,10 +211,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _password,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
-                  labelText: 'Password',
-                  helperText: 'At least 8 characters with upper/lower case and a number.',
+                  labelText: strings.text('password'),
+                  helperText: strings.text('password_help'),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
+                    tooltip: _obscurePassword
+                        ? strings.text('show_password')
+                        : strings.text('hide_password'),
                     onPressed: () => setState(
                       () => _obscurePassword = !_obscurePassword,
                     ),
@@ -220,7 +229,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 validator: (value) => (value ?? '').length < 8
-                    ? 'Use a password of at least 8 characters.'
+                    ? strings.text('password_min')
                     : null,
               ),
               const SizedBox(height: 12),
@@ -229,81 +238,77 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 icon: const Icon(Icons.cake_outlined),
                 label: Text(
                   _dateOfBirth == null
-                      ? 'Select date of birth'
-                      : 'Date of birth: ${_formatDate(_dateOfBirth!)}',
+                      ? strings.text('select_date_birth')
+                      : '${strings.text('date_of_birth')}: ${_formatDate(_dateOfBirth!)}',
                 ),
               ),
               if (_age != null) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Age: $_age',
+                  '${strings.text('date_of_birth')}: ${_formatDate(_dateOfBirth!)}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
               const SizedBox(height: 12),
               TextFormField(
                 controller: _school,
-                decoration: const InputDecoration(
-                  labelText: 'School / institution (optional)',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: strings.text('school_optional'),
+                  border: const OutlineInputBorder(),
                 ),
               ),
               if (_showGuardianFields) ...[
                 const SizedBox(height: 20),
                 Text(
-                  'Guardian consent',
+                  strings.text('guardian_consent'),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'A parent or guardian must agree to the submission of these details. The consent will remain pending until safeguarding review is completed.',
-                ),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _guardianName,
-                  decoration: const InputDecoration(
-                    labelText: 'Guardian name',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: strings.text('guardian_name'),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) => _showGuardianFields &&
                           (value ?? '').trim().isEmpty
-                      ? 'Enter the guardian name.'
+                      ? strings.text('enter_guardian_name')
                       : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _guardianRelationship,
-                  decoration: const InputDecoration(
-                    labelText: 'Relationship',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: strings.text('guardian_relationship'),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) => _showGuardianFields &&
                           (value ?? '').trim().isEmpty
-                      ? 'Enter the relationship.'
+                      ? strings.text('enter_relationship')
                       : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _guardianPhone,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Guardian phone',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: strings.text('guardian_phone'),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) => _showGuardianFields &&
                           (value ?? '').trim().isEmpty
-                      ? 'Enter the guardian phone number.'
+                      ? strings.text('enter_guardian_phone')
                       : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _guardianEmail,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Guardian email (optional)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: strings.text('guardian_email_optional'),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -315,9 +320,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       : (value) => setState(
                             () => _guardianConfirmed = value ?? false,
                           ),
-                  title: const Text(
-                    'I confirm that the parent or guardian has provided these details and consented to this account registration.',
-                  ),
+                  title: Text(strings.text('guardian_confirmation')),
                 ),
               ],
               const SizedBox(height: 22),
@@ -330,7 +333,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.person_add_alt_1),
-                label: Text(_busy ? 'Creating account...' : 'Create account'),
+                label: Text(
+                  _busy
+                      ? strings.text('creating_account')
+                      : strings.text('create_account'),
+                ),
               ),
             ],
           ),
