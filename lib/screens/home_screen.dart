@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/localization/app_strings.dart';
 import 'chatbot_screen.dart';
 import 'church_locator_screen.dart';
 import 'courses_screen.dart';
@@ -8,6 +9,7 @@ import 'events_screen.dart';
 import 'life_groups_screen.dart';
 import 'media_resources_screen.dart';
 import 'notifications_screen.dart';
+import 'opportunities_screen.dart';
 import 'prayer_screen.dart';
 import 'safety_center_screen.dart';
 
@@ -22,17 +24,19 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('COU Youth Platform'),
         actions: [
           IconButton(
-            tooltip: 'Youth Assistant',
+            tooltip: strings.text('youth_assistant'),
             onPressed: () => _open(context, const ChatbotScreen()),
             icon: const Icon(Icons.smart_toy_outlined),
           ),
           IconButton(
-            tooltip: 'Notifications',
+            tooltip: strings.text('notifications'),
             onPressed: () => _open(context, const NotificationsScreen()),
             icon: const Icon(Icons.notifications_none),
           ),
@@ -55,23 +59,23 @@ class HomeScreen extends StatelessWidget {
                 const Icon(Icons.church_outlined, color: Colors.white, size: 36),
                 const SizedBox(height: 16),
                 Text(
-                  'Welcome',
+                  strings.text('welcome'),
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
                       ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Connecting Young People. Growing Disciples. Transforming Nations.',
-                  style: TextStyle(color: Colors.white, height: 1.5),
+                Text(
+                  strings.text('tagline'),
+                  style: const TextStyle(color: Colors.white, height: 1.5),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 24),
           Text(
-            'Quick Access',
+            strings.text('quick_access'),
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -87,52 +91,57 @@ class HomeScreen extends StatelessWidget {
             children: [
               _QuickAccessCard(
                 icon: Icons.menu_book_outlined,
-                title: 'Discipleship',
+                title: strings.text('discipleship'),
                 onTap: () => _open(context, const CoursesScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.groups_2_outlined,
-                title: 'Life Groups',
+                title: strings.text('life_groups'),
                 onTap: () => _open(context, const LifeGroupsScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.event_outlined,
-                title: 'Events',
+                title: strings.text('events'),
                 onTap: () => _open(context, const EventsScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.volunteer_activism_outlined,
-                title: 'Prayer',
+                title: strings.text('prayer'),
                 onTap: () => _open(context, const PrayerScreen()),
               ),
               _QuickAccessCard(
+                icon: Icons.work_outline,
+                title: strings.text('opportunities'),
+                onTap: () => _open(context, const OpportunitiesScreen()),
+              ),
+              _QuickAccessCard(
                 icon: Icons.folder_open_outlined,
-                title: 'Media & Resources',
+                title: strings.text('media_resources'),
                 onTap: () => _open(context, const MediaResourcesScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.location_on_outlined,
-                title: 'Church Locator',
+                title: strings.text('church_locator'),
                 onTap: () => _open(context, const ChurchLocatorScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.handshake_outlined,
-                title: 'Donate',
+                title: strings.text('donate'),
                 onTap: () => _open(context, const DonationCheckoutScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.smart_toy_outlined,
-                title: 'Youth Assistant',
+                title: strings.text('youth_assistant'),
                 onTap: () => _open(context, const ChatbotScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.notifications_active_outlined,
-                title: 'Notifications',
+                title: strings.text('notifications'),
                 onTap: () => _open(context, const NotificationsScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.shield_outlined,
-                title: 'Safety Centre',
+                title: strings.text('safe_support'),
                 onTap: () => _open(context, const SafetyCenterScreen()),
               ),
             ],
