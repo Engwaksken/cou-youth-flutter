@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
@@ -30,6 +32,11 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
   bool _anonymous = false;
   bool _busy = false;
   bool _loading = true;
+  bool _verifying = false;
+  int? _activeDonationId;
+  String? _paymentStatus;
+  String? _receiptNumber;
+  String? _paymentMessage;
   String? _error;
 
   @override
@@ -51,6 +58,12 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
   int? _asInt(dynamic value) {
     if (value is int) return value;
     return int.tryParse(value?.toString() ?? '');
+  }
+
+  Map<String, dynamic> _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return const <String, dynamic>{};
   }
 
   Future<void> _load() async {
@@ -87,6 +100,10 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
     setState(() {
       _busy = true;
       _error = null;
+      _paymentStatus = null;
+      _receiptNumber = null;
+      _paymentMessage = null;
+      _activeDonationId = null;
     });
 
     try {
@@ -102,28 +119,24 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
 
       if (!mounted) return;
 
-      final data = response['data'];
-      final payment = data is Map ? data['payment'] : null;
-      final message = payment is Map
-          ? payment['message']?.toString()
-          : response['message']?.toString();
+      final data = _asMap(response['data']);
+      final donation = _asMap(data['donation']);
+      final payment = _asMap(data['payment']);
+      final donationId = _asInt(donation['id']);
+      final status = donation['status']?.toString() ?? 'pending';
+      final message = payment['message']?.toString() ??
+          response['message']?.toString() ??
+          'Approve the payment request on your phone.';
 
-      showDialog<void>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Donation started'),
-          content: Text(
-            message ??
-                'Your donation request was created. Follow the payment instructions from your selected provider.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      setState(() {
+        _activeDonationId = donationId;
+        _paymentStatus = status;
+        _paymentMessage = message;
+      });
+
+      if (donationId != null) {
+        await _pollPaymentStatus(donationId);
+      }
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
@@ -135,6 +148,178 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _pollPaymentStatus(int donationId) async {
+    if (_verifying) return;
+
+    setState(() => _verifying = true);
+
+    try {
+      for (var attempt = 0; attempt < 8; attempt++) {
+        if (attempt > 0) {
+          await Future<void>.delayed(const Duration(seconds: 4));
+        }
+
+        if (!mounted || donationId != _activeDonationId) return;
+
+        Map<String, dynamic> donation;
+
+        try {
+          final verified = await _service.verifyDonation(donationId);
+          donation = _asMap(verified['donation']);
+          if (donation.isEmpty) {
+            donation = verified;
+          }
+        } on ApiException {
+          donation = await _service.donationStatus(donationId);
+        }
+
+        if (!mounted || donationId != _activeDonationId) return;
+
+        final status = donation['status']?.toString().toLowerCase() ?? 'pending';
+        final receipt = donation['receipt_number']?.toString();
+
+        setState(() {
+          _paymentStatus = status;
+          _receiptNumber = receipt;
+          _paymentMessage = _messageForStatus(status);
+        });
+
+        if (_isFinalStatus(status)) break;
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.message;
+          _paymentMessage = 'Payment status could not be refreshed automatically.';
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _paymentMessage = 'Payment is still being processed. You can refresh the status manually.';
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _verifying = false);
+    }
+  }
+
+  Future<void> _refreshPaymentStatus() async {
+    final donationId = _activeDonationId;
+    if (donationId == null || _verifying) return;
+    await _pollPaymentStatus(donationId);
+  }
+
+  bool _isFinalStatus(String status) {
+    return const {
+      'successful',
+      'paid',
+      'completed',
+      'failed',
+      'cancelled',
+      'canceled',
+      'refunded',
+    }.contains(status.toLowerCase());
+  }
+
+  bool _isSuccessful(String? status) {
+    return const {'successful', 'paid', 'completed'}
+        .contains(status?.toLowerCase());
+  }
+
+  String _messageForStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'successful':
+      case 'paid':
+      case 'completed':
+        return 'Payment received successfully. Thank you for supporting Church of Uganda youth ministry.';
+      case 'failed':
+        return 'The payment was not completed. You can try again.';
+      case 'cancelled':
+      case 'canceled':
+        return 'The payment was cancelled.';
+      case 'refunded':
+        return 'This payment has been refunded.';
+      default:
+        return 'Waiting for payment approval. Please approve the Mobile Money prompt on your phone.';
+    }
+  }
+
+  Widget _paymentStatusCard(BuildContext context) {
+    final status = (_paymentStatus ?? 'pending').toLowerCase();
+    final success = _isSuccessful(status);
+    final failed = const {'failed', 'cancelled', 'canceled'}.contains(status);
+    final scheme = Theme.of(context).colorScheme;
+
+    final icon = success
+        ? Icons.check_circle
+        : failed
+            ? Icons.error_outline
+            : Icons.hourglass_top;
+
+    final title = success
+        ? 'Donation successful'
+        : failed
+            ? 'Payment not completed'
+            : 'Waiting for approval';
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 18),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  color: success
+                      ? Colors.green
+                      : failed
+                          ? scheme.error
+                          : scheme.primary,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                ),
+                if (_verifying)
+                  const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(_paymentMessage ?? _messageForStatus(status)),
+            if (_receiptNumber != null && _receiptNumber!.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Text(
+                'Receipt: $_receiptNumber',
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ],
+            if (!success && !failed) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _verifying ? null : _refreshPaymentStatus,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Refresh payment status'),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -157,6 +342,7 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
                   'Choose a campaign and payment method. Payment credentials are handled securely by the Laravel backend.',
                 ),
                 const SizedBox(height: 20),
+                if (_activeDonationId != null) _paymentStatusCard(context),
                 if (_error != null) ...[
                   Container(
                     padding: const EdgeInsets.all(12),
