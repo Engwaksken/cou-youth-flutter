@@ -7,6 +7,7 @@ import '../core/localization/app_strings.dart';
 import 'accessibility_screen.dart';
 import 'certificates_screen.dart';
 import 'chatbot_screen.dart';
+import 'guardian_consent_screen.dart';
 import 'notification_preferences_screen.dart';
 import 'opportunities_screen.dart';
 
@@ -50,7 +51,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _exitSession() async {
     if (_exiting) return;
-
     setState(() => _exiting = true);
     try {
       await widget.onExitSession();
@@ -132,6 +132,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const Divider(height: 1),
                   ListTile(
                     enabled: _signedIn,
+                    leading: const Icon(Icons.family_restroom_outlined),
+                    title: const Text('Guardian consent'),
+                    subtitle: Text(
+                      _signedIn
+                          ? 'Review teen safeguarding and guardian-consent status.'
+                          : 'Sign in to manage guardian consent.',
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: _signedIn
+                        ? () async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const GuardianConsentScreen(),
+                              ),
+                            );
+                            if (mounted) await _refresh();
+                          }
+                        : null,
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    enabled: _signedIn,
                     leading: const Icon(Icons.workspace_premium_outlined),
                     title: Text(strings.text('certificates')),
                     subtitle: Text(
@@ -140,9 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           : 'Sign in to view certificates.',
                     ),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: _signedIn
-                        ? () => _open(const CertificatesScreen())
-                        : null,
+                    onTap: _signedIn ? () => _open(const CertificatesScreen()) : null,
                   ),
                   const Divider(height: 1),
                   ListTile(
@@ -213,19 +233,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: EdgeInsets.all(20),
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 28,
-                child: Icon(Icons.person_outline, size: 30),
-              ),
+              CircleAvatar(radius: 28, child: Icon(Icons.person_outline, size: 30)),
               SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Guest',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                    ),
+                    Text('Guest', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                     SizedBox(height: 4),
                     Text('Sign in to view your profile, progress and certificates.'),
                   ],
@@ -268,6 +282,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final youthProfile = response['youth_profile'] is Map
             ? Map<String, dynamic>.from(response['youth_profile'] as Map)
             : <String, dynamic>{};
+        final safeguarding = response['safeguarding'] is Map
+            ? Map<String, dynamic>.from(response['safeguarding'] as Map)
+            : <String, dynamic>{};
+
+        final consentRequired = safeguarding['guardian_consent_required'] == true;
+        final consentStatus = '${safeguarding['guardian_consent_status'] ?? ''}'.trim();
+        final verified = safeguarding['safeguarding_verified'] == true;
 
         return Card(
           child: Padding(
@@ -289,10 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Text(
                         '${user['name'] ?? 'Youth Member'}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 4),
                       if (user['email'] != null) Text('${user['email']}'),
@@ -300,9 +318,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 6),
                         Chip(
                           visualDensity: VisualDensity.compact,
-                          label: Text(
-                            '${youthProfile['age_category']}'.replaceAll('_', ' '),
-                          ),
+                          label: Text('${youthProfile['age_category']}'.replaceAll('_', ' ')),
+                        ),
+                      ],
+                      if (consentRequired || verified || consentStatus.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: [
+                            if (consentRequired)
+                              Chip(
+                                avatar: const Icon(Icons.family_restroom_outlined, size: 16),
+                                label: Text(
+                                  consentStatus.isEmpty
+                                      ? 'Guardian consent required'
+                                      : 'Consent: ${consentStatus.replaceAll('_', ' ')}',
+                                ),
+                              ),
+                            if (verified)
+                              const Chip(
+                                avatar: Icon(Icons.verified_user_outlined, size: 16),
+                                label: Text('Safeguarding verified'),
+                              ),
+                          ],
                         ),
                       ],
                     ],
