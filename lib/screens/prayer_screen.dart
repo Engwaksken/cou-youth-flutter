@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
+import '../core/localization/app_strings.dart';
 import '../services/prayer_service.dart';
 
 class PrayerScreen extends StatefulWidget {
@@ -55,11 +56,11 @@ class _PrayerScreenState extends State<PrayerScreen> {
       _subject.clear();
       _message.clear();
 
+      final strings = AppStrings.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            response['message']?.toString() ??
-                'Your prayer request has been submitted safely.',
+            response['message']?.toString() ?? strings.text('prayer_submitted'),
           ),
         ),
       );
@@ -76,6 +77,14 @@ class _PrayerScreenState extends State<PrayerScreen> {
     }
   }
 
+  String _visibilityLabel(AppStrings strings, String visibility) {
+    return switch (visibility) {
+      'pastoral_team' => strings.text('pastoral_team'),
+      'public_anonymous' => strings.text('public_anonymous'),
+      _ => strings.text('private'),
+    };
+  }
+
   void _openForm() {
     showModalBottomSheet<void>(
       context: context,
@@ -84,6 +93,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
+            final strings = AppStrings.of(context);
             return Padding(
               padding: EdgeInsets.fromLTRB(
                 16,
@@ -98,7 +108,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'Submit a prayer request',
+                        strings.text('submit_prayer_request'),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w800,
                             ),
@@ -106,12 +116,12 @@ class _PrayerScreenState extends State<PrayerScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _subject,
-                        decoration: const InputDecoration(
-                          labelText: 'Subject',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: strings.text('subject'),
+                          border: const OutlineInputBorder(),
                         ),
                         validator: (value) => (value ?? '').trim().isEmpty
-                            ? 'Enter a subject.'
+                            ? strings.text('enter_subject')
                             : null,
                       ),
                       const SizedBox(height: 12),
@@ -119,34 +129,34 @@ class _PrayerScreenState extends State<PrayerScreen> {
                         controller: _message,
                         minLines: 5,
                         maxLines: 8,
-                        decoration: const InputDecoration(
-                          labelText: 'Prayer request',
+                        decoration: InputDecoration(
+                          labelText: strings.text('prayer_request_label'),
                           alignLabelWithHint: true,
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                         ),
                         validator: (value) => (value ?? '').trim().isEmpty
-                            ? 'Enter your prayer request.'
+                            ? strings.text('enter_prayer_request')
                             : null,
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
                         initialValue: _visibility,
-                        decoration: const InputDecoration(
-                          labelText: 'Who can see this?',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: strings.text('who_can_see'),
+                          border: const OutlineInputBorder(),
                         ),
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'private',
-                            child: Text('Private'),
+                            child: Text(strings.text('private')),
                           ),
                           DropdownMenuItem(
                             value: 'pastoral_team',
-                            child: Text('Pastoral team'),
+                            child: Text(strings.text('pastoral_team')),
                           ),
                           DropdownMenuItem(
                             value: 'public_anonymous',
-                            child: Text('Public, anonymous'),
+                            child: Text(strings.text('public_anonymous')),
                           ),
                         ],
                         onChanged: (value) {
@@ -155,9 +165,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                         },
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        'Sensitive requests may be flagged for safeguarding review so the right support can be provided.',
-                      ),
+                      Text(strings.text('prayer_safeguarding_note')),
                       const SizedBox(height: 18),
                       FilledButton.icon(
                         onPressed: _submitting
@@ -176,7 +184,9 @@ class _PrayerScreenState extends State<PrayerScreen> {
                               )
                             : const Icon(Icons.send_outlined),
                         label: Text(
-                          _submitting ? 'Submitting...' : 'Submit request',
+                          _submitting
+                              ? strings.text('submitting')
+                              : strings.text('submit_request'),
                         ),
                       ),
                     ],
@@ -192,14 +202,16 @@ class _PrayerScreenState extends State<PrayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Prayer & Pastoral Support'),
+        title: Text(strings.text('prayer_support')),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openForm,
         icon: const Icon(Icons.add),
-        label: const Text('Prayer request'),
+        label: Text(strings.text('prayer_request')),
       ),
       body: RefreshIndicator(
         onRefresh: _refresh,
@@ -212,14 +224,12 @@ class _PrayerScreenState extends State<PrayerScreen> {
 
             if (snapshot.hasError) {
               return ListView(
-                children: const [
-                  SizedBox(height: 120),
+                children: [
+                  const SizedBox(height: 120),
                   Padding(
-                    padding: EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(24),
                     child: Center(
-                      child: Text(
-                        'Prayer requests could not be loaded. Pull down to try again.',
-                      ),
+                      child: Text(strings.text('prayer_load_failed')),
                     ),
                   ),
                 ],
@@ -231,12 +241,12 @@ class _PrayerScreenState extends State<PrayerScreen> {
             if (requests.isEmpty) {
               return ListView(
                 padding: const EdgeInsets.all(24),
-                children: const [
-                  SizedBox(height: 80),
-                  Icon(Icons.volunteer_activism_outlined, size: 48),
-                  SizedBox(height: 16),
+                children: [
+                  const SizedBox(height: 80),
+                  const Icon(Icons.volunteer_activism_outlined, size: 48),
+                  const SizedBox(height: 16),
                   Text(
-                    'You have not submitted any prayer requests yet.',
+                    strings.text('no_prayer_requests'),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -249,18 +259,20 @@ class _PrayerScreenState extends State<PrayerScreen> {
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final request = requests[index];
+                final visibility = request['visibility']?.toString() ?? 'private';
+
                 return Card(
                   child: ListTile(
                     leading: const CircleAvatar(
                       child: Icon(Icons.volunteer_activism_outlined),
                     ),
-                    title: Text(request['subject']?.toString() ?? 'Prayer request'),
+                    title: Text(
+                      request['subject']?.toString() ??
+                          strings.text('prayer_request'),
+                    ),
                     subtitle: Text(request['message']?.toString() ?? ''),
                     trailing: Chip(
-                      label: Text(
-                        (request['visibility']?.toString() ?? 'private')
-                            .replaceAll('_', ' '),
-                      ),
+                      label: Text(_visibilityLabel(strings, visibility)),
                     ),
                   ),
                 );
