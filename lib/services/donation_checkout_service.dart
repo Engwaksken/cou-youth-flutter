@@ -82,4 +82,10 @@ class DonationCheckoutService {
 
     return const <String, dynamic>{};
   }
+
+  Future<Map<String, dynamic>> receipt(int donationId) async {
+    final response = await api.get('/donations/$donationId/receipt');
+
+    return Map<String, dynamic>.from(response);
+  }
 }
