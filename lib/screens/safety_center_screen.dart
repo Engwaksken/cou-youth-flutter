@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
 import '../core/api/api_config.dart';
+import '../core/localization/module_strings.dart';
 import '../services/moderation_service.dart';
 
 class SafetyCenterScreen extends StatefulWidget {
@@ -46,7 +47,9 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
 
   Future<void> _submit() async {
     if (!_signedIn) {
-      setState(() => _error = 'Please sign in before submitting a safeguarding report.');
+      setState(
+        () => _error = ModuleStrings.text(context, 'sign_in_report'),
+      );
       return;
     }
     if (!_formKey.currentState!.validate()) return;
@@ -69,7 +72,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
       );
       if (!mounted) return;
       setState(() {
-        _message = '${response['message'] ?? 'Report submitted for review.'}';
+        _message = '${response['message'] ?? ModuleStrings.text(context, 'report_submitted')}';
         _reportableId.clear();
         _reason.clear();
         _details.clear();
@@ -78,7 +81,9 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
-        setState(() => _error = 'The report could not be submitted. Please try again.');
+        setState(
+          () => _error = ModuleStrings.text(context, 'report_failed'),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -90,7 +95,11 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
       final response = await _service.unblock(userId);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${response['message'] ?? 'User unblocked.'}')),
+        SnackBar(
+          content: Text(
+            '${response['message'] ?? ModuleStrings.text(context, 'user_unblocked')}',
+          ),
+        ),
       );
       setState(() => _blockedFuture = _service.blocked());
     } on ApiException catch (e) {
@@ -102,10 +111,23 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
     }
   }
 
+  String _labelForType(String value) {
+    return switch (value) {
+      'content' => ModuleStrings.text(context, 'content'),
+      'user' => ModuleStrings.text(context, 'user'),
+      'life_group' => ModuleStrings.text(context, 'life_group'),
+      'media_asset' => ModuleStrings.text(context, 'media_resource'),
+      'prayer_request' => ModuleStrings.text(context, 'prayer_request'),
+      _ => value,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Safety Centre')),
+      appBar: AppBar(
+        title: Text(ModuleStrings.text(context, 'safety_center')),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -122,18 +144,18 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(width: 10),
-                      Text(
-                        'Report a safety concern',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                      Expanded(
+                        child: Text(
+                          ModuleStrings.text(context, 'report_safety_concern'),
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Use this form to report inappropriate content, a user, a Life Group, media item or prayer request for safeguarding review.',
-                  ),
+                  Text(ModuleStrings.text(context, 'safety_intro')),
                   const SizedBox(height: 16),
                   if (_message != null) ...[
                     _StatusBox(message: _message!, success: true),
@@ -149,15 +171,21 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                       children: [
                         DropdownButtonFormField<String>(
                           value: _type,
-                          decoration: const InputDecoration(
-                            labelText: 'What are you reporting?',
+                          decoration: InputDecoration(
+                            labelText: ModuleStrings.text(context, 'reporting_what'),
                           ),
-                          items: const [
-                            DropdownMenuItem(value: 'content', child: Text('Content')),
-                            DropdownMenuItem(value: 'user', child: Text('User')),
-                            DropdownMenuItem(value: 'life_group', child: Text('Life Group')),
-                            DropdownMenuItem(value: 'media_asset', child: Text('Media resource')),
-                            DropdownMenuItem(value: 'prayer_request', child: Text('Prayer request')),
+                          items: [
+                            for (final value in const [
+                              'content',
+                              'user',
+                              'life_group',
+                              'media_asset',
+                              'prayer_request',
+                            ])
+                              DropdownMenuItem(
+                                value: value,
+                                child: Text(_labelForType(value)),
+                              ),
                           ],
                           onChanged: _busy
                               ? null
@@ -167,13 +195,15 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                         TextFormField(
                           controller: _reportableId,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'Item or user ID',
-                            helperText: 'Use the ID shown on the relevant item or profile.',
+                          decoration: InputDecoration(
+                            labelText: ModuleStrings.text(context, 'item_user_id'),
+                            helperText: ModuleStrings.text(context, 'item_user_id_help'),
                           ),
                           validator: (value) {
                             final id = int.tryParse((value ?? '').trim());
-                            if (id == null || id < 1) return 'Enter a valid ID.';
+                            if (id == null || id < 1) {
+                              return ModuleStrings.text(context, 'valid_id');
+                            }
                             return null;
                           },
                         ),
@@ -181,9 +211,11 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                         TextFormField(
                           controller: _reason,
                           maxLength: 120,
-                          decoration: const InputDecoration(labelText: 'Reason'),
+                          decoration: InputDecoration(
+                            labelText: ModuleStrings.text(context, 'reason'),
+                          ),
                           validator: (value) => (value ?? '').trim().isEmpty
-                              ? 'Tell us why you are reporting this.'
+                              ? ModuleStrings.text(context, 'report_reason_required')
                               : null,
                         ),
                         const SizedBox(height: 12),
@@ -192,8 +224,8 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                           minLines: 3,
                           maxLines: 6,
                           maxLength: 3000,
-                          decoration: const InputDecoration(
-                            labelText: 'Additional details (optional)',
+                          decoration: InputDecoration(
+                            labelText: ModuleStrings.text(context, 'additional_details'),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -208,7 +240,11 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                                     child: CircularProgressIndicator(strokeWidth: 2),
                                   )
                                 : const Icon(Icons.report_outlined),
-                            label: Text(_busy ? 'Submitting...' : 'Submit report'),
+                            label: Text(
+                              _busy
+                                  ? ModuleStrings.text(context, 'submitting')
+                                  : ModuleStrings.text(context, 'submit_report'),
+                            ),
                           ),
                         ),
                       ],
@@ -220,17 +256,17 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
           ),
           const SizedBox(height: 18),
           Text(
-            'Blocked accounts',
+            ModuleStrings.text(context, 'blocked_accounts'),
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
           ),
           const SizedBox(height: 10),
           if (!_signedIn)
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(18),
-                child: Text('Sign in to view and manage blocked accounts.'),
+                padding: const EdgeInsets.all(18),
+                child: Text(ModuleStrings.text(context, 'sign_in_blocked')),
               ),
             )
           else
@@ -241,19 +277,23 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
-                  return const Card(
+                  return Card(
                     child: Padding(
-                      padding: EdgeInsets.all(18),
-                      child: Text('Blocked accounts could not be loaded.'),
+                      padding: const EdgeInsets.all(18),
+                      child: Text(
+                        ModuleStrings.text(context, 'blocked_load_failed'),
+                      ),
                     ),
                   );
                 }
                 final rows = snapshot.data ?? const <Map<String, dynamic>>[];
                 if (rows.isEmpty) {
-                  return const Card(
+                  return Card(
                     child: Padding(
-                      padding: EdgeInsets.all(18),
-                      child: Text('You have not blocked any accounts.'),
+                      padding: const EdgeInsets.all(18),
+                      child: Text(
+                        ModuleStrings.text(context, 'no_blocked_accounts'),
+                      ),
                     ),
                   );
                 }
@@ -262,11 +302,15 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                     for (final row in rows) ...[
                       Card(
                         child: ListTile(
-                          leading: const CircleAvatar(child: Icon(Icons.person_off_outlined)),
-                          title: Text(
-                            '${row['blocked'] is Map ? (row['blocked'] as Map)['name'] ?? 'Blocked user' : 'Blocked user'}',
+                          leading: const CircleAvatar(
+                            child: Icon(Icons.person_off_outlined),
                           ),
-                          subtitle: row['reason'] == null ? null : Text('${row['reason']}'),
+                          title: Text(
+                            '${row['blocked'] is Map ? (row['blocked'] as Map)['name'] ?? ModuleStrings.text(context, 'blocked_user') : ModuleStrings.text(context, 'blocked_user')}',
+                          ),
+                          subtitle: row['reason'] == null
+                              ? null
+                              : Text('${row['reason']}'),
                           trailing: TextButton(
                             onPressed: () {
                               final blocked = row['blocked'];
@@ -275,7 +319,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                                   : int.tryParse('${row['blocked_id'] ?? ''}');
                               if (id != null) _unblock(id);
                             },
-                            child: const Text('Unblock'),
+                            child: Text(ModuleStrings.text(context, 'unblock')),
                           ),
                         ),
                       ),
