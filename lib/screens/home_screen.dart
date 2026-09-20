@@ -12,6 +12,7 @@ import 'notifications_screen.dart';
 import 'opportunities_screen.dart';
 import 'prayer_screen.dart';
 import 'safety_center_screen.dart';
+import 'youth_hubs_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -113,6 +114,30 @@ class HomeScreen extends StatelessWidget {
                 icon: Icons.work_outline,
                 title: strings.text('opportunities'),
                 onTap: () => _open(context, const OpportunitiesScreen()),
+              ),
+              _QuickAccessCard(
+                icon: Icons.public_outlined,
+                title: strings.text('missions'),
+                onTap: () => _open(
+                  context,
+                  const YouthHubsScreen(initialType: 'mission'),
+                ),
+              ),
+              _QuickAccessCard(
+                icon: Icons.auto_awesome_outlined,
+                title: strings.text('talent_hub'),
+                onTap: () => _open(
+                  context,
+                  const YouthHubsScreen(initialType: 'talent'),
+                ),
+              ),
+              _QuickAccessCard(
+                icon: Icons.storefront_outlined,
+                title: strings.text('youth_businesses'),
+                onTap: () => _open(
+                  context,
+                  const YouthHubsScreen(initialType: 'youth_business'),
+                ),
               ),
               _QuickAccessCard(
                 icon: Icons.folder_open_outlined,
