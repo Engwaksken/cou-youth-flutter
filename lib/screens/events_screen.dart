@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_config.dart';
+import '../core/localization/module_strings.dart';
 import '../features/events/data/event_service.dart';
 
 class EventsScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _EventsScreenState extends State<EventsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Events'),
+        title: Text(ModuleStrings.text(context, 'events')),
       ),
       body: RefreshIndicator(
         onRefresh: _refresh,
@@ -58,13 +59,13 @@ class _EventsScreenState extends State<EventsScreen> {
             if (snapshot.hasError) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 120),
+                children: [
+                  const SizedBox(height: 120),
                   Center(
                     child: Padding(
-                      padding: EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(24),
                       child: Text(
-                        'Events could not be loaded. Pull down to try again.',
+                        ModuleStrings.text(context, 'events_load_failed'),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -78,9 +79,11 @@ class _EventsScreenState extends State<EventsScreen> {
             if (events.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 120),
-                  Center(child: Text('No upcoming events are available.')),
+                children: [
+                  const SizedBox(height: 120),
+                  Center(
+                    child: Text(ModuleStrings.text(context, 'no_events')),
+                  ),
                 ],
               );
             }
@@ -98,11 +101,13 @@ class _EventsScreenState extends State<EventsScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(4),
                     child: ListTile(
-                      leading: CircleAvatar(
-                        child: const Icon(Icons.event_outlined),
+                      leading: const CircleAvatar(
+                        child: Icon(Icons.event_outlined),
                       ),
                       title: Text(
-                        (event['title'] ?? event['name'] ?? 'Youth event')
+                        (event['title'] ??
+                                event['name'] ??
+                                ModuleStrings.text(context, 'youth_event'))
                             .toString(),
                       ),
                       subtitle: Column(
