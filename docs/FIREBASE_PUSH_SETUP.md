@@ -5,7 +5,8 @@ The Flutter application now contains the Firebase Cloud Messaging integration la
 ## Android
 
 1. Create/select the Church of Uganda Youth Platform project in Firebase.
-2. Register the Android application using the final production application ID. The current `com.example.cou_youth_mobile` value is only a placeholder and must be replaced before release.
+2. Register the Android application with this production application ID:
+   `org.churchofuganda.youth`
 3. Download `google-services.json` and place it at:
    `android/app/google-services.json`
 4. Do not commit that file. It is ignored by `.gitignore`.
@@ -14,12 +15,13 @@ The Google Services Gradle plugin is already configured in `android/settings.gra
 
 ## iOS
 
-1. Register the final iOS bundle identifier in Firebase.
-2. Download `GoogleService-Info.plist`.
-3. Add it to the Runner target in Xcode at `ios/Runner/GoogleService-Info.plist`.
-4. Enable Push Notifications and Background Modes > Remote notifications in the Runner target.
-5. Upload the APNs authentication key/certificate in Firebase Console.
-6. Do not commit the plist file. It is ignored by `.gitignore`.
+1. Use the same organisational identifier where possible: `org.churchofuganda.youth`.
+2. The Xcode Runner target still needs its `PRODUCT_BUNDLE_IDENTIFIER` changed from the generated Flutter placeholder to the final Church of Uganda identifier before Firebase/App Store registration.
+3. Download `GoogleService-Info.plist`.
+4. Add it to the Runner target in Xcode at `ios/Runner/GoogleService-Info.plist`.
+5. Enable Push Notifications and Background Modes > Remote notifications in the Runner target.
+6. Upload the APNs authentication key/certificate in Firebase Console.
+7. Do not commit the plist file. It is ignored by `.gitignore`.
 
 ## Flutter dependencies
 
