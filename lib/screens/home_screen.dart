@@ -5,6 +5,8 @@ import 'church_locator_screen.dart';
 import 'courses_screen.dart';
 import 'donation_checkout_screen.dart';
 import 'events_screen.dart';
+import 'life_groups_screen.dart';
+import 'media_resources_screen.dart';
 import 'notifications_screen.dart';
 import 'prayer_screen.dart';
 
@@ -88,6 +90,11 @@ class HomeScreen extends StatelessWidget {
                 onTap: () => _open(context, const CoursesScreen()),
               ),
               _QuickAccessCard(
+                icon: Icons.groups_2_outlined,
+                title: 'Life Groups',
+                onTap: () => _open(context, const LifeGroupsScreen()),
+              ),
+              _QuickAccessCard(
                 icon: Icons.event_outlined,
                 title: 'Events',
                 onTap: () => _open(context, const EventsScreen()),
@@ -96,6 +103,11 @@ class HomeScreen extends StatelessWidget {
                 icon: Icons.volunteer_activism_outlined,
                 title: 'Prayer',
                 onTap: () => _open(context, const PrayerScreen()),
+              ),
+              _QuickAccessCard(
+                icon: Icons.folder_open_outlined,
+                title: 'Media & Resources',
+                onTap: () => _open(context, const MediaResourcesScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.location_on_outlined,
