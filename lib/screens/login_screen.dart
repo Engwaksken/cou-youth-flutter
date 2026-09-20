@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
+import '../core/localization/app_strings.dart';
 import '../services/auth_service.dart';
 import 'auth_recovery_screen.dart';
 import 'register_screen.dart';
@@ -56,9 +57,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
-        setState(() {
-          _error = 'We could not sign you in. Please check your connection and try again.';
-        });
+        final strings = AppStrings.of(context);
+        setState(() => _error = strings.text('login_failed'));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -94,6 +94,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -117,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Church of Uganda Youth Platform',
+                      strings.text('app_title'),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w800,
@@ -125,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Sign in to access your discipleship progress, notifications, prayer requests and youth community.',
+                      strings.text('sign_in_intro'),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -150,15 +152,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       autofillHints: const [AutofillHints.email],
-                      decoration: const InputDecoration(
-                        labelText: 'Email address',
-                        prefixIcon: Icon(Icons.email_outlined),
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: strings.text('email_address'),
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         final text = value?.trim() ?? '';
-                        if (text.isEmpty) return 'Enter your email address.';
-                        if (!text.contains('@')) return 'Enter a valid email address.';
+                        if (text.isEmpty) return strings.text('enter_email');
+                        if (!text.contains('@')) return strings.text('valid_email');
                         return null;
                       },
                     ),
@@ -169,11 +171,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       autofillHints: const [AutofillHints.password],
                       onFieldSubmitted: (_) => _loading ? null : _submit(),
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: strings.text('password'),
                         prefixIcon: const Icon(Icons.lock_outline),
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
-                          tooltip: _obscurePassword ? 'Show password' : 'Hide password',
+                          tooltip: _obscurePassword
+                              ? strings.text('show_password')
+                              : strings.text('hide_password'),
                           onPressed: () {
                             setState(() => _obscurePassword = !_obscurePassword);
                           },
@@ -185,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       validator: (value) {
-                        if ((value ?? '').isEmpty) return 'Enter your password.';
+                        if ((value ?? '').isEmpty) return strings.text('enter_password');
                         return null;
                       },
                     ),
@@ -193,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: _loading ? null : _openRecovery,
-                        child: const Text('Forgot password / use OTP'),
+                        child: Text(strings.text('forgot_password_otp')),
                       ),
                     ),
                     FilledButton.icon(
@@ -205,18 +209,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.login),
-                      label: Text(_loading ? 'Signing in...' : 'Sign in'),
+                      label: Text(
+                        _loading ? strings.text('signing_in') : strings.text('sign_in'),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     OutlinedButton.icon(
                       onPressed: _loading ? null : _openRegister,
                       icon: const Icon(Icons.person_add_alt_1),
-                      label: const Text('Create youth account'),
+                      label: Text(strings.text('create_youth_account')),
                     ),
                     const SizedBox(height: 6),
                     TextButton(
                       onPressed: _loading ? null : widget.onContinueAsGuest,
-                      child: const Text('Continue as guest'),
+                      child: Text(strings.text('continue_guest')),
                     ),
                   ],
                 ),
