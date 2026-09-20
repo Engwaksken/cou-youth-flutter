@@ -18,8 +18,11 @@ void main() {
     expect(find.text('Life Groups'), findsOneWidget);
     expect(find.text('Events'), findsOneWidget);
     expect(find.text('Prayer'), findsOneWidget);
+    expect(find.text('Opportunities'), findsOneWidget);
+    expect(find.text('Missions & Evangelism'), findsOneWidget);
+    expect(find.text('Talent Hub'), findsOneWidget);
+    expect(find.text('Youth Business Directory'), findsOneWidget);
     expect(find.text('Media & Resources'), findsOneWidget);
     expect(find.text('Church Locator'), findsOneWidget);
-    expect(find.text('Safety Centre'), findsOneWidget);
   });
 }
