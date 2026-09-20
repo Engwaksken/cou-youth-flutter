@@ -8,6 +8,7 @@ import 'content_detail_screen.dart';
 import 'donation_checkout_screen.dart';
 import 'life_groups_screen.dart';
 import 'media_resources_screen.dart';
+import 'youth_hubs_screen.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -29,6 +30,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     'announcement': 'Announcements',
     'devotion': 'Devotions',
     'opportunity': 'Opportunities',
+    'mission': 'Missions',
+    'talent': 'Talent',
+    'youth_business': 'Youth Businesses',
   };
 
   @override
@@ -89,7 +93,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       textInputAction: TextInputAction.search,
                       onSubmitted: (_) => _searchNow(),
                       decoration: InputDecoration(
-                        hintText: 'Search news, devotions and opportunities',
+                        hintText: 'Search youth news, resources and opportunities',
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: IconButton(
                           tooltip: 'Search',
@@ -127,6 +131,27 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: [
+                          _ModuleCard(
+                            icon: Icons.public_outlined,
+                            title: 'Missions',
+                            onTap: () => _open(
+                              const YouthHubsScreen(initialType: 'mission'),
+                            ),
+                          ),
+                          _ModuleCard(
+                            icon: Icons.auto_awesome_outlined,
+                            title: 'Talent Hub',
+                            onTap: () => _open(
+                              const YouthHubsScreen(initialType: 'talent'),
+                            ),
+                          ),
+                          _ModuleCard(
+                            icon: Icons.storefront_outlined,
+                            title: 'Youth Businesses',
+                            onTap: () => _open(
+                              const YouthHubsScreen(initialType: 'youth_business'),
+                            ),
+                          ),
                           _ModuleCard(
                             icon: Icons.groups_2_outlined,
                             title: 'Life Groups',
@@ -286,6 +311,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       'announcement' => 'Announcement',
       'devotion' => 'Devotion',
       'opportunity' => 'Opportunity',
+      'mission' => 'Mission & Evangelism',
+      'talent' => 'Talent Hub',
+      'youth_business' => 'Youth Business',
       _ => 'Youth resource',
     };
   }
@@ -296,6 +324,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       'announcement' => Icons.campaign_outlined,
       'devotion' => Icons.menu_book_outlined,
       'opportunity' => Icons.work_outline,
+      'mission' => Icons.public_outlined,
+      'talent' => Icons.auto_awesome_outlined,
+      'youth_business' => Icons.storefront_outlined,
       _ => Icons.article_outlined,
     };
   }
