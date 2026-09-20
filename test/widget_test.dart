@@ -15,8 +15,11 @@ void main() {
     expect(find.text('COU Youth Platform'), findsOneWidget);
     expect(find.text('Quick Access'), findsOneWidget);
     expect(find.text('Discipleship'), findsOneWidget);
+    expect(find.text('Life Groups'), findsOneWidget);
     expect(find.text('Events'), findsOneWidget);
     expect(find.text('Prayer'), findsOneWidget);
+    expect(find.text('Media & Resources'), findsOneWidget);
     expect(find.text('Church Locator'), findsOneWidget);
+    expect(find.text('Safety Centre'), findsOneWidget);
   });
 }
