@@ -139,5 +139,33 @@ void main() {
       expect(verified['receipt_number'], 'COU-RCP-TEST');
       expect(requestCount, 2);
     });
+
+    test('loads a successful donation receipt', () async {
+      final client = ApiClient(
+        baseUrl: 'https://example.test/api/v1',
+        client: MockClient((request) async {
+          expect(request.method, 'GET');
+          expect(request.url.path, '/api/v1/donations/19/receipt');
+
+          return http.Response(
+            jsonEncode({
+              'receipt_number': 'COU-RCP-TEST',
+              'reference': 'reference-19',
+              'amount': '25000.00',
+              'currency': 'UGX',
+              'donor_name': 'Youth Member',
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      final receipt = await DonationCheckoutService(api: client).receipt(19);
+
+      expect(receipt['receipt_number'], 'COU-RCP-TEST');
+      expect(receipt['currency'], 'UGX');
+      expect(receipt['amount'], '25000.00');
+    });
   });
 }
