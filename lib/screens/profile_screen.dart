@@ -8,7 +8,12 @@ import 'chatbot_screen.dart';
 import 'notification_preferences_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({
+    super.key,
+    required this.onExitSession,
+  });
+
+  final Future<void> Function() onExitSession;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -16,6 +21,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<Map<String, dynamic>>? _profileFuture;
+  bool _exiting = false;
 
   bool get _signedIn =>
       ApiConfig.client.authToken != null &&
@@ -37,6 +43,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!_signedIn) return;
     setState(() => _profileFuture = ApiConfig.client.get('/me'));
     await _profileFuture;
+  }
+
+  Future<void> _exitSession() async {
+    if (_exiting) return;
+
+    setState(() => _exiting = true);
+    try {
+      await widget.onExitSession();
+    } finally {
+      if (mounted) setState(() => _exiting = false);
+    }
   }
 
   @override
@@ -99,6 +116,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onTap: () => _open(const AccessibilityScreen()),
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: _exiting ? null : _exitSession,
+              icon: _exiting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(_signedIn ? Icons.logout : Icons.login),
+              label: Text(
+                _exiting
+                    ? 'Please wait...'
+                    : _signedIn
+                        ? 'Sign out'
+                        : 'Sign in / create account',
               ),
             ),
           ],
@@ -196,15 +231,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      if (user['email'] != null)
-                        Text('${user['email']}'),
+                      if (user['email'] != null) Text('${user['email']}'),
                       if (youthProfile['age_category'] != null) ...[
                         const SizedBox(height: 6),
                         Chip(
                           visualDensity: VisualDensity.compact,
                           label: Text(
-                            '${youthProfile['age_category']}'
-                                .replaceAll('_', ' '),
+                            '${youthProfile['age_category']}'.replaceAll('_', ' '),
                           ),
                         ),
                       ],
