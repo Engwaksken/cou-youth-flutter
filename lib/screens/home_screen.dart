@@ -9,6 +9,7 @@ import 'life_groups_screen.dart';
 import 'media_resources_screen.dart';
 import 'notifications_screen.dart';
 import 'prayer_screen.dart';
+import 'safety_center_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -131,8 +132,8 @@ class HomeScreen extends StatelessWidget {
               ),
               _QuickAccessCard(
                 icon: Icons.shield_outlined,
-                title: 'Safe Support',
-                onTap: () => _open(context, const PrayerScreen()),
+                title: 'Safety Centre',
+                onTap: () => _open(context, const SafetyCenterScreen()),
               ),
             ],
           ),
@@ -145,7 +146,7 @@ class HomeScreen extends StatelessWidget {
                 'Prayer, pastoral support, safeguarding and accessibility are built into the platform.',
               ),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(context, const PrayerScreen()),
+              onTap: () => _open(context, const SafetyCenterScreen()),
             ),
           ),
         ],
