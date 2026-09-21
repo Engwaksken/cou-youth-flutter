@@ -4,8 +4,10 @@ import '../core/api/api_client.dart';
 import '../services/certificate_service.dart';
 
 class CertificatesScreen extends StatefulWidget {
-  const CertificatesScreen({super.key, CertificateService? service})
-      : _service = service;
+  const CertificatesScreen({
+    super.key,
+    CertificateService? service,
+  }) : _service = service;
 
   final CertificateService? _service;
 
@@ -142,7 +144,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final item = items[index];
                 final course = item['course'];
