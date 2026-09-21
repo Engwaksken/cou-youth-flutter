@@ -43,7 +43,8 @@ class _GuardianConsentScreenState extends State<GuardianConsentScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate() || !_confirmed || _submitting) return;
+    if (!_formKey.currentState!.validate() || !_confirmed || _submitting)
+      return;
 
     setState(() => _submitting = true);
     try {
@@ -55,14 +56,18 @@ class _GuardianConsentScreenState extends State<GuardianConsentScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${response['message'] ?? 'Guardian consent submitted.'}')),
+        SnackBar(
+          content: Text(
+            '${response['message'] ?? 'Guardian consent submitted.'}',
+          ),
+        ),
       );
       await _refresh();
     } on ApiException catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -118,20 +123,31 @@ class _GuardianConsentScreenState extends State<GuardianConsentScreen> {
                           children: [
                             const Text(
                               'Safeguarding status',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                             const SizedBox(height: 10),
-                            Text(required
-                                ? 'Guardian consent is required for this teen account.'
-                                : 'Guardian consent is not required for this age category.'),
+                            Text(
+                              required
+                                  ? 'Guardian consent is required for this teen account.'
+                                  : 'Guardian consent is not required for this age category.',
+                            ),
                             if (status.isNotEmpty) ...[
                               const SizedBox(height: 8),
-                              Chip(label: Text('Consent: ${status.replaceAll('_', ' ')}')),
+                              Chip(
+                                label: Text(
+                                  'Consent: ${status.replaceAll('_', ' ')}',
+                                ),
+                              ),
                             ],
                             const SizedBox(height: 6),
-                            Text(verified
-                                ? 'Safeguarding verification is complete.'
-                                : 'Safeguarding verification is pending or incomplete.'),
+                            Text(
+                              verified
+                                  ? 'Safeguarding verification is complete.'
+                                  : 'Safeguarding verification is pending or incomplete.',
+                            ),
                           ],
                         ),
                       ),
@@ -192,13 +208,16 @@ class _GuardianConsentScreenState extends State<GuardianConsentScreen> {
               TextFormField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Guardian email (optional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Guardian email (optional)',
+                ),
               ),
               const SizedBox(height: 8),
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 value: _confirmed,
-                onChanged: (value) => setState(() => _confirmed = value ?? false),
+                onChanged: (value) =>
+                    setState(() => _confirmed = value ?? false),
                 title: const Text(
                   'I confirm that the guardian has provided these details and consented to this submission.',
                 ),
@@ -213,7 +232,9 @@ class _GuardianConsentScreenState extends State<GuardianConsentScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.verified_user_outlined),
-                label: Text(_submitting ? 'Submitting...' : 'Submit for review'),
+                label: Text(
+                  _submitting ? 'Submitting...' : 'Submit for review',
+                ),
               ),
             ],
           ),

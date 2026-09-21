@@ -3,11 +3,9 @@ import '../core/api/api_config.dart';
 import '../core/auth/session_store.dart';
 
 class AuthRecoveryService {
-  AuthRecoveryService({
-    ApiClient? api,
-    SessionStore? sessionStore,
-  })  : api = api ?? ApiConfig.client,
-        sessionStore = sessionStore ?? SessionStore();
+  AuthRecoveryService({ApiClient? api, SessionStore? sessionStore})
+    : api = api ?? ApiConfig.client,
+      sessionStore = sessionStore ?? SessionStore();
 
   final ApiClient api;
   final SessionStore sessionStore;
@@ -16,11 +14,7 @@ class AuthRecoveryService {
     await api.post('/auth/password/request', {'email': email.trim()});
   }
 
-  Future<void> resetPassword(
-    String email,
-    String code,
-    String password,
-  ) async {
+  Future<void> resetPassword(String email, String code, String password) async {
     await api.post('/auth/password/reset', {
       'email': email.trim(),
       'code': code.trim(),
@@ -39,7 +33,8 @@ class AuthRecoveryService {
       'code': code.trim(),
     });
 
-    final token = response['token'] ??
+    final token =
+        response['token'] ??
         (response['data'] is Map ? (response['data'] as Map)['token'] : null);
 
     if (token is String && token.trim().isNotEmpty) {

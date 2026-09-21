@@ -7,9 +7,7 @@ class ChatbotService {
   final ApiClient api;
 
   Future<String> ask(String message) async {
-    final response = await api.post('/chatbot', {
-      'message': message.trim(),
-    });
+    final response = await api.post('/chatbot', {'message': message.trim()});
 
     final data = response['data'];
     if (data is Map && data['reply'] is String) {

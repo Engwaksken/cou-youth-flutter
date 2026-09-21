@@ -74,21 +74,21 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() {
-        _messages.add(_ChatMessage(
-          text: e.message,
-          fromUser: false,
-          isError: true,
-        ));
+        _messages.add(
+          _ChatMessage(text: e.message, fromUser: false, isError: true),
+        );
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _messages.add(const _ChatMessage(
-          text:
-              'The assistant is temporarily unavailable. You can still use the quick support actions below.',
-          fromUser: false,
-          isError: true,
-        ));
+        _messages.add(
+          const _ChatMessage(
+            text:
+                'The assistant is temporarily unavailable. You can still use the quick support actions below.',
+            fromUser: false,
+            isError: true,
+          ),
+        );
       });
     } finally {
       if (mounted) {
@@ -110,9 +110,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   void _open(Widget screen) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => screen),
-    );
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
   }
 
   @override
@@ -143,8 +141,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   Text(
                     'Quick help',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   SingleChildScrollView(
@@ -223,8 +221,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                           color: message.fromUser
                               ? scheme.primary
                               : message.isError
-                                  ? scheme.errorContainer
-                                  : scheme.surface,
+                              ? scheme.errorContainer
+                              : scheme.surface,
                           borderRadius: BorderRadius.circular(14),
                           border: message.fromUser
                               ? null
@@ -236,8 +234,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                             color: message.fromUser
                                 ? scheme.onPrimary
                                 : message.isError
-                                    ? scheme.onErrorContainer
-                                    : scheme.onSurface,
+                                ? scheme.onErrorContainer
+                                : scheme.onSurface,
                             height: 1.45,
                           ),
                         ),
@@ -254,7 +252,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   alignment: Alignment.centerLeft,
                   child: Semantics(
                     liveRegion: true,
-                    child: const Text('Youth Assistant is preparing a response…'),
+                    child: const Text(
+                      'Youth Assistant is preparing a response…',
+                    ),
                   ),
                 ),
               ),

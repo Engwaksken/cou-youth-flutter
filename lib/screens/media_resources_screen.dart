@@ -110,7 +110,9 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
                         Center(
                           child: Padding(
                             padding: EdgeInsets.all(24),
-                            child: Text('No published media resources are available yet.'),
+                            child: Text(
+                              'No published media resources are available yet.',
+                            ),
                           ),
                         ),
                       ],
@@ -120,18 +122,19 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
                   return ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                     itemCount: items.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       final item = items[index];
                       final type = '${item['type'] ?? 'resource'}';
-                      final title = '${item['title'] ?? item['name'] ?? 'Youth resource'}';
-                      final description = '${item['description'] ?? item['summary'] ?? ''}'.trim();
+                      final title =
+                          '${item['title'] ?? item['name'] ?? 'Youth resource'}';
+                      final description =
+                          '${item['description'] ?? item['summary'] ?? ''}'
+                              .trim();
 
                       return Card(
                         child: ListTile(
-                          leading: CircleAvatar(
-                            child: Icon(_icon(type)),
-                          ),
+                          leading: CircleAvatar(child: Icon(_icon(type))),
                           title: Text(title),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,8 +169,10 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
 
   void _showDetails(Map<String, dynamic> item) {
     final title = '${item['title'] ?? item['name'] ?? 'Resource'}';
-    final description = '${item['description'] ?? item['summary'] ?? ''}'.trim();
-    final url = '${item['url'] ?? item['file_url'] ?? item['source_url'] ?? ''}'.trim();
+    final description = '${item['description'] ?? item['summary'] ?? ''}'
+        .trim();
+    final url = '${item['url'] ?? item['file_url'] ?? item['source_url'] ?? ''}'
+        .trim();
 
     showModalBottomSheet<void>(
       context: context,
@@ -182,9 +187,9 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
             children: [
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
               ),
               if (description.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -207,20 +212,20 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
   }
 
   String _label(String type) => switch (type) {
-        'video' => 'Video',
-        'audio' => 'Audio',
-        'podcast' => 'Podcast',
-        'document' => 'Document',
-        'image' => 'Image',
-        _ => 'Resource',
-      };
+    'video' => 'Video',
+    'audio' => 'Audio',
+    'podcast' => 'Podcast',
+    'document' => 'Document',
+    'image' => 'Image',
+    _ => 'Resource',
+  };
 
   IconData _icon(String type) => switch (type) {
-        'video' => Icons.play_circle_outline,
-        'audio' => Icons.audiotrack_outlined,
-        'podcast' => Icons.podcasts_outlined,
-        'document' => Icons.description_outlined,
-        'image' => Icons.image_outlined,
-        _ => Icons.folder_open_outlined,
-      };
+    'video' => Icons.play_circle_outline,
+    'audio' => Icons.audiotrack_outlined,
+    'podcast' => Icons.podcasts_outlined,
+    'document' => Icons.description_outlined,
+    'image' => Icons.image_outlined,
+    _ => Icons.folder_open_outlined,
+  };
 }

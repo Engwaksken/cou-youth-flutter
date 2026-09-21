@@ -132,8 +132,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         dateOfBirth: _formatDate(_dateOfBirth!),
         schoolInstitution: _school.text,
         guardianName: _showGuardianFields ? _guardianName.text : null,
-        guardianRelationship:
-            _showGuardianFields ? _guardianRelationship.text : null,
+        guardianRelationship: _showGuardianFields
+            ? _guardianRelationship.text
+            : null,
         guardianPhone: _showGuardianFields ? _guardianPhone.text : null,
         guardianEmail: _showGuardianFields ? _guardianEmail.text : null,
         guardianConfirmed: _showGuardianFields && _guardianConfirmed,
@@ -167,8 +168,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Text(
                     strings.text('join_youth_community'),
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(strings.text('registration_intro')),
@@ -225,7 +226,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     autofillHints: const [AutofillHints.newPassword],
                     decoration: InputDecoration(
                       labelText: strings.text('password'),
-                      helperText: '8+ characters, uppercase, lowercase and a number',
+                      helperText:
+                          '8+ characters, uppercase, lowercase and a number',
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         tooltip: _obscurePassword
@@ -257,7 +259,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   if (_age != null) ...[
                     const SizedBox(height: 8),
-                    Text('Age: $_age', style: Theme.of(context).textTheme.bodySmall),
+                    Text(
+                      'Age: $_age',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ],
                   const SizedBox(height: 12),
                   TextFormField(
@@ -272,18 +277,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Text(
                       strings.text('guardian_consent'),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
                       controller: _guardianName,
                       decoration: InputDecoration(
                         labelText: strings.text('guardian_name'),
-                        prefixIcon: const Icon(Icons.supervisor_account_outlined),
+                        prefixIcon: const Icon(
+                          Icons.supervisor_account_outlined,
+                        ),
                       ),
-                      validator: (value) => _showGuardianFields &&
-                              (value ?? '').trim().isEmpty
+                      validator: (value) =>
+                          _showGuardianFields && (value ?? '').trim().isEmpty
                           ? strings.text('enter_guardian_name')
                           : null,
                     ),
@@ -294,8 +301,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         labelText: strings.text('guardian_relationship'),
                         prefixIcon: const Icon(Icons.family_restroom_outlined),
                       ),
-                      validator: (value) => _showGuardianFields &&
-                              (value ?? '').trim().isEmpty
+                      validator: (value) =>
+                          _showGuardianFields && (value ?? '').trim().isEmpty
                           ? strings.text('enter_relationship')
                           : null,
                     ),
@@ -307,8 +314,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         labelText: strings.text('guardian_phone'),
                         prefixIcon: const Icon(Icons.phone_outlined),
                       ),
-                      validator: (value) => _showGuardianFields &&
-                              (value ?? '').trim().isEmpty
+                      validator: (value) =>
+                          _showGuardianFields && (value ?? '').trim().isEmpty
                           ? strings.text('enter_guardian_phone')
                           : null,
                     ),
@@ -336,8 +343,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onChanged: _busy
                           ? null
                           : (value) => setState(
-                                () => _guardianConfirmed = value ?? false,
-                              ),
+                              () => _guardianConfirmed = value ?? false,
+                            ),
                       title: Text(strings.text('guardian_confirmation')),
                     ),
                   ],

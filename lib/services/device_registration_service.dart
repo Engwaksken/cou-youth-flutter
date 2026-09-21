@@ -20,8 +20,6 @@ class DeviceRegistrationService {
   }
 
   Future<void> unregister(String pushToken) async {
-    await api.delete('/devices', {
-      'push_token': pushToken.trim(),
-    });
+    await api.delete('/devices', {'push_token': pushToken.trim()});
   }
 }

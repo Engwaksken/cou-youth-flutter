@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'accessibility_controller.dart';
 
 class AccessibilitySheet extends StatelessWidget {
-  const AccessibilitySheet({
-    super.key,
-    required this.controller,
-  });
+  const AccessibilitySheet({super.key, required this.controller});
 
   final AccessibilityController controller;
 
@@ -24,10 +21,7 @@ class AccessibilitySheet extends StatelessWidget {
                 header: true,
                 child: const Text(
                   'Accessibility',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(height: 12),
@@ -72,9 +66,7 @@ class AccessibilitySheet extends StatelessWidget {
 
               FilledButton.tonal(
                 onPressed: controller.reset,
-                child: const Text(
-                  'Reset accessibility settings',
-                ),
+                child: const Text('Reset accessibility settings'),
               ),
             ],
           ),

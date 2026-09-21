@@ -4,10 +4,7 @@ import '../core/api/api_client.dart';
 import '../services/auth_recovery_service.dart';
 
 class AuthRecoveryScreen extends StatefulWidget {
-  const AuthRecoveryScreen({
-    super.key,
-    required this.onSignedIn,
-  });
+  const AuthRecoveryScreen({super.key, required this.onSignedIn});
 
   final VoidCallback onSignedIn;
 
@@ -82,7 +79,10 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
-        setState(() => _error = 'The request could not be completed. Please try again.');
+        setState(
+          () =>
+              _error = 'The request could not be completed. Please try again.',
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -98,8 +98,10 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
 
     if (!_otpMode) {
       if (!_strongPassword(_password.text)) {
-        setState(() => _error =
-            'Use at least 8 characters with uppercase, lowercase and a number.');
+        setState(
+          () => _error =
+              'Use at least 8 characters with uppercase, lowercase and a number.',
+        );
         return;
       }
       if (_password.text != _passwordConfirmation.text) {
@@ -122,7 +124,8 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
         await _service.resetPassword(_email.text, code, _password.text);
         if (mounted) {
           setState(() {
-            _message = 'Password updated. Return to login and use your new password.';
+            _message =
+                'Password updated. Return to login and use your new password.';
             _codeSent = false;
             _code.clear();
             _password.clear();
@@ -133,7 +136,8 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Verification failed. Please try again.');
+      if (mounted)
+        setState(() => _error = 'Verification failed. Please try again.');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -154,7 +158,9 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_otpMode ? 'Sign in with code' : 'Forgot password')),
+      appBar: AppBar(
+        title: Text(_otpMode ? 'Sign in with code' : 'Forgot password'),
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -182,10 +188,12 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  _otpMode ? 'Sign in with a one-time code' : 'Reset your password',
+                  _otpMode
+                      ? 'Sign in with a one-time code'
+                      : 'Reset your password',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -235,11 +243,14 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
                       autofillHints: const [AutofillHints.newPassword],
                       decoration: InputDecoration(
                         labelText: 'New password',
-                        helperText: '8+ characters, uppercase, lowercase and a number',
+                        helperText:
+                            '8+ characters, uppercase, lowercase and a number',
                         prefixIcon: const Icon(Icons.lock_outline),
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
-                          tooltip: _obscurePassword ? 'Show password' : 'Hide password',
+                          tooltip: _obscurePassword
+                              ? 'Show password'
+                              : 'Hide password',
                           onPressed: () => setState(
                             () => _obscurePassword = !_obscurePassword,
                           ),
@@ -261,7 +272,9 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
                         prefixIcon: const Icon(Icons.lock_outline),
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
-                          tooltip: _obscureConfirmation ? 'Show password' : 'Hide password',
+                          tooltip: _obscureConfirmation
+                              ? 'Show password'
+                              : 'Hide password',
                           onPressed: () => setState(
                             () => _obscureConfirmation = !_obscureConfirmation,
                           ),
@@ -277,20 +290,26 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
                 ],
                 const SizedBox(height: 20),
                 FilledButton.icon(
-                  onPressed: _busy ? null : (_codeSent ? _verify : _requestCode),
+                  onPressed: _busy
+                      ? null
+                      : (_codeSent ? _verify : _requestCode),
                   icon: _busy
                       ? const SizedBox(
                           width: 18,
                           height: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Icon(_codeSent ? Icons.verified_outlined : Icons.send_outlined),
+                      : Icon(
+                          _codeSent
+                              ? Icons.verified_outlined
+                              : Icons.send_outlined,
+                        ),
                   label: Text(
                     _busy
                         ? 'Please wait...'
                         : _codeSent
-                            ? (_otpMode ? 'Verify and sign in' : 'Update password')
-                            : 'Send code',
+                        ? (_otpMode ? 'Verify and sign in' : 'Update password')
+                        : 'Send code',
                   ),
                 ),
                 if (_codeSent)

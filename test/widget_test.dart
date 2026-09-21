@@ -6,11 +6,7 @@ void main() {
   testWidgets('Home screen renders core youth platform actions', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: HomeScreen(),
-      ),
-    );
+    await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
 
     expect(find.text('COU Youth Platform'), findsOneWidget);
     expect(find.text('Quick Access'), findsOneWidget);

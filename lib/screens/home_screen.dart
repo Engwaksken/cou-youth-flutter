@@ -20,9 +20,7 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   void _open(BuildContext context, Widget screen) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => screen),
-    );
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
   }
 
   @override
@@ -84,18 +82,14 @@ class HomeScreen extends StatelessWidget {
       YouthAppIcon(
         icon: Icons.public_outlined,
         label: strings.text('missions'),
-        onTap: () => _open(
-          context,
-          const YouthHubsScreen(initialType: 'mission'),
-        ),
+        onTap: () =>
+            _open(context, const YouthHubsScreen(initialType: 'mission')),
       ),
       YouthAppIcon(
         icon: Icons.auto_awesome_outlined,
         label: strings.text('talent_hub'),
-        onTap: () => _open(
-          context,
-          const YouthHubsScreen(initialType: 'talent'),
-        ),
+        onTap: () =>
+            _open(context, const YouthHubsScreen(initialType: 'talent')),
       ),
       YouthAppIcon(
         icon: Icons.storefront_outlined,
@@ -164,9 +158,9 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     strings.text('welcome'),
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -183,9 +177,9 @@ class HomeScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   strings.text('quick_access'),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                 ),
               ),
               Text(

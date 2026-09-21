@@ -15,11 +15,11 @@ class ReleaseInfo {
   });
 
   factory ReleaseInfo.fromJson(Map<String, dynamic> json) => ReleaseInfo(
-        version: '${json['version'] ?? ''}',
-        build: '${json['build'] ?? ''}',
-        minimumMobileVersion: '${json['minimum_mobile_version'] ?? ''}',
-        maintenanceMessage: json['maintenance_message']?.toString(),
-      );
+    version: '${json['version'] ?? ''}',
+    build: '${json['build'] ?? ''}',
+    minimumMobileVersion: '${json['minimum_mobile_version'] ?? ''}',
+    maintenanceMessage: json['maintenance_message']?.toString(),
+  );
 }
 
 class ReleaseService {

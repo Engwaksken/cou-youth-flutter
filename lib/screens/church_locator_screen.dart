@@ -43,9 +43,7 @@ class _ChurchLocatorScreenState extends State<ChurchLocatorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Church Locator'),
-      ),
+      appBar: AppBar(title: const Text('Church Locator')),
       body: Column(
         children: [
           Padding(
@@ -109,28 +107,33 @@ class _ChurchLocatorScreenState extends State<ChurchLocatorScreen> {
                   return ListView.separated(
                     padding: const EdgeInsets.all(16),
                     itemCount: items.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final church = items[index];
-                      final name = (church['name'] ??
-                              church['organisation_unit']?['name'] ??
-                              'Church of Uganda')
-                          .toString();
-                      final address = (church['address'] ??
-                              church['organisation_unit']?['address'] ??
-                              '')
+                      final name =
+                          (church['name'] ??
+                                  church['organisation_unit']?['name'] ??
+                                  'Church of Uganda')
+                              .toString();
+                      final address =
+                          (church['address'] ??
+                                  church['organisation_unit']?['address'] ??
+                                  '')
+                              .toString()
+                              .trim();
+                      final phone =
+                          (church['contact_phone'] ??
+                                  church['organisation_unit']?['phone'] ??
+                                  '')
+                              .toString()
+                              .trim();
+                      final serviceTimes = (church['service_times'] ?? '')
                           .toString()
                           .trim();
-                      final phone = (church['contact_phone'] ??
-                              church['organisation_unit']?['phone'] ??
-                              '')
-                          .toString()
-                          .trim();
-                      final serviceTimes =
-                          (church['service_times'] ?? '').toString().trim();
-                      final youthTimes = (church['youth_fellowship_times'] ?? '')
-                          .toString()
-                          .trim();
+                      final youthTimes =
+                          (church['youth_fellowship_times'] ?? '')
+                              .toString()
+                              .trim();
 
                       return Card(
                         child: Padding(
@@ -150,7 +153,9 @@ class _ChurchLocatorScreenState extends State<ChurchLocatorScreen> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium
-                                          ?.copyWith(fontWeight: FontWeight.w700),
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -166,7 +171,9 @@ class _ChurchLocatorScreenState extends State<ChurchLocatorScreen> {
                                   children: [
                                     const Icon(Icons.schedule, size: 18),
                                     const SizedBox(width: 8),
-                                    Expanded(child: Text('Services: $serviceTimes')),
+                                    Expanded(
+                                      child: Text('Services: $serviceTimes'),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -177,7 +184,11 @@ class _ChurchLocatorScreenState extends State<ChurchLocatorScreen> {
                                   children: [
                                     const Icon(Icons.groups_outlined, size: 18),
                                     const SizedBox(width: 8),
-                                    Expanded(child: Text('Youth fellowship: $youthTimes')),
+                                    Expanded(
+                                      child: Text(
+                                        'Youth fellowship: $youthTimes',
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],

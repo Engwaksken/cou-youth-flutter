@@ -72,7 +72,10 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
                     Chip(label: Text(type)),
                     if (published != null)
                       Chip(
-                        avatar: const Icon(Icons.calendar_today_outlined, size: 16),
+                        avatar: const Icon(
+                          Icons.calendar_today_outlined,
+                          size: 16,
+                        ),
                         label: Text(_formatDate('$published')),
                       ),
                   ],
@@ -81,24 +84,24 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 if (summary.isNotEmpty) ...[
                   const SizedBox(height: 14),
                   Text(
                     summary,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          height: 1.5,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(height: 1.5),
                   ),
                 ],
                 const SizedBox(height: 20),
                 Text(
                   body.isEmpty ? 'No additional details are available.' : body,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        height: 1.65,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(height: 1.65),
                 ),
               ],
             ),

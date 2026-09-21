@@ -47,9 +47,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
 
   Future<void> _submit() async {
     if (!_signedIn) {
-      setState(
-        () => _error = ModuleStrings.text(context, 'sign_in_report'),
-      );
+      setState(() => _error = ModuleStrings.text(context, 'sign_in_report'));
       return;
     }
     if (!_formKey.currentState!.validate()) return;
@@ -72,7 +70,8 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
       );
       if (!mounted) return;
       setState(() {
-        _message = '${response['message'] ?? ModuleStrings.text(context, 'report_submitted')}';
+        _message =
+            '${response['message'] ?? ModuleStrings.text(context, 'report_submitted')}';
         _reportableId.clear();
         _reason.clear();
         _details.clear();
@@ -81,9 +80,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
-        setState(
-          () => _error = ModuleStrings.text(context, 'report_failed'),
-        );
+        setState(() => _error = ModuleStrings.text(context, 'report_failed'));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -104,9 +101,9 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
       setState(() => _blockedFuture = _service.blocked());
     } on ApiException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
       }
     }
   }
@@ -125,9 +122,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(ModuleStrings.text(context, 'safety_center')),
-      ),
+      appBar: AppBar(title: Text(ModuleStrings.text(context, 'safety_center'))),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -147,9 +142,8 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                       Expanded(
                         child: Text(
                           ModuleStrings.text(context, 'report_safety_concern'),
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w800),
                         ),
                       ),
                     ],
@@ -170,9 +164,12 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                     child: Column(
                       children: [
                         DropdownButtonFormField<String>(
-                          value: _type,
+                          initialValue: _type,
                           decoration: InputDecoration(
-                            labelText: ModuleStrings.text(context, 'reporting_what'),
+                            labelText: ModuleStrings.text(
+                              context,
+                              'reporting_what',
+                            ),
                           ),
                           items: [
                             for (final value in const [
@@ -189,15 +186,22 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                           ],
                           onChanged: _busy
                               ? null
-                              : (value) => setState(() => _type = value ?? 'content'),
+                              : (value) =>
+                                    setState(() => _type = value ?? 'content'),
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _reportableId,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            labelText: ModuleStrings.text(context, 'item_user_id'),
-                            helperText: ModuleStrings.text(context, 'item_user_id_help'),
+                            labelText: ModuleStrings.text(
+                              context,
+                              'item_user_id',
+                            ),
+                            helperText: ModuleStrings.text(
+                              context,
+                              'item_user_id_help',
+                            ),
                           ),
                           validator: (value) {
                             final id = int.tryParse((value ?? '').trim());
@@ -215,7 +219,10 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                             labelText: ModuleStrings.text(context, 'reason'),
                           ),
                           validator: (value) => (value ?? '').trim().isEmpty
-                              ? ModuleStrings.text(context, 'report_reason_required')
+                              ? ModuleStrings.text(
+                                  context,
+                                  'report_reason_required',
+                                )
                               : null,
                         ),
                         const SizedBox(height: 12),
@@ -225,7 +232,10 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                           maxLines: 6,
                           maxLength: 3000,
                           decoration: InputDecoration(
-                            labelText: ModuleStrings.text(context, 'additional_details'),
+                            labelText: ModuleStrings.text(
+                              context,
+                              'additional_details',
+                            ),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -237,13 +247,18 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                                 ? const SizedBox(
                                     width: 16,
                                     height: 16,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : const Icon(Icons.report_outlined),
                             label: Text(
                               _busy
                                   ? ModuleStrings.text(context, 'submitting')
-                                  : ModuleStrings.text(context, 'submit_report'),
+                                  : ModuleStrings.text(
+                                      context,
+                                      'submit_report',
+                                    ),
                             ),
                           ),
                         ),
@@ -257,9 +272,9 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
           const SizedBox(height: 18),
           Text(
             ModuleStrings.text(context, 'blocked_accounts'),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 10),
           if (!_signedIn)

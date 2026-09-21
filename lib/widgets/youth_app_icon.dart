@@ -38,11 +38,7 @@ class YouthAppIcon extends StatelessWidget {
                   color: scheme.primaryContainer,
                   border: Border.all(color: scheme.outlineVariant),
                 ),
-                child: Icon(
-                  icon,
-                  size: 30,
-                  color: scheme.onPrimaryContainer,
-                ),
+                child: Icon(icon, size: 30, color: scheme.onPrimaryContainer),
               ),
               const SizedBox(height: 7),
               Text(
@@ -51,9 +47,9 @@ class YouthAppIcon extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      height: 1.15,
-                    ),
+                  fontWeight: FontWeight.w700,
+                  height: 1.15,
+                ),
               ),
             ],
           ),

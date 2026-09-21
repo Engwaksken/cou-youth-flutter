@@ -41,21 +41,23 @@ void main() {
     test('loads enabled payment gateways', () async {
       final client = ApiClient(
         baseUrl: 'https://example.test/api/v1',
-        client: MockClient((request) async => http.Response(
-              jsonEncode({
-                'success': true,
-                'data': [
-                  {
-                    'id': 2,
-                    'name': 'MTN Mobile Money',
-                    'provider': 'mtn_momo',
-                    'currency': 'UGX',
-                  },
-                ],
-              }),
-              200,
-              headers: {'content-type': 'application/json'},
-            )),
+        client: MockClient(
+          (request) async => http.Response(
+            jsonEncode({
+              'success': true,
+              'data': [
+                {
+                  'id': 2,
+                  'name': 'MTN Mobile Money',
+                  'provider': 'mtn_momo',
+                  'currency': 'UGX',
+                },
+              ],
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          ),
+        ),
       );
 
       final gateways = await DonationCheckoutService(api: client).gateways();
@@ -72,9 +74,7 @@ void main() {
         client: MockClient((request) async {
           expect(request.method, 'POST');
           expect(request.url.path, '/api/v1/donations');
-          sentBody = Map<String, dynamic>.from(
-            jsonDecode(request.body) as Map,
-          );
+          sentBody = Map<String, dynamic>.from(jsonDecode(request.body) as Map);
 
           return http.Response(
             jsonEncode({

@@ -56,18 +56,31 @@ class CouYouthApp extends StatelessWidget {
                   disableAnimations: accessibility.reduceMotion,
                 );
 
-                Widget result = MediaQuery(
-                  data: mediaQuery,
-                  child: child,
-                );
+                Widget result = MediaQuery(data: mediaQuery, child: child);
 
                 if (accessibility.grayscale) {
                   result = ColorFiltered(
                     colorFilter: const ColorFilter.matrix(<double>[
-                      0.2126, 0.7152, 0.0722, 0, 0,
-                      0.2126, 0.7152, 0.0722, 0, 0,
-                      0.2126, 0.7152, 0.0722, 0, 0,
-                      0, 0, 0, 1, 0,
+                      0.2126,
+                      0.7152,
+                      0.0722,
+                      0,
+                      0,
+                      0.2126,
+                      0.7152,
+                      0.0722,
+                      0,
+                      0,
+                      0.2126,
+                      0.7152,
+                      0.0722,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
                     ]),
                     child: result,
                   );
@@ -75,9 +88,7 @@ class CouYouthApp extends StatelessWidget {
 
                 return result;
               },
-              home: const AuthGate(
-                authenticatedBuilder: _buildMainNavigation,
-              ),
+              home: const AuthGate(authenticatedBuilder: _buildMainNavigation),
             );
           },
         );
@@ -102,13 +113,15 @@ class CouYouthApp extends StatelessWidget {
     var theme = ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      scaffoldBackgroundColor:
-          accessibility.highContrast ? Colors.white : const Color(0xFFF7F8FC),
+      scaffoldBackgroundColor: accessibility.highContrast
+          ? Colors.white
+          : const Color(0xFFF7F8FC),
       appBarTheme: AppBarTheme(
         centerTitle: false,
         backgroundColor: Colors.white,
-        foregroundColor:
-            accessibility.highContrast ? Colors.black : const Color(0xFF1F2937),
+        foregroundColor: accessibility.highContrast
+            ? Colors.black
+            : const Color(0xFF1F2937),
         elevation: accessibility.highContrast ? 1 : 0,
       ),
       cardTheme: CardThemeData(

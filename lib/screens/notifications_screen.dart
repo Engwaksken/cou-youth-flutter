@@ -31,9 +31,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(ModuleStrings.text(context, 'notifications')),
-      ),
+      appBar: AppBar(title: Text(ModuleStrings.text(context, 'notifications'))),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -52,7 +50,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(24),
                       child: Text(
-                        ModuleStrings.text(context, 'notifications_load_failed'),
+                        ModuleStrings.text(
+                          context,
+                          'notifications_load_failed',
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -80,7 +81,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             return ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: rows.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
+              separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {
                 final row = rows[index];
                 final receiptId = row['receipt_id'] ?? row['id'];
@@ -95,7 +96,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ),
                   ),
                   title: Text(
-                    (row['title'] ?? ModuleStrings.text(context, 'notification'))
+                    (row['title'] ??
+                            ModuleStrings.text(context, 'notification'))
                         .toString(),
                   ),
                   subtitle: Text((row['message'] ?? '').toString()),

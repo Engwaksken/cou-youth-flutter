@@ -13,10 +13,7 @@ import 'notification_preferences_screen.dart';
 import 'opportunities_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({
-    super.key,
-    required this.onExitSession,
-  });
+  const ProfileScreen({super.key, required this.onExitSession});
 
   final Future<void> Function() onExitSession;
 
@@ -39,9 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _open(Widget screen) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => screen),
-    );
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
   }
 
   void _openSignedInOnly(Widget screen) {
@@ -84,17 +79,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               leading: const Icon(Icons.language),
               title: Text(strings.text('language')),
             ),
-            RadioListTile<String>(
-              value: 'en',
+            RadioGroup<String>(
               groupValue: current,
-              title: Text(strings.text('english')),
               onChanged: (value) => Navigator.of(context).pop(value),
-            ),
-            RadioListTile<String>(
-              value: 'lg',
-              groupValue: current,
-              title: Text(strings.text('luganda')),
-              onChanged: (value) => Navigator.of(context).pop(value),
+              child: Column(
+                children: [
+                  RadioListTile<String>(
+                    value: 'en',
+                    title: Text(strings.text('english')),
+                  ),
+                  RadioListTile<String>(
+                    value: 'lg',
+                    title: Text(strings.text('luganda')),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 8),
           ],
@@ -104,9 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (selected == null || !mounted) return;
     AppLocaleController.instance.setLocale(Locale(selected));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(strings.text('language_updated'))),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(strings.text('language_updated'))));
   }
 
   @override
@@ -125,9 +124,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             Text(
               'My tools',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 10),
             GridView.count(
@@ -203,8 +202,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _exiting
                     ? 'Please wait...'
                     : _signedIn
-                        ? strings.text('sign_out')
-                        : strings.text('sign_in_create'),
+                    ? strings.text('sign_out')
+                    : strings.text('sign_in_create'),
               ),
             ),
           ],
@@ -220,15 +219,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: EdgeInsets.all(20),
           child: Row(
             children: [
-              CircleAvatar(radius: 28, child: Icon(Icons.person_outline, size: 30)),
+              CircleAvatar(
+                radius: 28,
+                child: Icon(Icons.person_outline, size: 30),
+              ),
               SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Guest', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                    Text(
+                      'Guest',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     SizedBox(height: 4),
-                    Text('Sign in to view your profile, progress and certificates.'),
+                    Text(
+                      'Sign in to view your profile, progress and certificates.',
+                    ),
                   ],
                 ),
               ),
@@ -273,8 +283,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ? Map<String, dynamic>.from(response['safeguarding'] as Map)
             : <String, dynamic>{};
 
-        final consentRequired = safeguarding['guardian_consent_required'] == true;
-        final consentStatus = '${safeguarding['guardian_consent_status'] ?? ''}'.trim();
+        final consentRequired =
+            safeguarding['guardian_consent_required'] == true;
+        final consentStatus = '${safeguarding['guardian_consent_status'] ?? ''}'
+            .trim();
         final verified = safeguarding['safeguarding_verified'] == true;
 
         return Card(
@@ -297,7 +309,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Text(
                         '${user['name'] ?? 'Youth Member'}',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       if (user['email'] != null) Text('${user['email']}'),
@@ -305,10 +320,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 6),
                         Chip(
                           visualDensity: VisualDensity.compact,
-                          label: Text('${youthProfile['age_category']}'.replaceAll('_', ' ')),
+                          label: Text(
+                            '${youthProfile['age_category']}'.replaceAll(
+                              '_',
+                              ' ',
+                            ),
+                          ),
                         ),
                       ],
-                      if (consentRequired || verified || consentStatus.isNotEmpty) ...[
+                      if (consentRequired ||
+                          verified ||
+                          consentStatus.isNotEmpty) ...[
                         const SizedBox(height: 6),
                         Wrap(
                           spacing: 6,
@@ -316,7 +338,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             if (consentRequired)
                               Chip(
-                                avatar: const Icon(Icons.family_restroom_outlined, size: 16),
+                                avatar: const Icon(
+                                  Icons.family_restroom_outlined,
+                                  size: 16,
+                                ),
                                 label: Text(
                                   consentStatus.isEmpty
                                       ? 'Guardian consent required'
@@ -325,7 +350,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             if (verified)
                               const Chip(
-                                avatar: Icon(Icons.verified_user_outlined, size: 16),
+                                avatar: Icon(
+                                  Icons.verified_user_outlined,
+                                  size: 16,
+                                ),
                                 label: Text('Safeguarding verified'),
                               ),
                           ],

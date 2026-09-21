@@ -110,7 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     CircleAvatar(
                       radius: 34,
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer,
                       child: Icon(
                         Icons.church_outlined,
                         size: 36,
@@ -121,9 +123,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       strings.text('app_title'),
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -142,7 +143,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           _error!,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onErrorContainer,
                           ),
                         ),
                       ),
@@ -160,7 +163,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       validator: (value) {
                         final text = value?.trim() ?? '';
                         if (text.isEmpty) return strings.text('enter_email');
-                        if (!text.contains('@')) return strings.text('valid_email');
+                        if (!text.contains('@'))
+                          return strings.text('valid_email');
                         return null;
                       },
                     ),
@@ -179,7 +183,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? strings.text('show_password')
                               : strings.text('hide_password'),
                           onPressed: () {
-                            setState(() => _obscurePassword = !_obscurePassword);
+                            setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            );
                           },
                           icon: Icon(
                             _obscurePassword
@@ -189,7 +195,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       validator: (value) {
-                        if ((value ?? '').isEmpty) return strings.text('enter_password');
+                        if ((value ?? '').isEmpty)
+                          return strings.text('enter_password');
                         return null;
                       },
                     ),
@@ -210,7 +217,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             )
                           : const Icon(Icons.login),
                       label: Text(
-                        _loading ? strings.text('signing_in') : strings.text('sign_in'),
+                        _loading
+                            ? strings.text('signing_in')
+                            : strings.text('sign_in'),
                       ),
                     ),
                     const SizedBox(height: 10),

@@ -5,13 +5,12 @@ class AppLocaleController extends ValueNotifier<Locale> {
 
   static final AppLocaleController instance = AppLocaleController._();
 
-  static const supportedLocales = <Locale>[
-    Locale('en'),
-    Locale('lg'),
-  ];
+  static const supportedLocales = <Locale>[Locale('en'), Locale('lg')];
 
   void setLocale(Locale locale) {
-    if (!supportedLocales.any((item) => item.languageCode == locale.languageCode)) {
+    if (!supportedLocales.any(
+      (item) => item.languageCode == locale.languageCode,
+    )) {
       return;
     }
     if (value.languageCode == locale.languageCode) return;
@@ -19,6 +18,8 @@ class AppLocaleController extends ValueNotifier<Locale> {
   }
 
   void toggle() {
-    value = value.languageCode == 'en' ? const Locale('lg') : const Locale('en');
+    value = value.languageCode == 'en'
+        ? const Locale('lg')
+        : const Locale('en');
   }
 }

@@ -8,10 +8,7 @@ import '../screens/home_screen.dart';
 import '../screens/profile_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({
-    super.key,
-    required this.onExitSession,
-  });
+  const MainNavigationScreen({super.key, required this.onExitSession});
 
   final Future<void> Function() onExitSession;
 
@@ -34,10 +31,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     ];
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {

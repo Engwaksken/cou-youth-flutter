@@ -4,10 +4,7 @@ import '../core/api/api_client.dart';
 import '../services/notification_preferences_service.dart';
 
 class NotificationPreferencesScreen extends StatefulWidget {
-  const NotificationPreferencesScreen({
-    super.key,
-    this.service,
-  });
+  const NotificationPreferencesScreen({super.key, this.service});
 
   final NotificationPreferencesService? service;
 
@@ -58,7 +55,8 @@ class _NotificationPreferencesScreenState
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'Notification preferences could not be loaded. Please try again.';
+        _error =
+            'Notification preferences could not be loaded. Please try again.';
       });
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -80,15 +78,17 @@ class _NotificationPreferencesScreenState
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _preferences[key] = previous);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
       setState(() => _preferences[key] = previous);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Your preference could not be saved. Please try again.'),
+          content: Text(
+            'Your preference could not be saved. Please try again.',
+          ),
         ),
       );
     } finally {
@@ -110,45 +110,45 @@ class _NotificationPreferencesScreenState
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.notifications_off_outlined, size: 48),
-                        const SizedBox(height: 12),
-                        Text(_error!, textAlign: TextAlign.center),
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          onPressed: _load,
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('Try again'),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : ListView(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    for (final entry in _labels.entries)
-                      SwitchListTile(
-                        secondary: _savingKey == entry.key
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : Icon(_iconFor(entry.key)),
-                        title: Text(entry.value),
-                        value: _valueFor(entry.key),
-                        onChanged: _savingKey == null
-                            ? (value) => _set(entry.key, value)
-                            : null,
-                      ),
+                    const Icon(Icons.notifications_off_outlined, size: 48),
+                    const SizedBox(height: 12),
+                    Text(_error!, textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: _load,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Try again'),
+                    ),
                   ],
                 ),
+              ),
+            )
+          : ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              children: [
+                for (final entry in _labels.entries)
+                  SwitchListTile(
+                    secondary: _savingKey == entry.key
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Icon(_iconFor(entry.key)),
+                    title: Text(entry.value),
+                    value: _valueFor(entry.key),
+                    onChanged: _savingKey == null
+                        ? (value) => _set(entry.key, value)
+                        : null,
+                  ),
+              ],
+            ),
     );
   }
 

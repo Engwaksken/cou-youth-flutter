@@ -6,10 +6,7 @@ import '../core/api/api_client.dart';
 import '../services/donation_checkout_service.dart';
 
 class DonationCheckoutScreen extends StatefulWidget {
-  const DonationCheckoutScreen({
-    super.key,
-    this.initialCampaign,
-  });
+  const DonationCheckoutScreen({super.key, this.initialCampaign});
 
   final Map<String, dynamic>? initialCampaign;
 
@@ -79,7 +76,9 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
       setState(() {
         _gateways = results[0];
         _campaigns = results[1];
-        _gatewayId = _gateways.isNotEmpty ? _asInt(_gateways.first['id']) : null;
+        _gatewayId = _gateways.isNotEmpty
+            ? _asInt(_gateways.first['id'])
+            : null;
         _loading = false;
       });
     } catch (_) {
@@ -125,7 +124,8 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
       final payment = _asMap(data['payment']);
       final donationId = _asInt(donation['id']);
       final status = donation['status']?.toString() ?? 'pending';
-      final message = payment['message']?.toString() ??
+      final message =
+          payment['message']?.toString() ??
           response['message']?.toString() ??
           'Approve the payment request on your phone.';
 
@@ -176,7 +176,8 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
 
         if (!mounted || donationId != _activeDonationId) return;
 
-        final status = donation['status']?.toString().toLowerCase() ?? 'pending';
+        final status =
+            donation['status']?.toString().toLowerCase() ?? 'pending';
         final receipt = donation['receipt_number']?.toString();
 
         setState(() {
@@ -191,13 +192,15 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
       if (mounted) {
         setState(() {
           _error = e.message;
-          _paymentMessage = 'Payment status could not be refreshed automatically.';
+          _paymentMessage =
+              'Payment status could not be refreshed automatically.';
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          _paymentMessage = 'Payment is still being processed. You can refresh the status manually.';
+          _paymentMessage =
+              'Payment is still being processed. You can refresh the status manually.';
         });
       }
     } finally {
@@ -262,7 +265,9 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
-        setState(() => _error = 'The receipt could not be loaded. Please try again.');
+        setState(
+          () => _error = 'The receipt could not be loaded. Please try again.',
+        );
       }
     } finally {
       if (mounted) setState(() => _receiptBusy = false);
@@ -289,12 +294,22 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
 
   bool _isFinalStatus(String status) {
     return const {
-      'successful', 'paid', 'completed', 'failed', 'cancelled', 'canceled', 'refunded',
+      'successful',
+      'paid',
+      'completed',
+      'failed',
+      'cancelled',
+      'canceled',
+      'refunded',
     }.contains(status.toLowerCase());
   }
 
   bool _isSuccessful(String? status) {
-    return const {'successful', 'paid', 'completed'}.contains(status?.toLowerCase());
+    return const {
+      'successful',
+      'paid',
+      'completed',
+    }.contains(status?.toLowerCase());
   }
 
   String _messageForStatus(String status) {
@@ -321,8 +336,16 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
     final failed = const {'failed', 'cancelled', 'canceled'}.contains(status);
     final scheme = Theme.of(context).colorScheme;
 
-    final icon = success ? Icons.check_circle : failed ? Icons.error_outline : Icons.hourglass_top;
-    final title = success ? 'Donation successful' : failed ? 'Payment not completed' : 'Waiting for approval';
+    final icon = success
+        ? Icons.check_circle
+        : failed
+        ? Icons.error_outline
+        : Icons.hourglass_top;
+    final title = success
+        ? 'Donation successful'
+        : failed
+        ? 'Payment not completed'
+        : 'Waiting for approval';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 18),
@@ -333,32 +356,54 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, color: success ? Colors.green : failed ? scheme.error : scheme.primary),
+                Icon(
+                  icon,
+                  color: success
+                      ? Colors.green
+                      : failed
+                      ? scheme.error
+                      : scheme.primary,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
                 if (_verifying)
-                  const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+                  const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
               ],
             ),
             const SizedBox(height: 10),
             Text(_paymentMessage ?? _messageForStatus(status)),
             if (_receiptNumber != null && _receiptNumber!.isNotEmpty) ...[
               const SizedBox(height: 10),
-              Text('Receipt: $_receiptNumber', style: const TextStyle(fontWeight: FontWeight.w700)),
+              Text(
+                'Receipt: $_receiptNumber',
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
             ],
             if (success) ...[
               const SizedBox(height: 12),
               FilledButton.tonalIcon(
                 onPressed: _receiptBusy ? null : _showReceipt,
                 icon: _receiptBusy
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Icon(Icons.receipt_long),
-                label: Text(_receiptBusy ? 'Loading receipt...' : 'View receipt'),
+                label: Text(
+                  _receiptBusy ? 'Loading receipt...' : 'View receipt',
+                ),
               ),
             ] else if (!failed) ...[
               const SizedBox(height: 12),
@@ -385,10 +430,14 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
               children: [
                 Text(
                   'Support youth ministry',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                const Text('Choose a campaign and payment method. Payment credentials are handled securely by the Laravel backend.'),
+                const Text(
+                  'Choose a campaign and payment method. Payment credentials are handled securely by the Laravel backend.',
+                ),
                 const SizedBox(height: 20),
                 if (_activeDonationId != null) _paymentStatusCard(context),
                 if (_error != null) ...[
@@ -408,67 +457,111 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
                     children: [
                       DropdownButtonFormField<int?>(
                         initialValue: _campaignId,
-                        decoration: const InputDecoration(labelText: 'Campaign (optional)', border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                          labelText: 'Campaign (optional)',
+                          border: OutlineInputBorder(),
+                        ),
                         items: [
-                          const DropdownMenuItem<int?>(value: null, child: Text('General donation')),
-                          ..._campaigns.map((campaign) => DropdownMenuItem<int?>(
-                                value: _asInt(campaign['id']),
-                                child: Text(campaign['title']?.toString() ?? 'Campaign'),
-                              )),
+                          const DropdownMenuItem<int?>(
+                            value: null,
+                            child: Text('General donation'),
+                          ),
+                          ..._campaigns.map(
+                            (campaign) => DropdownMenuItem<int?>(
+                              value: _asInt(campaign['id']),
+                              child: Text(
+                                campaign['title']?.toString() ?? 'Campaign',
+                              ),
+                            ),
+                          ),
                         ],
-                        onChanged: (value) => setState(() => _campaignId = value),
+                        onChanged: (value) =>
+                            setState(() => _campaignId = value),
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _amount,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: const InputDecoration(labelText: 'Amount (UGX)', prefixText: 'UGX ', border: OutlineInputBorder()),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: const InputDecoration(
+                          labelText: 'Amount (UGX)',
+                          prefixText: 'UGX ',
+                          border: OutlineInputBorder(),
+                        ),
                         validator: (value) {
                           final amount = double.tryParse((value ?? '').trim());
-                          return amount == null || amount < 100 ? 'Enter an amount of at least UGX 100.' : null;
+                          return amount == null || amount < 100
+                              ? 'Enter an amount of at least UGX 100.'
+                              : null;
                         },
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<int>(
                         initialValue: _gatewayId,
-                        decoration: const InputDecoration(labelText: 'Payment method', border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                          labelText: 'Payment method',
+                          border: OutlineInputBorder(),
+                        ),
                         items: _gateways
-                            .map((gateway) => DropdownMenuItem<int>(
-                                  value: _asInt(gateway['id']),
-                                  child: Text(gateway['name']?.toString() ?? 'Payment method'),
-                                ))
+                            .map(
+                              (gateway) => DropdownMenuItem<int>(
+                                value: _asInt(gateway['id']),
+                                child: Text(
+                                  gateway['name']?.toString() ??
+                                      'Payment method',
+                                ),
+                              ),
+                            )
                             .where((item) => item.value != null)
                             .cast<DropdownMenuItem<int>>()
                             .toList(),
-                        onChanged: (value) => setState(() => _gatewayId = value),
-                        validator: (value) => value == null ? 'Choose a payment method.' : null,
+                        onChanged: (value) =>
+                            setState(() => _gatewayId = value),
+                        validator: (value) =>
+                            value == null ? 'Choose a payment method.' : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _phone,
                         keyboardType: TextInputType.phone,
-                        decoration: const InputDecoration(labelText: 'Mobile number', hintText: 'e.g. 2567XXXXXXXX', border: OutlineInputBorder()),
-                        validator: (value) => (value ?? '').trim().isEmpty ? 'Enter the mobile number for payment.' : null,
+                        decoration: const InputDecoration(
+                          labelText: 'Mobile number',
+                          hintText: 'e.g. 2567XXXXXXXX',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) => (value ?? '').trim().isEmpty
+                            ? 'Enter the mobile number for payment.'
+                            : null,
                       ),
                       const SizedBox(height: 8),
                       SwitchListTile.adaptive(
                         contentPadding: EdgeInsets.zero,
                         value: _anonymous,
                         title: const Text('Donate anonymously'),
-                        subtitle: const Text('Your name will not be displayed publicly.'),
-                        onChanged: (value) => setState(() => _anonymous = value),
+                        subtitle: const Text(
+                          'Your name will not be displayed publicly.',
+                        ),
+                        onChanged: (value) =>
+                            setState(() => _anonymous = value),
                       ),
                       if (!_anonymous) ...[
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: _name,
-                          decoration: const InputDecoration(labelText: 'Name (optional)', border: OutlineInputBorder()),
+                          decoration: const InputDecoration(
+                            labelText: 'Name (optional)',
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _email,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(labelText: 'Email (optional)', border: OutlineInputBorder()),
+                          decoration: const InputDecoration(
+                            labelText: 'Email (optional)',
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                       ],
                       const SizedBox(height: 22),
@@ -477,9 +570,17 @@ class _DonationCheckoutScreenState extends State<DonationCheckoutScreen> {
                         child: FilledButton.icon(
                           onPressed: _busy ? null : _pay,
                           icon: _busy
-                              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
                               : const Icon(Icons.favorite_outline),
-                          label: Text(_busy ? 'Processing...' : 'Continue to payment'),
+                          label: Text(
+                            _busy ? 'Processing...' : 'Continue to payment',
+                          ),
                         ),
                       ),
                     ],

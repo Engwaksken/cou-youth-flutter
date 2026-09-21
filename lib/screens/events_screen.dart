@@ -34,8 +34,18 @@ class _EventsScreenState extends State<EventsScreen> {
     if (parsed == null) return value.toString();
 
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
 
     return '${parsed.day.toString().padLeft(2, '0')} ${months[parsed.month - 1]} ${parsed.year}';
@@ -44,9 +54,7 @@ class _EventsScreenState extends State<EventsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(ModuleStrings.text(context, 'events')),
-      ),
+      appBar: AppBar(title: Text(ModuleStrings.text(context, 'events'))),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -81,9 +89,7 @@ class _EventsScreenState extends State<EventsScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   const SizedBox(height: 120),
-                  Center(
-                    child: Text(ModuleStrings.text(context, 'no_events')),
-                  ),
+                  Center(child: Text(ModuleStrings.text(context, 'no_events'))),
                 ],
               );
             }
@@ -91,7 +97,7 @@ class _EventsScreenState extends State<EventsScreen> {
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: events.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final event = events[index];
                 final venue = (event['venue'] ?? '').toString().trim();
@@ -117,7 +123,10 @@ class _EventsScreenState extends State<EventsScreen> {
                             const SizedBox(height: 6),
                             Row(
                               children: [
-                                const Icon(Icons.calendar_today_outlined, size: 16),
+                                const Icon(
+                                  Icons.calendar_today_outlined,
+                                  size: 16,
+                                ),
                                 const SizedBox(width: 6),
                                 Flexible(child: Text(date)),
                               ],
@@ -127,7 +136,10 @@ class _EventsScreenState extends State<EventsScreen> {
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                const Icon(Icons.location_on_outlined, size: 16),
+                                const Icon(
+                                  Icons.location_on_outlined,
+                                  size: 16,
+                                ),
                                 const SizedBox(width: 6),
                                 Flexible(child: Text(venue)),
                               ],

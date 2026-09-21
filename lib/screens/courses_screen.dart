@@ -31,9 +31,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(ModuleStrings.text(context, 'courses')),
-      ),
+      appBar: AppBar(title: Text(ModuleStrings.text(context, 'courses'))),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -78,20 +76,25 @@ class _CoursesScreenState extends State<CoursesScreen> {
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: courses.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final course = courses[index];
-                final title = (course['title'] ??
-                        ModuleStrings.text(context, 'discipleship_course'))
-                    .toString();
-                final description = (course['description'] ?? '').toString().trim();
+                final title =
+                    (course['title'] ??
+                            ModuleStrings.text(context, 'discipleship_course'))
+                        .toString();
+                final description = (course['description'] ?? '')
+                    .toString()
+                    .trim();
                 final age = (course['age_category'] ?? 'all')
                     .toString()
                     .replaceAll('_', ' ');
                 final audience = age == 'all'
                     ? ModuleStrings.text(context, 'for_all_ages')
-                    : ModuleStrings.text(context, 'for_age')
-                        .replaceFirst('{age}', age);
+                    : ModuleStrings.text(
+                        context,
+                        'for_age',
+                      ).replaceFirst('{age}', age);
 
                 return Card(
                   child: Padding(
@@ -120,7 +123,9 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                   const SizedBox(height: 6),
                                   Text(
                                     audience,
-                                    style: Theme.of(context).textTheme.bodySmall,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
                                   ),
                                 ],
                               ),

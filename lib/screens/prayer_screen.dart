@@ -68,9 +68,9 @@ class _PrayerScreenState extends State<PrayerScreen> {
       await _refresh();
     } on ApiException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -110,8 +110,8 @@ class _PrayerScreenState extends State<PrayerScreen> {
                       Text(
                         strings.text('submit_prayer_request'),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -180,7 +180,9 @@ class _PrayerScreenState extends State<PrayerScreen> {
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.send_outlined),
                         label: Text(
@@ -205,9 +207,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
     final strings = AppStrings.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(strings.text('prayer_support')),
-      ),
+      appBar: AppBar(title: Text(strings.text('prayer_support'))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openForm,
         icon: const Icon(Icons.add),
@@ -256,10 +256,11 @@ class _PrayerScreenState extends State<PrayerScreen> {
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: requests.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final request = requests[index];
-                final visibility = request['visibility']?.toString() ?? 'private';
+                final visibility =
+                    request['visibility']?.toString() ?? 'private';
 
                 return Card(
                   child: ListTile(

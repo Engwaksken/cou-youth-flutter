@@ -71,9 +71,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   void _open(Widget screen) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => screen),
-    );
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
   }
 
   @override
@@ -93,7 +91,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       YouthAppIcon(
         icon: Icons.storefront_outlined,
         label: 'Youth Business',
-        onTap: () => _open(const YouthHubsScreen(initialType: 'youth_business')),
+        onTap: () =>
+            _open(const YouthHubsScreen(initialType: 'youth_business')),
       ),
       YouthAppIcon(
         icon: Icons.groups_2_outlined,
@@ -144,7 +143,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       textInputAction: TextInputAction.search,
                       onSubmitted: (_) => _searchNow(),
                       decoration: InputDecoration(
-                        hintText: 'Search youth news, resources and opportunities',
+                        hintText:
+                            'Search youth news, resources and opportunities',
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: IconButton(
                           tooltip: 'Search',
@@ -173,8 +173,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     Text(
                       'Explore more',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     GridView.count(
@@ -192,8 +192,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           ? 'Latest resources'
                           : _filters[_type] ?? 'Resources',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -256,7 +256,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   sliver: SliverList.separated(
                     itemCount: items.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       final item = items[index];
                       final id = _asInt(item['id']);
@@ -280,11 +280,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           onTap: id == null
                               ? null
                               : () => _open(
-                                    ContentDetailScreen(
-                                      contentId: id,
-                                      initialContent: item,
-                                    ),
+                                  ContentDetailScreen(
+                                    contentId: id,
+                                    initialContent: item,
                                   ),
+                                ),
                         ),
                       );
                     },

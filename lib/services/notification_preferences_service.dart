@@ -2,7 +2,8 @@ import '../core/api/api_client.dart';
 import '../core/api/api_config.dart';
 
 class NotificationPreferencesService {
-  NotificationPreferencesService({ApiClient? api}) : api = api ?? ApiConfig.client;
+  NotificationPreferencesService({ApiClient? api})
+    : api = api ?? ApiConfig.client;
 
   final ApiClient api;
 
@@ -17,9 +18,7 @@ class NotificationPreferencesService {
     return response;
   }
 
-  Future<Map<String, dynamic>> update(
-    Map<String, dynamic> values,
-  ) async {
+  Future<Map<String, dynamic>> update(Map<String, dynamic> values) async {
     final response = await api.put('/notification-preferences', values);
     final data = response['preferences'] ?? response['data'];
 

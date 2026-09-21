@@ -8,7 +8,7 @@ import 'device_registration_service.dart';
 
 class PushNotificationService {
   PushNotificationService({DeviceRegistrationService? devices})
-      : _devices = devices ?? DeviceRegistrationService();
+    : _devices = devices ?? DeviceRegistrationService();
 
   final DeviceRegistrationService _devices;
 

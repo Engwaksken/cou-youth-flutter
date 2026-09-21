@@ -3,11 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiException implements Exception {
-  const ApiException(
-    this.message, {
-    this.statusCode,
-    this.data,
-  });
+  const ApiException(this.message, {this.statusCode, this.data});
 
   final String message;
   final int? statusCode;
@@ -18,10 +14,8 @@ class ApiException implements Exception {
 }
 
 class ApiClient {
-  ApiClient({
-    required this.baseUrl,
-    http.Client? client,
-  }) : _client = client ?? http.Client();
+  ApiClient({required this.baseUrl, http.Client? client})
+    : _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
@@ -29,15 +23,16 @@ class ApiClient {
   String? authToken;
 
   Map<String, String> get _headers => {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        if (authToken != null && authToken!.trim().isNotEmpty)
-          'Authorization': 'Bearer ${authToken!.trim()}',
-      };
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    if (authToken != null && authToken!.trim().isNotEmpty)
+      'Authorization': 'Bearer ${authToken!.trim()}',
+  };
 
   String _buildUrl(String path) {
-    final cleanBaseUrl =
-        baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    final cleanBaseUrl = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
 
     final cleanPath = path.startsWith('/') ? path : '/$path';
 
@@ -96,10 +91,7 @@ class ApiClient {
     String path, [
     Map<String, dynamic>? body,
   ]) async {
-    final request = http.Request(
-      'DELETE',
-      Uri.parse(_buildUrl(path)),
-    );
+    final request = http.Request('DELETE', Uri.parse(_buildUrl(path)));
 
     request.headers.addAll(_headers);
 
@@ -143,9 +135,7 @@ class ApiClient {
     } else if (decoded is Map) {
       data = Map<String, dynamic>.from(decoded);
     } else {
-      data = <String, dynamic>{
-        'data': decoded,
-      };
+      data = <String, dynamic>{'data': decoded};
     }
 
     if (!_isSuccessful(response.statusCode)) {

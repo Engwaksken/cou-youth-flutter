@@ -6,10 +6,7 @@ import '../services/content_service.dart';
 import 'content_detail_screen.dart';
 
 class YouthHubsScreen extends StatefulWidget {
-  const YouthHubsScreen({
-    super.key,
-    this.initialType = 'mission',
-  });
+  const YouthHubsScreen({super.key, this.initialType = 'mission'});
 
   final String initialType;
 
@@ -29,7 +26,9 @@ class _YouthHubsScreenState extends State<YouthHubsScreen> {
   @override
   void initState() {
     super.initState();
-    _type = _types.contains(widget.initialType) ? widget.initialType : 'mission';
+    _type = _types.contains(widget.initialType)
+        ? widget.initialType
+        : 'mission';
     _future = _load();
   }
 
@@ -223,14 +222,11 @@ class _Header extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
         ),
-        if (subtitle.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(subtitle),
-        ],
+        if (subtitle.isNotEmpty) ...[const SizedBox(height: 4), Text(subtitle)],
       ],
     );
   }
@@ -261,11 +257,7 @@ class _HubChip extends StatelessWidget {
 }
 
 class _HubCard extends StatelessWidget {
-  const _HubCard({
-    required this.item,
-    required this.type,
-    required this.onTap,
-  });
+  const _HubCard({required this.item, required this.type, required this.onTap});
 
   final Map<String, dynamic> item;
   final String type;

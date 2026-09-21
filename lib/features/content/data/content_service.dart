@@ -1,2 +1,19 @@
 import '../../../core/api/api_client.dart';
-class ContentService { ContentService(this.api); final ApiClient api; Future<Map<String,dynamic>> list({String? type,String? ageCategory,String? query,int page=1}) { final p=<String>['page=$page']; if(type!=null)p.add('type=$type'); if(ageCategory!=null)p.add('age_category=$ageCategory'); if(query!=null&&query.trim().isNotEmpty)p.add('q=${Uri.encodeQueryComponent(query)}'); return api.get('/api/v1/content?${p.join('&')}'); } }
+
+class ContentService {
+  ContentService(this.api);
+  final ApiClient api;
+  Future<Map<String, dynamic>> list({
+    String? type,
+    String? ageCategory,
+    String? query,
+    int page = 1,
+  }) {
+    final p = <String>['page=$page'];
+    if (type != null) p.add('type=$type');
+    if (ageCategory != null) p.add('age_category=$ageCategory');
+    if (query != null && query.trim().isNotEmpty)
+      p.add('q=${Uri.encodeQueryComponent(query)}');
+    return api.get('/api/v1/content?${p.join('&')}');
+  }
+}

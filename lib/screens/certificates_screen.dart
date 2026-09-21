@@ -4,10 +4,7 @@ import '../core/api/api_client.dart';
 import '../services/certificate_service.dart';
 
 class CertificatesScreen extends StatefulWidget {
-  const CertificatesScreen({
-    super.key,
-    this.service,
-  });
+  const CertificatesScreen({super.key, this.service});
 
   final CertificateService? service;
 
@@ -58,8 +55,8 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                   Text(
                     courseTitle,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   _DetailRow(
@@ -68,7 +65,8 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                   ),
                   _DetailRow(
                     label: 'Issued',
-                    value: '${certificate['issued_at'] ?? certificate['created_at'] ?? '—'}',
+                    value:
+                        '${certificate['issued_at'] ?? certificate['created_at'] ?? '—'}',
                   ),
                   if (certificate['verification_code'] != null)
                     _DetailRow(
@@ -83,9 +81,9 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
       );
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
@@ -155,8 +153,9 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                 return Card(
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer,
                       child: const Icon(Icons.workspace_premium_outlined),
                     ),
                     title: Text(title),

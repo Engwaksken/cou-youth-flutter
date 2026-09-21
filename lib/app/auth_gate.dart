@@ -8,16 +8,11 @@ import '../screens/login_screen.dart';
 import '../services/auth_service.dart';
 import '../services/push_notification_service.dart';
 
-typedef AuthenticatedBuilder = Widget Function(
-  BuildContext context,
-  Future<void> Function() exitSession,
-);
+typedef AuthenticatedBuilder =
+    Widget Function(BuildContext context, Future<void> Function() exitSession);
 
 class AuthGate extends StatefulWidget {
-  const AuthGate({
-    super.key,
-    required this.authenticatedBuilder,
-  });
+  const AuthGate({super.key, required this.authenticatedBuilder});
 
   final AuthenticatedBuilder authenticatedBuilder;
 
@@ -92,9 +87,7 @@ class _AuthGateState extends State<AuthGate> {
   @override
   Widget build(BuildContext context) {
     if (_checkingSession) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (_signedIn || _guest) {

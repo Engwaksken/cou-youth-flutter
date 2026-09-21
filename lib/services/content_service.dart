@@ -17,10 +17,7 @@ class ContentService {
       if (query != null && query.trim().isNotEmpty) 'q': query.trim(),
     };
 
-    final path = Uri(
-      path: '/content',
-      queryParameters: params,
-    ).toString();
+    final path = Uri(path: '/content', queryParameters: params).toString();
 
     final response = await api.get(path);
     final raw = response['data'];

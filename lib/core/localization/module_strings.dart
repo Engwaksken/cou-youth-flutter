@@ -11,24 +11,29 @@ class ModuleStrings {
   static const Map<String, Map<String, String>> _values = {
     'en': {
       'events': 'Events',
-      'events_load_failed': 'Events could not be loaded. Pull down to try again.',
+      'events_load_failed':
+          'Events could not be loaded. Pull down to try again.',
       'no_events': 'No upcoming events are available.',
       'youth_event': 'Youth event',
       'courses': 'Discipleship Courses',
-      'courses_load_failed': 'Courses could not be loaded. Pull down to try again.',
+      'courses_load_failed':
+          'Courses could not be loaded. Pull down to try again.',
       'no_courses': 'No discipleship courses are available yet.',
       'discipleship_course': 'Discipleship Course',
       'for_all_ages': 'For all age groups',
       'for_age': 'For {age}',
       'notifications': 'Notifications',
-      'notifications_load_failed': 'Notifications could not be loaded. Pull down to try again.',
+      'notifications_load_failed':
+          'Notifications could not be loaded. Pull down to try again.',
       'no_notifications': 'You have no notifications.',
       'notification': 'Notification',
       'notification_update_failed': 'Could not update the notification.',
       'safety_center': 'Safety Centre',
       'report_safety_concern': 'Report a safety concern',
-      'safety_intro': 'Use this form to report inappropriate content, a user, a Life Group, media item or prayer request for safeguarding review.',
-      'sign_in_report': 'Please sign in before submitting a safeguarding report.',
+      'safety_intro':
+          'Use this form to report inappropriate content, a user, a Life Group, media item or prayer request for safeguarding review.',
+      'sign_in_report':
+          'Please sign in before submitting a safeguarding report.',
       'report_submitted': 'Report submitted for review.',
       'report_failed': 'The report could not be submitted. Please try again.',
       'reporting_what': 'What are you reporting?',
@@ -55,24 +60,29 @@ class ModuleStrings {
     },
     'lg': {
       'events': 'Emikolo',
-      'events_load_failed': 'Emikolo tegisobodde kutikkibwa. Sika wansi oddemu ogezeeko.',
+      'events_load_failed':
+          'Emikolo tegisobodde kutikkibwa. Sika wansi oddemu ogezeeko.',
       'no_events': 'Tewali mikolo gijja giriwo kati.',
       'youth_event': 'Omukolo gw’abavubuka',
       'courses': 'Amasomo g’Okuyigirizibwa',
-      'courses_load_failed': 'Amasomo tegansobodde kutikkibwa. Sika wansi oddemu ogezeeko.',
+      'courses_load_failed':
+          'Amasomo tegansobodde kutikkibwa. Sika wansi oddemu ogezeeko.',
       'no_courses': 'Tewali masomo ga kuyigirizibwa galiwo kati.',
       'discipleship_course': 'Essomo ly’Okuyigirizibwa',
       'for_all_ages': 'Lya myaka gyonna',
       'for_age': 'Lya {age}',
       'notifications': 'Obubaka',
-      'notifications_load_failed': 'Obubaka tebusobodde kutikkibwa. Sika wansi oddemu ogezeeko.',
+      'notifications_load_failed':
+          'Obubaka tebusobodde kutikkibwa. Sika wansi oddemu ogezeeko.',
       'no_notifications': 'Tolina bubaka bupya.',
       'notification': 'Obubaka',
       'notification_update_failed': 'Obubaka tebusobodde kulongoosebwa.',
       'safety_center': 'Ekifo ky’Obukuumi',
       'report_safety_concern': 'Loopa ekikweraliikiriza ku bukuumi',
-      'safety_intro': 'Kozesa foomu eno okuloopa ebitali birungi, omuntu, ekibiina ky’obulamu, eby’amawulire oba okusaba bisobole okwekebejjebwa olw’obukuumi.',
-      'sign_in_report': 'Yingira mu akawunti nga tonnaweereza lipoota y’obukuumi.',
+      'safety_intro':
+          'Kozesa foomu eno okuloopa ebitali birungi, omuntu, ekibiina ky’obulamu, eby’amawulire oba okusaba bisobole okwekebejjebwa olw’obukuumi.',
+      'sign_in_report':
+          'Yingira mu akawunti nga tonnaweereza lipoota y’obukuumi.',
       'report_submitted': 'Lipoota eweerezeddwa okwekebejjebwa.',
       'report_failed': 'Lipoota tesobodde kuweerezebwa. Ddamu ogezeeko.',
       'reporting_what': 'Kiki ky’oloopa?',

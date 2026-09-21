@@ -25,12 +25,13 @@ class AccessibilityScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Text size',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
                       ),
                       const SizedBox(height: 8),
-                      Text('Current scale: ${(settings.textScale * 100).round()}%'),
+                      Text(
+                        'Current scale: ${(settings.textScale * 100).round()}%',
+                      ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -62,7 +63,9 @@ class AccessibilityScreen extends StatelessWidget {
                     SwitchListTile(
                       secondary: const Icon(Icons.contrast_outlined),
                       title: const Text('High contrast'),
-                      subtitle: const Text('Increase contrast for clearer reading.'),
+                      subtitle: const Text(
+                        'Increase contrast for clearer reading.',
+                      ),
                       value: settings.highContrast,
                       onChanged: (_) => controller.toggleHighContrast(),
                     ),
@@ -78,7 +81,9 @@ class AccessibilityScreen extends StatelessWidget {
                     SwitchListTile(
                       secondary: const Icon(Icons.motion_photos_off_outlined),
                       title: const Text('Reduce motion'),
-                      subtitle: const Text('Use simpler page transitions and animations.'),
+                      subtitle: const Text(
+                        'Use simpler page transitions and animations.',
+                      ),
                       value: settings.reduceMotion,
                       onChanged: (_) => controller.toggleReduceMotion(),
                     ),
@@ -86,7 +91,9 @@ class AccessibilityScreen extends StatelessWidget {
                     SwitchListTile(
                       secondary: const Icon(Icons.menu_book_outlined),
                       title: const Text('Reading-friendly text'),
-                      subtitle: const Text('Increase spacing to make text easier to follow.'),
+                      subtitle: const Text(
+                        'Increase spacing to make text easier to follow.',
+                      ),
                       value: settings.dyslexiaFriendly,
                       onChanged: (_) => controller.toggleDyslexiaFriendly(),
                     ),

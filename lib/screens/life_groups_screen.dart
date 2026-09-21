@@ -57,15 +57,17 @@ class _LifeGroupsScreenState extends State<LifeGroupsScreen> {
       await _refresh();
     } on ApiException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('The Life Group could not be joined. Please try again.'),
+            content: Text(
+              'The Life Group could not be joined. Please try again.',
+            ),
           ),
         );
       }
@@ -120,12 +122,14 @@ class _LifeGroupsScreenState extends State<LifeGroupsScreen> {
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: groups.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final group = groups[index];
                 final id = int.tryParse('${group['id'] ?? ''}');
-                final members = int.tryParse('${group['members_count'] ?? 0}') ?? 0;
-                final limit = int.tryParse('${group['member_limit'] ?? 0}') ?? 0;
+                final members =
+                    int.tryParse('${group['members_count'] ?? 0}') ?? 0;
+                final limit =
+                    int.tryParse('${group['member_limit'] ?? 0}') ?? 0;
                 final full = limit > 0 && members >= limit;
                 final joining = id != null && _joiningId == id;
 
@@ -168,7 +172,10 @@ class _LifeGroupsScreenState extends State<LifeGroupsScreen> {
                           runSpacing: 8,
                           children: [
                             Chip(
-                              avatar: const Icon(Icons.people_outline, size: 18),
+                              avatar: const Icon(
+                                Icons.people_outline,
+                                size: 18,
+                              ),
                               label: Text(
                                 limit > 0
                                     ? '$members / $limit members'
@@ -177,12 +184,18 @@ class _LifeGroupsScreenState extends State<LifeGroupsScreen> {
                             ),
                             if (group['meeting_day'] != null)
                               Chip(
-                                avatar: const Icon(Icons.event_repeat_outlined, size: 18),
+                                avatar: const Icon(
+                                  Icons.event_repeat_outlined,
+                                  size: 18,
+                                ),
                                 label: Text('${group['meeting_day']}'),
                               ),
                             if (group['meeting_time'] != null)
                               Chip(
-                                avatar: const Icon(Icons.schedule_outlined, size: 18),
+                                avatar: const Icon(
+                                  Icons.schedule_outlined,
+                                  size: 18,
+                                ),
                                 label: Text('${group['meeting_time']}'),
                               ),
                           ],
@@ -201,20 +214,24 @@ class _LifeGroupsScreenState extends State<LifeGroupsScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: FilledButton.icon(
-                            onPressed: full || joining ? null : () => _join(group),
+                            onPressed: full || joining
+                                ? null
+                                : () => _join(group),
                             icon: joining
                                 ? const SizedBox(
                                     width: 16,
                                     height: 16,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : const Icon(Icons.group_add_outlined),
                             label: Text(
                               full
                                   ? 'Group full'
                                   : joining
-                                      ? 'Joining...'
-                                      : 'Join Life Group',
+                                  ? 'Joining...'
+                                  : 'Join Life Group',
                             ),
                           ),
                         ),
