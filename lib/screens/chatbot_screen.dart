@@ -248,13 +248,13 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               ),
             ),
             if (_busy)
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Semantics(
                     liveRegion: true,
-                    child: Text('Youth Assistant is preparing a response…'),
+                    child: const Text('Youth Assistant is preparing a response…'),
                   ),
                 ),
               ),
