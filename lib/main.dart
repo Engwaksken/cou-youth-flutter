@@ -24,7 +24,7 @@ class CouYouthApp extends StatelessWidget {
       builder: (context, accessibility, _) {
         return ValueListenableBuilder<Locale>(
           valueListenable: AppLocaleController.instance,
-          builder: (context, locale, __) {
+          builder: (context, locale, _) {
             final theme = _buildTheme(accessibility);
 
             return MaterialApp(
