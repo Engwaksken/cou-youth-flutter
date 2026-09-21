@@ -158,9 +158,9 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     strings.text('welcome'),
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -177,26 +177,30 @@ class HomeScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   strings.text('quick_access'),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                 ),
               ),
-              Text(
-                columns == 4 ? '4 per row' : 'Accessible layout',
-                style: Theme.of(context).textTheme.bodySmall,
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  columns == 4 ? '4 per row' : 'Accessible layout',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          GridView.count(
-            crossAxisCount: columns,
+          GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 6,
-            crossAxisSpacing: 6,
-            childAspectRatio: .82,
-            children: shortcuts,
+            gridDelegate: youthShortcutGridDelegate(context),
+            itemCount: shortcuts.length,
+            itemBuilder: (context, index) => shortcuts[index],
           ),
           const SizedBox(height: 20),
           Card(
