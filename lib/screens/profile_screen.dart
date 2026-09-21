@@ -103,15 +103,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (selected == null || !mounted) return;
     AppLocaleController.instance.setLocale(Locale(selected));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(strings.text('language_updated'))));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(strings.text('language_updated'))),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
-    final columns = youthShortcutColumnCount(context);
+    final tools = <Widget>[
+      YouthAppIcon(
+        icon: Icons.smart_toy_outlined,
+        label: strings.text('youth_assistant'),
+        onTap: () => _open(const ChatbotScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.work_outline,
+        label: strings.text('opportunities'),
+        onTap: () => _open(const OpportunitiesScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.family_restroom_outlined,
+        label: 'Guardian',
+        semanticLabel: 'Guardian consent',
+        onTap: () async {
+          if (!_signedIn) {
+            _openSignedInOnly(const GuardianConsentScreen());
+            return;
+          }
+          await Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const GuardianConsentScreen(),
+            ),
+          );
+          if (mounted) await _refresh();
+        },
+      ),
+      YouthAppIcon(
+        icon: Icons.workspace_premium_outlined,
+        label: strings.text('certificates'),
+        onTap: () => _openSignedInOnly(const CertificatesScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.notifications_outlined,
+        label: 'Alerts',
+        semanticLabel: strings.text('notification_preferences'),
+        onTap: () => _openSignedInOnly(const NotificationPreferencesScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.language_outlined,
+        label: strings.text('language'),
+        onTap: _chooseLanguage,
+      ),
+      YouthAppIcon(
+        icon: Icons.accessibility_new_outlined,
+        label: strings.text('accessibility'),
+        onTap: () => _open(const AccessibilityScreen()),
+      ),
+    ];
 
     return Scaffold(
       appBar: AppBar(title: Text(strings.text('profile'))),
@@ -124,86 +173,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             Text(
               'My tools',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
             ),
             const SizedBox(height: 10),
-            GridView.count(
-              crossAxisCount: columns,
+            GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: .82,
-              children: [
-                YouthAppIcon(
-                  icon: Icons.smart_toy_outlined,
-                  label: strings.text('youth_assistant'),
-                  onTap: () => _open(const ChatbotScreen()),
-                ),
-                YouthAppIcon(
-                  icon: Icons.work_outline,
-                  label: strings.text('opportunities'),
-                  onTap: () => _open(const OpportunitiesScreen()),
-                ),
-                YouthAppIcon(
-                  icon: Icons.family_restroom_outlined,
-                  label: 'Guardian',
-                  semanticLabel: 'Guardian consent',
-                  onTap: () async {
-                    if (!_signedIn) {
-                      _openSignedInOnly(const GuardianConsentScreen());
-                      return;
-                    }
-                    await Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const GuardianConsentScreen(),
-                      ),
-                    );
-                    if (mounted) await _refresh();
-                  },
-                ),
-                YouthAppIcon(
-                  icon: Icons.workspace_premium_outlined,
-                  label: strings.text('certificates'),
-                  onTap: () => _openSignedInOnly(const CertificatesScreen()),
-                ),
-                YouthAppIcon(
-                  icon: Icons.notifications_outlined,
-                  label: 'Alerts',
-                  semanticLabel: strings.text('notification_preferences'),
-                  onTap: () =>
-                      _openSignedInOnly(const NotificationPreferencesScreen()),
-                ),
-                YouthAppIcon(
-                  icon: Icons.language_outlined,
-                  label: strings.text('language'),
-                  onTap: _chooseLanguage,
-                ),
-                YouthAppIcon(
-                  icon: Icons.accessibility_new_outlined,
-                  label: strings.text('accessibility'),
-                  onTap: () => _open(const AccessibilityScreen()),
-                ),
-              ],
+              gridDelegate: youthShortcutGridDelegate(
+                context,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+              ),
+              itemCount: tools.length,
+              itemBuilder: (context, index) => tools[index],
             ),
             const SizedBox(height: 18),
-            OutlinedButton.icon(
-              onPressed: _exiting ? null : _exitSession,
-              icon: _exiting
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Icon(_signedIn ? Icons.logout : Icons.login),
-              label: Text(
-                _exiting
-                    ? 'Please wait...'
-                    : _signedIn
-                    ? strings.text('sign_out')
-                    : strings.text('sign_in_create'),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _exiting ? null : _exitSession,
+                icon: _exiting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Icon(_signedIn ? Icons.logout : Icons.login),
+                label: Text(
+                  _exiting
+                      ? 'Please wait...'
+                      : _signedIn
+                          ? strings.text('sign_out')
+                          : strings.text('sign_in_create'),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ],
@@ -315,17 +320,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      if (user['email'] != null) Text('${user['email']}'),
+                      if (user['email'] != null)
+                        Text(
+                          '${user['email']}',
+                          softWrap: true,
+                          overflow: TextOverflow.visible,
+                        ),
                       if (youthProfile['age_category'] != null) ...[
                         const SizedBox(height: 6),
-                        Chip(
-                          visualDensity: VisualDensity.compact,
-                          label: Text(
-                            '${youthProfile['age_category']}'.replaceAll(
-                              '_',
-                              ' ',
+                        Wrap(
+                          children: [
+                            Chip(
+                              visualDensity: VisualDensity.compact,
+                              label: Text(
+                                '${youthProfile['age_category']}'.replaceAll(
+                                  '_',
+                                  ' ',
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                       if (consentRequired ||
