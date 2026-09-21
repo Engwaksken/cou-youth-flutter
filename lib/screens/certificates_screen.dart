@@ -6,10 +6,10 @@ import '../services/certificate_service.dart';
 class CertificatesScreen extends StatefulWidget {
   const CertificatesScreen({
     super.key,
-    CertificateService? service,
-  }) : _service = service;
+    this.service,
+  });
 
-  final CertificateService? _service;
+  final CertificateService? service;
 
   @override
   State<CertificatesScreen> createState() => _CertificatesScreenState();
@@ -22,7 +22,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
   @override
   void initState() {
     super.initState();
-    _service = widget._service ?? CertificateService();
+    _service = widget.service ?? CertificateService();
     _future = _service.list();
   }
 
