@@ -76,7 +76,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final columns = youthShortcutColumnCount(context);
     final modules = <Widget>[
       YouthAppIcon(
         icon: Icons.public_outlined,
@@ -173,18 +172,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     Text(
                       'Explore more',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                     const SizedBox(height: 8),
-                    GridView.count(
-                      crossAxisCount: columns,
+                    GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 6,
-                      crossAxisSpacing: 6,
-                      childAspectRatio: .82,
-                      children: modules,
+                      gridDelegate: youthShortcutGridDelegate(context),
+                      itemCount: modules.length,
+                      itemBuilder: (context, index) => modules[index],
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -192,8 +189,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           ? 'Latest resources'
                           : _filters[_type] ?? 'Resources',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -280,11 +277,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           onTap: id == null
                               ? null
                               : () => _open(
-                                  ContentDetailScreen(
-                                    contentId: id,
-                                    initialContent: item,
+                                    ContentDetailScreen(
+                                      contentId: id,
+                                      initialContent: item,
+                                    ),
                                   ),
-                                ),
                         ),
                       );
                     },
