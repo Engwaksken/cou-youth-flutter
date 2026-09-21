@@ -10,9 +10,9 @@ import 'prayer_screen.dart';
 import 'safety_center_screen.dart';
 
 class ChatbotScreen extends StatefulWidget {
-  const ChatbotScreen({super.key, ChatbotService? service}) : _service = service;
+  const ChatbotScreen({super.key, this.service});
 
-  final ChatbotService? _service;
+  final ChatbotService? service;
 
   @override
   State<ChatbotScreen> createState() => _ChatbotScreenState();
@@ -44,7 +44,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   void initState() {
     super.initState();
-    _service = widget._service ?? ChatbotService();
+    _service = widget.service ?? ChatbotService();
   }
 
   @override
