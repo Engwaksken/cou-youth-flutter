@@ -6,10 +6,10 @@ import '../services/notification_preferences_service.dart';
 class NotificationPreferencesScreen extends StatefulWidget {
   const NotificationPreferencesScreen({
     super.key,
-    NotificationPreferencesService? service,
-  }) : _service = service;
+    this.service,
+  });
 
-  final NotificationPreferencesService? _service;
+  final NotificationPreferencesService? service;
 
   @override
   State<NotificationPreferencesScreen> createState() =>
@@ -38,7 +38,7 @@ class _NotificationPreferencesScreenState
   @override
   void initState() {
     super.initState();
-    _service = widget._service ?? NotificationPreferencesService();
+    _service = widget.service ?? NotificationPreferencesService();
     _load();
   }
 
