@@ -4,6 +4,7 @@ import '../core/api/api_client.dart';
 import '../core/api/api_config.dart';
 import '../core/localization/app_locale_controller.dart';
 import '../core/localization/app_strings.dart';
+import '../widgets/youth_app_icon.dart';
 import 'accessibility_screen.dart';
 import 'certificates_screen.dart';
 import 'chatbot_screen.dart';
@@ -41,6 +42,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => screen),
     );
+  }
+
+  void _openSignedInOnly(Widget screen) {
+    if (!_signedIn) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please sign in to use this feature.')),
+      );
+      return;
+    }
+    _open(screen);
   }
 
   Future<void> _refresh() async {
@@ -101,6 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
+    final columns = youthShortcutColumnCount(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(strings.text('profile'))),
@@ -110,99 +122,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             _buildProfileCard(context),
-            const SizedBox(height: 16),
-            Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.smart_toy_outlined),
-                    title: Text(strings.text('youth_assistant')),
-                    subtitle: const Text('Ask about youth resources and opportunities.'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _open(const ChatbotScreen()),
+            const SizedBox(height: 20),
+            Text(
+              'My tools',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.work_outline),
-                    title: Text(strings.text('opportunities')),
-                    subtitle: const Text('Jobs, scholarships, training and volunteering.'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _open(const OpportunitiesScreen()),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    enabled: _signedIn,
-                    leading: const Icon(Icons.family_restroom_outlined),
-                    title: const Text('Guardian consent'),
-                    subtitle: Text(
-                      _signedIn
-                          ? 'Review teen safeguarding and guardian-consent status.'
-                          : 'Sign in to manage guardian consent.',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _signedIn
-                        ? () async {
-                            await Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (_) => const GuardianConsentScreen(),
-                              ),
-                            );
-                            if (mounted) await _refresh();
-                          }
-                        : null,
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    enabled: _signedIn,
-                    leading: const Icon(Icons.workspace_premium_outlined),
-                    title: Text(strings.text('certificates')),
-                    subtitle: Text(
-                      _signedIn
-                          ? 'View your completed course certificates.'
-                          : 'Sign in to view certificates.',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _signedIn ? () => _open(const CertificatesScreen()) : null,
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    enabled: _signedIn,
-                    leading: const Icon(Icons.notifications_outlined),
-                    title: Text(strings.text('notification_preferences')),
-                    subtitle: Text(
-                      _signedIn
-                          ? 'Choose the updates you want to receive.'
-                          : 'Sign in to manage notification preferences.',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _signedIn
-                        ? () => _open(const NotificationPreferencesScreen())
-                        : null,
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.language_outlined),
-                    title: Text(strings.text('language')),
-                    subtitle: Text(
-                      AppLocaleController.instance.value.languageCode == 'lg'
-                          ? strings.text('luganda')
-                          : strings.text('english'),
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _chooseLanguage,
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.accessibility_new_outlined),
-                    title: Text(strings.text('accessibility')),
-                    subtitle: const Text('Text size, contrast, motion and reading settings.'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _open(const AccessibilityScreen()),
-                  ),
-                ],
-              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
+            GridView.count(
+              crossAxisCount: columns,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: .82,
+              children: [
+                YouthAppIcon(
+                  icon: Icons.smart_toy_outlined,
+                  label: strings.text('youth_assistant'),
+                  onTap: () => _open(const ChatbotScreen()),
+                ),
+                YouthAppIcon(
+                  icon: Icons.work_outline,
+                  label: strings.text('opportunities'),
+                  onTap: () => _open(const OpportunitiesScreen()),
+                ),
+                YouthAppIcon(
+                  icon: Icons.family_restroom_outlined,
+                  label: 'Guardian',
+                  semanticLabel: 'Guardian consent',
+                  onTap: () async {
+                    if (!_signedIn) {
+                      _openSignedInOnly(const GuardianConsentScreen());
+                      return;
+                    }
+                    await Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const GuardianConsentScreen(),
+                      ),
+                    );
+                    if (mounted) await _refresh();
+                  },
+                ),
+                YouthAppIcon(
+                  icon: Icons.workspace_premium_outlined,
+                  label: strings.text('certificates'),
+                  onTap: () => _openSignedInOnly(const CertificatesScreen()),
+                ),
+                YouthAppIcon(
+                  icon: Icons.notifications_outlined,
+                  label: 'Alerts',
+                  semanticLabel: strings.text('notification_preferences'),
+                  onTap: () =>
+                      _openSignedInOnly(const NotificationPreferencesScreen()),
+                ),
+                YouthAppIcon(
+                  icon: Icons.language_outlined,
+                  label: strings.text('language'),
+                  onTap: _chooseLanguage,
+                ),
+                YouthAppIcon(
+                  icon: Icons.accessibility_new_outlined,
+                  label: strings.text('accessibility'),
+                  onTap: () => _open(const AccessibilityScreen()),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
             OutlinedButton.icon(
               onPressed: _exiting ? null : _exitSession,
               icon: _exiting
