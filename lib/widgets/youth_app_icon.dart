@@ -31,6 +31,7 @@ class YouthAppIcon extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
                 width: iconExtent,
@@ -48,18 +49,16 @@ class YouthAppIcon extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    label,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          height: 1.15,
-                        ),
-                  ),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        height: 1.15,
+                      ),
                 ),
               ),
             ],
@@ -83,12 +82,15 @@ int youthShortcutColumnCount(BuildContext context) {
 
 double youthShortcutTileHeight(BuildContext context) {
   final textScale = MediaQuery.textScalerOf(context).scale(1);
-  return (98 + ((textScale - 1).clamp(0, 2) * 38)).clamp(98, 174).toDouble();
+
+  // 58 icon + 12 vertical padding + 6 gap + up to two label lines.
+  // Keep extra room so normal text does not trigger RenderFlex bottom overflows.
+  return (120 + ((textScale - 1).clamp(0, 2) * 46)).clamp(120, 196).toDouble();
 }
 
 SliverGridDelegateWithFixedCrossAxisCount youthShortcutGridDelegate(
   BuildContext context, {
-  double mainAxisSpacing = 6,
+  double mainAxisSpacing = 8,
   double crossAxisSpacing = 6,
 }) {
   return SliverGridDelegateWithFixedCrossAxisCount(
