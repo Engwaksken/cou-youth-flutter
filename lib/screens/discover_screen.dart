@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
 import '../services/content_service.dart';
+import '../widgets/youth_app_icon.dart';
+import 'accessibility_screen.dart';
 import 'chatbot_screen.dart';
 import 'church_locator_screen.dart';
 import 'content_detail_screen.dart';
@@ -76,6 +78,55 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final columns = youthShortcutColumnCount(context);
+    final modules = <Widget>[
+      YouthAppIcon(
+        icon: Icons.public_outlined,
+        label: 'Missions',
+        onTap: () => _open(const YouthHubsScreen(initialType: 'mission')),
+      ),
+      YouthAppIcon(
+        icon: Icons.auto_awesome_outlined,
+        label: 'Talent Hub',
+        onTap: () => _open(const YouthHubsScreen(initialType: 'talent')),
+      ),
+      YouthAppIcon(
+        icon: Icons.storefront_outlined,
+        label: 'Youth Business',
+        onTap: () => _open(const YouthHubsScreen(initialType: 'youth_business')),
+      ),
+      YouthAppIcon(
+        icon: Icons.groups_2_outlined,
+        label: 'Life Groups',
+        onTap: () => _open(const LifeGroupsScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.folder_open_outlined,
+        label: 'Media',
+        onTap: () => _open(const MediaResourcesScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.smart_toy_outlined,
+        label: 'Assistant',
+        onTap: () => _open(const ChatbotScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.location_on_outlined,
+        label: 'Churches',
+        onTap: () => _open(const ChurchLocatorScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.handshake_outlined,
+        label: 'Donate',
+        onTap: () => _open(const DonationCheckoutScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.accessibility_new_outlined,
+        label: 'Accessibility',
+        onTap: () => _open(const AccessibilityScreen()),
+      ),
+    ];
+
     return Scaffold(
       appBar: AppBar(title: const Text('Discover')),
       body: RefreshIndicator(
@@ -125,62 +176,17 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             fontWeight: FontWeight.w800,
                           ),
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 116,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          _ModuleCard(
-                            icon: Icons.public_outlined,
-                            title: 'Missions',
-                            onTap: () => _open(
-                              const YouthHubsScreen(initialType: 'mission'),
-                            ),
-                          ),
-                          _ModuleCard(
-                            icon: Icons.auto_awesome_outlined,
-                            title: 'Talent Hub',
-                            onTap: () => _open(
-                              const YouthHubsScreen(initialType: 'talent'),
-                            ),
-                          ),
-                          _ModuleCard(
-                            icon: Icons.storefront_outlined,
-                            title: 'Youth Businesses',
-                            onTap: () => _open(
-                              const YouthHubsScreen(initialType: 'youth_business'),
-                            ),
-                          ),
-                          _ModuleCard(
-                            icon: Icons.groups_2_outlined,
-                            title: 'Life Groups',
-                            onTap: () => _open(const LifeGroupsScreen()),
-                          ),
-                          _ModuleCard(
-                            icon: Icons.folder_open_outlined,
-                            title: 'Media & Resources',
-                            onTap: () => _open(const MediaResourcesScreen()),
-                          ),
-                          _ModuleCard(
-                            icon: Icons.smart_toy_outlined,
-                            title: 'Youth Assistant',
-                            onTap: () => _open(const ChatbotScreen()),
-                          ),
-                          _ModuleCard(
-                            icon: Icons.location_on_outlined,
-                            title: 'Church Locator',
-                            onTap: () => _open(const ChurchLocatorScreen()),
-                          ),
-                          _ModuleCard(
-                            icon: Icons.handshake_outlined,
-                            title: 'Donate',
-                            onTap: () => _open(const DonationCheckoutScreen()),
-                          ),
-                        ],
-                      ),
+                    const SizedBox(height: 8),
+                    GridView.count(
+                      crossAxisCount: columns,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 6,
+                      crossAxisSpacing: 6,
+                      childAspectRatio: .82,
+                      children: modules,
                     ),
-                    const SizedBox(height: 22),
+                    const SizedBox(height: 20),
                     Text(
                       _type == null
                           ? 'Latest resources'
@@ -329,52 +335,5 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       'youth_business' => Icons.storefront_outlined,
       _ => Icons.article_outlined,
     };
-  }
-}
-
-class _ModuleCard extends StatelessWidget {
-  const _ModuleCard({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: SizedBox(
-        width: 132,
-        child: Card(
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(14),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    icon,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 28,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
