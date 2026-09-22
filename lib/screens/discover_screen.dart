@@ -13,7 +13,9 @@ import 'media_resources_screen.dart';
 import 'youth_hubs_screen.dart';
 
 class DiscoverScreen extends StatefulWidget {
-  const DiscoverScreen({super.key});
+  const DiscoverScreen({super.key, this.onOpenDrawer});
+
+  final VoidCallback? onOpenDrawer;
 
   @override
   State<DiscoverScreen> createState() => _DiscoverScreenState();
@@ -77,56 +79,28 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   @override
   Widget build(BuildContext context) {
     final modules = <Widget>[
-      YouthAppIcon(
-        icon: Icons.public_outlined,
-        label: 'Missions',
-        onTap: () => _open(const YouthHubsScreen(initialType: 'mission')),
-      ),
-      YouthAppIcon(
-        icon: Icons.auto_awesome_outlined,
-        label: 'Talent Hub',
-        onTap: () => _open(const YouthHubsScreen(initialType: 'talent')),
-      ),
-      YouthAppIcon(
-        icon: Icons.storefront_outlined,
-        label: 'Youth Business',
-        onTap: () =>
-            _open(const YouthHubsScreen(initialType: 'youth_business')),
-      ),
-      YouthAppIcon(
-        icon: Icons.groups_2_outlined,
-        label: 'Life Groups',
-        onTap: () => _open(const LifeGroupsScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.folder_open_outlined,
-        label: 'Media',
-        onTap: () => _open(const MediaResourcesScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.smart_toy_outlined,
-        label: 'Assistant',
-        onTap: () => _open(const ChatbotScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.location_on_outlined,
-        label: 'Churches',
-        onTap: () => _open(const ChurchLocatorScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.handshake_outlined,
-        label: 'Donate',
-        onTap: () => _open(const DonationCheckoutScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.accessibility_new_outlined,
-        label: 'Accessibility',
-        onTap: () => _open(const AccessibilityScreen()),
-      ),
+      YouthAppIcon(icon: Icons.public_outlined, label: 'Missions', onTap: () => _open(const YouthHubsScreen(initialType: 'mission'))),
+      YouthAppIcon(icon: Icons.auto_awesome_outlined, label: 'Talent Hub', onTap: () => _open(const YouthHubsScreen(initialType: 'talent'))),
+      YouthAppIcon(icon: Icons.storefront_outlined, label: 'Youth Business', onTap: () => _open(const YouthHubsScreen(initialType: 'youth_business'))),
+      YouthAppIcon(icon: Icons.groups_2_outlined, label: 'Life Groups', onTap: () => _open(const LifeGroupsScreen())),
+      YouthAppIcon(icon: Icons.folder_open_outlined, label: 'Media', onTap: () => _open(const MediaResourcesScreen())),
+      YouthAppIcon(icon: Icons.smart_toy_outlined, label: 'Assistant', onTap: () => _open(const ChatbotScreen())),
+      YouthAppIcon(icon: Icons.location_on_outlined, label: 'Churches', onTap: () => _open(const ChurchLocatorScreen())),
+      YouthAppIcon(icon: Icons.handshake_outlined, label: 'Donate', onTap: () => _open(const DonationCheckoutScreen())),
+      YouthAppIcon(icon: Icons.accessibility_new_outlined, label: 'Accessibility', onTap: () => _open(const AccessibilityScreen())),
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Discover')),
+      appBar: AppBar(
+        leading: widget.onOpenDrawer == null
+            ? null
+            : IconButton(
+                tooltip: 'Open menu',
+                onPressed: widget.onOpenDrawer,
+                icon: const Icon(Icons.menu),
+              ),
+        title: const Text('Discover'),
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: CustomScrollView(
@@ -142,8 +116,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       textInputAction: TextInputAction.search,
                       onSubmitted: (_) => _searchNow(),
                       decoration: InputDecoration(
-                        hintText:
-                            'Search youth news, resources and opportunities',
+                        hintText: 'Search youth news, resources and opportunities',
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: IconButton(
                           tooltip: 'Search',
@@ -171,9 +144,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     const SizedBox(height: 20),
                     Text(
                       'Explore more',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 8),
                     GridView.builder(
@@ -185,12 +156,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      _type == null
-                          ? 'Latest resources'
-                          : _filters[_type] ?? 'Resources',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                      _type == null ? 'Latest resources' : _filters[_type] ?? 'Resources',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -240,10 +207,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     child: Center(
                       child: Padding(
                         padding: EdgeInsets.all(24),
-                        child: Text(
-                          'No matching resources are available yet.',
-                          textAlign: TextAlign.center,
-                        ),
+                        child: Text('No matching resources are available yet.', textAlign: TextAlign.center),
                       ),
                     ),
                   );
@@ -262,26 +226,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                       return Card(
                         child: ListTile(
-                          leading: CircleAvatar(
-                            child: Icon(_iconForType(type)),
-                          ),
+                          leading: CircleAvatar(child: Icon(_iconForType(type))),
                           title: Text('${item['title'] ?? 'Youth resource'}'),
                           subtitle: summary.isEmpty
                               ? Text(_labelForType(type))
-                              : Text(
-                                  summary,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                              : Text(summary, maxLines: 2, overflow: TextOverflow.ellipsis),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: id == null
                               ? null
-                              : () => _open(
-                                    ContentDetailScreen(
-                                      contentId: id,
-                                      initialContent: item,
-                                    ),
-                                  ),
+                              : () => _open(ContentDetailScreen(contentId: id, initialContent: item)),
                         ),
                       );
                     },
