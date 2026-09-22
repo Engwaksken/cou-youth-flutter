@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../core/api/api_config.dart';
 import '../core/localization/module_strings.dart';
+import '../core/theme/app_colors.dart';
 import '../services/notification_service.dart';
-import '../widgets/brand_header.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -29,81 +31,87 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     await future;
   }
 
+  Future<void> _markAsRead(int receiptId) async {
+    try {
+      await _service.markAsRead(receiptId);
+      if (mounted) {
+        setState(() => _future = _service.list());
+      }
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ModuleStrings.text(context, 'notification_update_failed'),
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Scaffold(
-      appBar: AppBar(title: Text(ModuleStrings.text(context, 'notifications'))),
-      body: RefreshIndicator(
+    return YouthScreenScaffold(
+      title: ModuleStrings.text(context, 'notifications'),
+      subtitle: 'Stay up to date with youth ministry messages and alerts.',
+      leading: IconButton(
+        tooltip: 'Back',
+        onPressed: () => Navigator.of(context).maybePop(),
+        icon: const Icon(Icons.arrow_back_rounded),
+      ),
+      child: RefreshIndicator(
         onRefresh: _refresh,
+        color: AppColors.primary,
         child: FutureBuilder<List<Map<String, dynamic>>>(
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const YouthLoading(label: 'Loading notifications…');
             }
 
             if (snapshot.hasError) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(18),
                 children: [
-                  const BrandHeader(compact: true),
-                  const SizedBox(height: 32),
-                  Icon(
-                    Icons.cloud_off_outlined,
-                    size: 44,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    ModuleStrings.text(context, 'notifications_load_failed'),
-                    textAlign: TextAlign.center,
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * .55,
+                    child: YouthErrorState(
+                      title: ModuleStrings.text(
+                        context,
+                        'notifications_load_failed',
+                      ),
+                      onRetry: _refresh,
+                    ),
                   ),
                 ],
               );
             }
 
             final rows = snapshot.data ?? const <Map<String, dynamic>>[];
-
             if (rows.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(18),
                 children: [
-                  const BrandHeader(compact: true),
-                  const SizedBox(height: 32),
-                  Icon(
-                    Icons.notifications_none_outlined,
-                    size: 48,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    ModuleStrings.text(context, 'no_notifications'),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * .55,
+                    child: YouthEmptyState(
+                      icon: Icons.notifications_none_rounded,
+                      title: ModuleStrings.text(context, 'no_notifications'),
+                      message: 'New ministry updates and reminders will appear here.',
+                    ),
                   ),
                 ],
               );
             }
 
             return ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
-              itemCount: rows.length + 1,
-              separatorBuilder: (_, index) => index == 0
-                  ? const SizedBox(height: 18)
-                  : const SizedBox(height: 10),
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+              itemCount: rows.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
-                if (index == 0) {
-                  return const BrandHeader(compact: true, showTagline: false);
-                }
-
-                final row = rows[index - 1];
+                final row = rows[index];
                 final receiptId = row['receipt_id'] ?? row['id'];
-                final readAt = row['read_at'];
-                final unread = readAt == null;
+                final unread = row['read_at'] == null;
                 final title = (row['title'] ??
                         ModuleStrings.text(context, 'notification'))
                     .toString();
@@ -111,49 +119,36 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
                 return Semantics(
                   button: receiptId is int && unread,
-                  label: '${unread ? 'Unread' : 'Read'} notification. $title. $message',
+                  label:
+                      '${unread ? 'Unread' : 'Read'} notification. $title. $message',
                   child: Card(
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(20),
                       onTap: receiptId is int && unread
-                          ? () async {
-                              try {
-                                await _service.markAsRead(receiptId);
-                                if (mounted) {
-                                  setState(() => _future = _service.list());
-                                }
-                              } catch (_) {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        ModuleStrings.text(
-                                          context,
-                                          'notification_update_failed',
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }
-                              }
-                            }
+                          ? () => _markAsRead(receiptId)
                           : null,
                       child: Padding(
-                        padding: const EdgeInsets.all(14),
+                        padding: const EdgeInsets.all(15),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CircleAvatar(
-                              backgroundColor: unread
-                                  ? scheme.primaryContainer
-                                  : scheme.surfaceContainerHighest,
+                            Container(
+                              width: 46,
+                              height: 46,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: unread
+                                    ? AppColors.primaryLight
+                                    : AppColors.surfaceMuted,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                               child: Icon(
                                 unread
                                     ? Icons.notifications_active_outlined
-                                    : Icons.notifications_none,
+                                    : Icons.notifications_none_rounded,
                                 color: unread
-                                    ? scheme.primary
-                                    : scheme.onSurfaceVariant,
+                                    ? AppColors.primary
+                                    : AppColors.textSecondary,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -166,22 +161,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                       Expanded(
                                         child: Text(
                                           title,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium
-                                              ?.copyWith(
-                                                fontWeight: unread
-                                                    ? FontWeight.w800
-                                                    : FontWeight.w600,
-                                              ),
+                                          style: TextStyle(
+                                            color: AppColors.textPrimary,
+                                            fontWeight: unread
+                                                ? FontWeight.w800
+                                                : FontWeight.w600,
+                                          ),
                                         ),
                                       ),
                                       if (unread)
                                         Container(
                                           width: 9,
                                           height: 9,
-                                          decoration: BoxDecoration(
-                                            color: scheme.primary,
+                                          decoration: const BoxDecoration(
+                                            color: AppColors.primary,
                                             shape: BoxShape.circle,
                                           ),
                                         ),
@@ -191,10 +184,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                     const SizedBox(height: 6),
                                     Text(
                                       message,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(height: 1.45),
+                                      style: const TextStyle(
+                                        color: AppColors.textSecondary,
+                                        height: 1.45,
+                                      ),
+                                    ),
+                                  ],
+                                  if (unread) ...[
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Tap to mark as read',
+                                      style: TextStyle(
+                                        color: AppColors.primary,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                   ],
                                 ],
