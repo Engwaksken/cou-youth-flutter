@@ -9,6 +9,7 @@ import '../screens/media_resources_screen.dart';
 import '../screens/opportunities_screen.dart';
 import '../screens/prayer_screen.dart';
 import '../screens/safety_center_screen.dart';
+import 'brand_header.dart';
 
 class YouthAppDrawer extends StatelessWidget {
   const YouthAppDrawer({
@@ -34,41 +35,15 @@ class YouthAppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Drawer(
       child: SafeArea(
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 22, 20, 18),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [scheme.primary, scheme.secondary],
-                ),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.church_outlined, color: Colors.white, size: 38),
-                  SizedBox(height: 12),
-                  Text(
-                    'COU Youth Platform',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Connect • Grow • Serve',
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                ],
-              ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(18, 20, 18, 14),
+              child: BrandHeader(compact: true),
             ),
+            const Divider(height: 1),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -104,11 +79,13 @@ class YouthAppDrawer extends StatelessWidget {
                     onTap: () => _selectMain(context, 4),
                   ),
                   const Divider(),
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(16, 8, 16, 6),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
                     child: Text(
                       'Youth services',
-                      style: TextStyle(fontWeight: FontWeight.w800),
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                   ),
                   _DrawerItem(
