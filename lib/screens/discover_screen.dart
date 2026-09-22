@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
+import '../core/theme/app_colors.dart';
 import '../services/content_service.dart';
 import '../widgets/youth_app_icon.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
 import 'accessibility_screen.dart';
 import 'chatbot_screen.dart';
 import 'church_locator_screen.dart';
@@ -79,34 +82,70 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   @override
   Widget build(BuildContext context) {
     final modules = <Widget>[
-      YouthAppIcon(icon: Icons.public_outlined, label: 'Missions', onTap: () => _open(const YouthHubsScreen(initialType: 'mission'))),
-      YouthAppIcon(icon: Icons.auto_awesome_outlined, label: 'Talent Hub', onTap: () => _open(const YouthHubsScreen(initialType: 'talent'))),
-      YouthAppIcon(icon: Icons.storefront_outlined, label: 'Youth Business', onTap: () => _open(const YouthHubsScreen(initialType: 'youth_business'))),
-      YouthAppIcon(icon: Icons.groups_2_outlined, label: 'Life Groups', onTap: () => _open(const LifeGroupsScreen())),
-      YouthAppIcon(icon: Icons.folder_open_outlined, label: 'Media', onTap: () => _open(const MediaResourcesScreen())),
-      YouthAppIcon(icon: Icons.smart_toy_outlined, label: 'Assistant', onTap: () => _open(const ChatbotScreen())),
-      YouthAppIcon(icon: Icons.location_on_outlined, label: 'Churches', onTap: () => _open(const ChurchLocatorScreen())),
-      YouthAppIcon(icon: Icons.handshake_outlined, label: 'Donate', onTap: () => _open(const DonationCheckoutScreen())),
-      YouthAppIcon(icon: Icons.accessibility_new_outlined, label: 'Accessibility', onTap: () => _open(const AccessibilityScreen())),
+      YouthAppIcon(
+        icon: Icons.public_outlined,
+        label: 'Missions',
+        onTap: () => _open(const YouthHubsScreen(initialType: 'mission')),
+      ),
+      YouthAppIcon(
+        icon: Icons.auto_awesome_outlined,
+        label: 'Talent Hub',
+        onTap: () => _open(const YouthHubsScreen(initialType: 'talent')),
+      ),
+      YouthAppIcon(
+        icon: Icons.storefront_outlined,
+        label: 'Youth Business',
+        onTap: () => _open(const YouthHubsScreen(initialType: 'youth_business')),
+      ),
+      YouthAppIcon(
+        icon: Icons.groups_2_outlined,
+        label: 'Life Groups',
+        onTap: () => _open(const LifeGroupsScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.folder_open_outlined,
+        label: 'Media',
+        onTap: () => _open(const MediaResourcesScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.smart_toy_outlined,
+        label: 'Assistant',
+        onTap: () => _open(const ChatbotScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.location_on_outlined,
+        label: 'Churches',
+        onTap: () => _open(const ChurchLocatorScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.handshake_outlined,
+        label: 'Donate',
+        onTap: () => _open(const DonationCheckoutScreen()),
+      ),
+      YouthAppIcon(
+        icon: Icons.accessibility_new_outlined,
+        label: 'Accessibility',
+        onTap: () => _open(const AccessibilityScreen()),
+      ),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: widget.onOpenDrawer == null
-            ? null
-            : IconButton(
-                tooltip: 'Open menu',
-                onPressed: widget.onOpenDrawer,
-                icon: const Icon(Icons.menu),
-              ),
-        title: const Text('Discover'),
-      ),
-      body: RefreshIndicator(
+    return YouthScreenScaffold(
+      title: 'Discover',
+      subtitle: 'Explore youth news, resources, opportunities and ministries.',
+      leading: widget.onOpenDrawer == null
+          ? null
+          : IconButton(
+              tooltip: 'Open menu',
+              onPressed: widget.onOpenDrawer,
+              icon: const Icon(Icons.menu_rounded),
+            ),
+      child: RefreshIndicator(
         onRefresh: _refresh,
+        color: AppColors.primary,
         child: CustomScrollView(
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,11 +156,20 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       onSubmitted: (_) => _searchNow(),
                       decoration: InputDecoration(
                         hintText: 'Search youth news, resources and opportunities',
-                        prefixIcon: const Icon(Icons.search),
+                        prefixIcon: const Icon(Icons.search_rounded),
                         suffixIcon: IconButton(
-                          tooltip: 'Search',
-                          onPressed: _searchNow,
-                          icon: const Icon(Icons.arrow_forward),
+                          tooltip: _search.text.isEmpty ? 'Search' : 'Clear search',
+                          onPressed: () {
+                            if (_search.text.isEmpty) {
+                              _searchNow();
+                            } else {
+                              _search.clear();
+                              _searchNow();
+                            }
+                          },
+                          icon: Icon(
+                            _search.text.isEmpty ? Icons.arrow_forward_rounded : Icons.close_rounded,
+                          ),
                         ),
                       ),
                     ),
@@ -141,10 +189,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 22),
                     Text(
                       'Explore more',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     GridView.builder(
@@ -154,10 +205,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       itemCount: modules.length,
                       itemBuilder: (context, index) => modules[index],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 22),
                     Text(
                       _type == null ? 'Latest resources' : _filters[_type] ?? 'Resources',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -170,33 +224,17 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SliverFillRemaining(
                     hasScrollBody: false,
-                    child: Center(child: CircularProgressIndicator()),
+                    child: YouthLoading(label: 'Loading resources…'),
                   );
                 }
 
                 if (snapshot.hasError) {
                   final message = snapshot.error is ApiException
                       ? (snapshot.error as ApiException).message
-                      : 'Resources could not be loaded. Pull down to try again.';
+                      : 'Please check your connection and try again.';
                   return SliverFillRemaining(
                     hasScrollBody: false,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.cloud_off_outlined, size: 46),
-                          const SizedBox(height: 12),
-                          Text(message, textAlign: TextAlign.center),
-                          const SizedBox(height: 14),
-                          FilledButton.icon(
-                            onPressed: _refresh,
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Try again'),
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: YouthErrorState(message: message, onRetry: _refresh),
                   );
                 }
 
@@ -204,17 +242,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 if (items.isEmpty) {
                   return const SliverFillRemaining(
                     hasScrollBody: false,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(24),
-                        child: Text('No matching resources are available yet.', textAlign: TextAlign.center),
-                      ),
+                    child: YouthEmptyState(
+                      icon: Icons.explore_outlined,
+                      title: 'No matching resources',
+                      message: 'New youth content and opportunities will appear here when available.',
                     ),
                   );
                 }
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
                   sliver: SliverList.separated(
                     itemCount: items.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 10),
@@ -226,15 +263,51 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
                       return Card(
                         child: ListTile(
-                          leading: CircleAvatar(child: Icon(_iconForType(type))),
-                          title: Text('${item['title'] ?? 'Youth resource'}'),
-                          subtitle: summary.isEmpty
-                              ? Text(_labelForType(type))
-                              : Text(summary, maxLines: 2, overflow: TextOverflow.ellipsis),
-                          trailing: const Icon(Icons.chevron_right),
+                          minVerticalPadding: 12,
+                          leading: Container(
+                            width: 46,
+                            height: 46,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryLight,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Icon(
+                              _iconForType(type),
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          title: Text(
+                            '${item['title'] ?? 'Youth resource'}',
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: Text(
+                              summary.isEmpty ? _labelForType(type) : summary,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColors.textSecondary,
+                                height: 1.35,
+                              ),
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.chevron_right_rounded,
+                            color: AppColors.textMuted,
+                          ),
                           onTap: id == null
                               ? null
-                              : () => _open(ContentDetailScreen(contentId: id, initialContent: item)),
+                              : () => _open(
+                                    ContentDetailScreen(
+                                      contentId: id,
+                                      initialContent: item,
+                                    ),
+                                  ),
                         ),
                       );
                     },
