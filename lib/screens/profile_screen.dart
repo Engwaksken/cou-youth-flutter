@@ -13,9 +13,14 @@ import 'notification_preferences_screen.dart';
 import 'opportunities_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key, required this.onExitSession});
+  const ProfileScreen({
+    super.key,
+    required this.onExitSession,
+    this.onOpenDrawer,
+  });
 
   final Future<void> Function() onExitSession;
+  final VoidCallback? onOpenDrawer;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -163,7 +168,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(strings.text('profile'))),
+      appBar: AppBar(
+        leading: widget.onOpenDrawer == null
+            ? null
+            : IconButton(
+                tooltip: 'Open menu',
+                onPressed: widget.onOpenDrawer,
+                icon: const Icon(Icons.menu),
+              ),
+        title: Text(strings.text('profile')),
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: ListView(
@@ -342,9 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ],
-                      if (consentRequired ||
-                          verified ||
-                          consentStatus.isNotEmpty) ...[
+                      if (consentRequired || verified || consentStatus.isNotEmpty) ...[
                         const SizedBox(height: 6),
                         Wrap(
                           spacing: 6,
