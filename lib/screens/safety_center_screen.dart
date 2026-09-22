@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../core/api/api_client.dart';
 import '../core/api/api_config.dart';
 import '../core/localization/module_strings.dart';
+import '../core/theme/app_colors.dart';
 import '../services/moderation_service.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
 
 class SafetyCenterScreen extends StatefulWidget {
   const SafetyCenterScreen({super.key});
@@ -101,9 +104,9 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
       setState(() => _blockedFuture = _service.blocked());
     } on ApiException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.message)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
       }
     }
   }
@@ -121,10 +124,16 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(ModuleStrings.text(context, 'safety_center'))),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+    return YouthScreenScaffold(
+      title: ModuleStrings.text(context, 'safety_center'),
+      subtitle: 'Report concerns and manage your personal safety settings.',
+      leading: IconButton(
+        tooltip: 'Back',
+        onPressed: () => Navigator.of(context).maybePop(),
+        icon: const Icon(Icons.arrow_back_rounded),
+      ),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
         children: [
           Card(
             child: Padding(
@@ -134,22 +143,39 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.shield_outlined,
-                        color: Theme.of(context).colorScheme.primary,
+                      Container(
+                        width: 48,
+                        height: 48,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryLight,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: const Icon(
+                          Icons.shield_outlined,
+                          color: AppColors.primary,
+                        ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           ModuleStrings.text(context, 'report_safety_concern'),
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.w800),
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                              ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(ModuleStrings.text(context, 'safety_intro')),
+                  Text(
+                    ModuleStrings.text(context, 'safety_intro'),
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      height: 1.45,
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   if (_message != null) ...[
                     _StatusBox(message: _message!, success: true),
@@ -170,6 +196,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                               context,
                               'reporting_what',
                             ),
+                            prefixIcon: const Icon(Icons.flag_outlined),
                           ),
                           items: [
                             for (final value in const [
@@ -202,6 +229,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                               context,
                               'item_user_id_help',
                             ),
+                            prefixIcon: const Icon(Icons.tag_rounded),
                           ),
                           validator: (value) {
                             final id = int.tryParse((value ?? '').trim());
@@ -217,6 +245,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                           maxLength: 120,
                           decoration: InputDecoration(
                             labelText: ModuleStrings.text(context, 'reason'),
+                            prefixIcon: const Icon(Icons.warning_amber_rounded),
                           ),
                           validator: (value) => (value ?? '').trim().isEmpty
                               ? ModuleStrings.text(
@@ -236,6 +265,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                               context,
                               'additional_details',
                             ),
+                            alignLabelWithHint: true,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -249,6 +279,7 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                                     height: 16,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
+                                      color: Colors.white,
                                     ),
                                   )
                                 : const Icon(Icons.report_outlined),
@@ -269,19 +300,23 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
           Text(
             ModuleStrings.text(context, 'blocked_accounts'),
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
           ),
           const SizedBox(height: 10),
           if (!_signedIn)
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(18),
-                child: Text(ModuleStrings.text(context, 'sign_in_blocked')),
+                child: Text(
+                  ModuleStrings.text(context, 'sign_in_blocked'),
+                  style: const TextStyle(color: AppColors.textSecondary),
+                ),
               ),
             )
           else
@@ -289,26 +324,33 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
               future: _blockedFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SizedBox(
+                    height: 180,
+                    child: YouthLoading(label: 'Loading blocked accounts…'),
+                  );
                 }
                 if (snapshot.hasError) {
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(18),
-                      child: Text(
-                        ModuleStrings.text(context, 'blocked_load_failed'),
+                  return SizedBox(
+                    height: 220,
+                    child: YouthErrorState(
+                      title: ModuleStrings.text(
+                        context,
+                        'blocked_load_failed',
                       ),
                     ),
                   );
                 }
                 final rows = snapshot.data ?? const <Map<String, dynamic>>[];
                 if (rows.isEmpty) {
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(18),
-                      child: Text(
-                        ModuleStrings.text(context, 'no_blocked_accounts'),
+                  return SizedBox(
+                    height: 220,
+                    child: YouthEmptyState(
+                      icon: Icons.person_off_outlined,
+                      title: ModuleStrings.text(
+                        context,
+                        'no_blocked_accounts',
                       ),
+                      message: 'People you block will appear here for review.',
                     ),
                   );
                 }
@@ -318,14 +360,25 @@ class _SafetyCenterScreenState extends State<SafetyCenterScreen> {
                       Card(
                         child: ListTile(
                           leading: const CircleAvatar(
+                            backgroundColor: AppColors.primaryLight,
+                            foregroundColor: AppColors.primary,
                             child: Icon(Icons.person_off_outlined),
                           ),
                           title: Text(
                             '${row['blocked'] is Map ? (row['blocked'] as Map)['name'] ?? ModuleStrings.text(context, 'blocked_user') : ModuleStrings.text(context, 'blocked_user')}',
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                           subtitle: row['reason'] == null
                               ? null
-                              : Text('${row['reason']}'),
+                              : Text(
+                                  '${row['reason']}',
+                                  style: const TextStyle(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
                           trailing: TextButton(
                             onPressed: () {
                               final blocked = row['blocked'];
@@ -358,15 +411,27 @@ class _StatusBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: success ? scheme.primaryContainer : scheme.errorContainer,
+        color: success
+            ? const Color(0xFFEAF7EE)
+            : Theme.of(context).colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: success ? AppColors.success : Theme.of(context).colorScheme.error,
+        ),
       ),
-      child: Text(message),
+      child: Text(
+        message,
+        style: TextStyle(
+          color: success
+              ? AppColors.success
+              : Theme.of(context).colorScheme.onErrorContainer,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }
