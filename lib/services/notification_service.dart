@@ -9,21 +9,34 @@ class NotificationService {
     final response = await apiClient.get('/notifications');
     final data = response['data'];
 
+    final List<dynamic> rows;
     if (data is List) {
-      return data
-          .whereType<Map>()
-          .map((item) => Map<String, dynamic>.from(item))
-          .toList();
+      rows = data;
+    } else if (data is Map && data['data'] is List) {
+      rows = data['data'] as List;
+    } else {
+      return <Map<String, dynamic>>[];
     }
 
-    if (data is Map && data['data'] is List) {
-      return (data['data'] as List)
-          .whereType<Map>()
-          .map((item) => Map<String, dynamic>.from(item))
-          .toList();
-    }
+    return rows.whereType<Map>().map((item) {
+      final receipt = Map<String, dynamic>.from(item);
+      final notificationRaw = receipt['notification'];
+      final notification = notificationRaw is Map
+          ? Map<String, dynamic>.from(notificationRaw)
+          : const <String, dynamic>{};
 
-    return <Map<String, dynamic>>[];
+      return <String, dynamic>{
+        ...receipt,
+        'receipt_id': receipt['id'],
+        'title': notification['title'] ?? receipt['title'],
+        'message': notification['body'] ??
+            notification['message'] ??
+            receipt['message'] ??
+            receipt['body'],
+        'action_url': notification['action_url'] ?? receipt['action_url'],
+        'channel': notification['channel'] ?? receipt['channel'],
+      };
+    }).toList();
   }
 
   Future<Map<String, dynamic>> markAsRead(int receiptId) async {
