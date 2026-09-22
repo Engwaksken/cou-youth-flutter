@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
+import '../core/theme/app_colors.dart';
 import '../services/notification_preferences_service.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
 
 class NotificationPreferencesScreen extends StatefulWidget {
   const NotificationPreferencesScreen({super.key, this.service});
@@ -78,9 +81,9 @@ class _NotificationPreferencesScreenState
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _preferences[key] = previous);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
     } catch (_) {
       if (!mounted) return;
       setState(() => _preferences[key] = previous);
@@ -105,50 +108,110 @@ class _NotificationPreferencesScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Notification preferences')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
+    return YouthScreenScaffold(
+      title: 'Notification preferences',
+      subtitle: 'Choose which youth updates you want to receive.',
+      leading: IconButton(
+        tooltip: 'Back',
+        onPressed: () => Navigator.of(context).maybePop(),
+        icon: const Icon(Icons.arrow_back_rounded),
+      ),
+      child: _loading
+          ? const YouthLoading(label: 'Loading preferences…')
           : _error != null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+              ? YouthErrorState(message: _error!, onRetry: _load)
+              : ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
                   children: [
-                    const Icon(Icons.notifications_off_outlined, size: 48),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryLight,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: const Icon(
+                                Icons.notifications_active_outlined,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Text(
+                                'Stay connected without unnecessary noise. You can change these choices any time.',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 12),
-                    Text(_error!, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    FilledButton.icon(
-                      onPressed: _load,
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Try again'),
+                    Card(
+                      child: Column(
+                        children: [
+                          for (var index = 0;
+                              index < _labels.entries.length;
+                              index++) ...[
+                            Builder(
+                              builder: (context) {
+                                final entry = _labels.entries.elementAt(index);
+                                return SwitchListTile(
+                                  activeThumbColor: AppColors.primary,
+                                  secondary: _savingKey == entry.key
+                                      ? const SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: AppColors.primary,
+                                          ),
+                                        )
+                                      : Container(
+                                          width: 42,
+                                          height: 42,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.primaryLight,
+                                            borderRadius:
+                                                BorderRadius.circular(13),
+                                          ),
+                                          child: Icon(
+                                            _iconFor(entry.key),
+                                            color: AppColors.primary,
+                                          ),
+                                        ),
+                                  title: Text(
+                                    entry.value,
+                                    style: const TextStyle(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  value: _valueFor(entry.key),
+                                  onChanged: _savingKey == null
+                                      ? (value) => _set(entry.key, value)
+                                      : null,
+                                );
+                              },
+                            ),
+                            if (index != _labels.entries.length - 1)
+                              const Divider(height: 1),
+                          ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              children: [
-                for (final entry in _labels.entries)
-                  SwitchListTile(
-                    secondary: _savingKey == entry.key
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Icon(_iconFor(entry.key)),
-                    title: Text(entry.value),
-                    value: _valueFor(entry.key),
-                    onChanged: _savingKey == null
-                        ? (value) => _set(entry.key, value)
-                        : null,
-                  ),
-              ],
-            ),
     );
   }
 
@@ -162,7 +225,7 @@ class _NotificationPreferencesScreenState
       'opportunities' => Icons.work_outline,
       'donations' => Icons.volunteer_activism_outlined,
       'life_groups' => Icons.groups_outlined,
-      _ => Icons.tune,
+      _ => Icons.tune_rounded,
     };
   }
 }
