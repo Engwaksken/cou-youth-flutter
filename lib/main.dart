@@ -6,6 +6,7 @@ import 'app/main_navigation_screen.dart';
 import 'core/accessibility/accessibility_controller.dart';
 import 'core/localization/app_locale_controller.dart';
 import 'core/localization/app_strings.dart';
+import 'core/theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +16,6 @@ void main() {
 class CouYouthApp extends StatelessWidget {
   const CouYouthApp({super.key});
 
-  static const _primary = Color(0xFF4B2E83);
-
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<AccessibilitySettings>(
@@ -25,12 +24,10 @@ class CouYouthApp extends StatelessWidget {
         return ValueListenableBuilder<Locale>(
           valueListenable: AppLocaleController.instance,
           builder: (context, locale, _) {
-            final theme = _buildTheme(accessibility);
-
             return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Church of Uganda Youth Platform',
-              theme: theme,
+              theme: buildYouthTheme(accessibility),
               locale: locale,
               supportedLocales: AppLocaleController.supportedLocales,
               localizationsDelegates: const [
@@ -96,121 +93,10 @@ class CouYouthApp extends StatelessWidget {
     );
   }
 
-  static ThemeData _buildTheme(AccessibilitySettings accessibility) {
-    final scheme = accessibility.highContrast
-        ? const ColorScheme.light(
-            primary: Color(0xFF2A0A55),
-            onPrimary: Colors.white,
-            secondary: Color(0xFF003B5C),
-            onSecondary: Colors.white,
-            surface: Colors.white,
-            onSurface: Colors.black,
-            error: Color(0xFF8B0000),
-            onError: Colors.white,
-          )
-        : ColorScheme.fromSeed(seedColor: _primary);
-
-    var theme = ThemeData(
-      useMaterial3: true,
-      colorScheme: scheme,
-      scaffoldBackgroundColor: accessibility.highContrast
-          ? Colors.white
-          : const Color(0xFFF7F8FC),
-      appBarTheme: AppBarTheme(
-        centerTitle: false,
-        backgroundColor: Colors.white,
-        foregroundColor: accessibility.highContrast
-            ? Colors.black
-            : const Color(0xFF1F2937),
-        elevation: accessibility.highContrast ? 1 : 0,
-      ),
-      cardTheme: CardThemeData(
-        margin: EdgeInsets.zero,
-        elevation: accessibility.highContrast ? 1 : 0,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: BorderSide(
-            color: accessibility.highContrast
-                ? Colors.black
-                : const Color(0xFFE5E7EB),
-          ),
-        ),
-      ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: Colors.white,
-        indicatorColor: accessibility.highContrast
-            ? const Color(0xFFD1C4E9)
-            : const Color(0xFFEDE9FE),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: Colors.white,
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: accessibility.highContrast
-                ? Colors.black
-                : const Color(0xFFD1D5DB),
-          ),
-        ),
-        border: const OutlineInputBorder(),
-      ),
-      pageTransitionsTheme: accessibility.reduceMotion
-          ? const PageTransitionsTheme(
-              builders: {
-                TargetPlatform.android: _NoTransitionsBuilder(),
-                TargetPlatform.iOS: _NoTransitionsBuilder(),
-                TargetPlatform.macOS: _NoTransitionsBuilder(),
-                TargetPlatform.windows: _NoTransitionsBuilder(),
-                TargetPlatform.linux: _NoTransitionsBuilder(),
-              },
-            )
-          : const PageTransitionsTheme(),
-    );
-
-    if (accessibility.dyslexiaFriendly) {
-      theme = theme.copyWith(
-        textTheme: theme.textTheme.copyWith(
-          bodyLarge: theme.textTheme.bodyLarge?.copyWith(
-            letterSpacing: .45,
-            height: 1.6,
-          ),
-          bodyMedium: theme.textTheme.bodyMedium?.copyWith(
-            letterSpacing: .45,
-            height: 1.55,
-          ),
-          bodySmall: theme.textTheme.bodySmall?.copyWith(
-            letterSpacing: .35,
-            height: 1.5,
-          ),
-          titleLarge: theme.textTheme.titleLarge?.copyWith(letterSpacing: .3),
-          titleMedium: theme.textTheme.titleMedium?.copyWith(letterSpacing: .3),
-        ),
-      );
-    }
-
-    return theme;
-  }
-
   static Widget _buildMainNavigation(
     BuildContext context,
     Future<void> Function() exitSession,
   ) {
     return MainNavigationScreen(onExitSession: exitSession);
-  }
-}
-
-class _NoTransitionsBuilder extends PageTransitionsBuilder {
-  const _NoTransitionsBuilder();
-
-  @override
-  Widget buildTransitions<T>(
-    PageRoute<T> route,
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    return child;
   }
 }
