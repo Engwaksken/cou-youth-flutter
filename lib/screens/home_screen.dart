@@ -17,7 +17,9 @@ import 'safety_center_screen.dart';
 import 'youth_hubs_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.onOpenDrawer});
+
+  final VoidCallback? onOpenDrawer;
 
   void _open(BuildContext context, Widget screen) {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
@@ -29,91 +31,32 @@ class HomeScreen extends StatelessWidget {
     final columns = youthShortcutColumnCount(context);
 
     final shortcuts = <Widget>[
-      YouthAppIcon(
-        icon: Icons.event_outlined,
-        label: strings.text('events'),
-        onTap: () => _open(context, const EventsScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.menu_book_outlined,
-        label: strings.text('discipleship'),
-        onTap: () => _open(context, const CoursesScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.location_on_outlined,
-        label: strings.text('church_locator'),
-        onTap: () => _open(context, const ChurchLocatorScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.groups_2_outlined,
-        label: strings.text('life_groups'),
-        onTap: () => _open(context, const LifeGroupsScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.handshake_outlined,
-        label: strings.text('donate'),
-        onTap: () => _open(context, const DonationCheckoutScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.volunteer_activism_outlined,
-        label: strings.text('prayer'),
-        onTap: () => _open(context, const PrayerScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.smart_toy_outlined,
-        label: strings.text('youth_assistant'),
-        onTap: () => _open(context, const ChatbotScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.notifications_active_outlined,
-        label: strings.text('notifications'),
-        onTap: () => _open(context, const NotificationsScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.folder_open_outlined,
-        label: strings.text('media_resources'),
-        onTap: () => _open(context, const MediaResourcesScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.work_outline,
-        label: strings.text('opportunities'),
-        onTap: () => _open(context, const OpportunitiesScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.public_outlined,
-        label: strings.text('missions'),
-        onTap: () =>
-            _open(context, const YouthHubsScreen(initialType: 'mission')),
-      ),
-      YouthAppIcon(
-        icon: Icons.auto_awesome_outlined,
-        label: strings.text('talent_hub'),
-        onTap: () =>
-            _open(context, const YouthHubsScreen(initialType: 'talent')),
-      ),
-      YouthAppIcon(
-        icon: Icons.storefront_outlined,
-        label: strings.text('youth_businesses'),
-        onTap: () => _open(
-          context,
-          const YouthHubsScreen(initialType: 'youth_business'),
-        ),
-      ),
-      YouthAppIcon(
-        icon: Icons.accessibility_new_outlined,
-        label: 'Accessibility',
-        semanticLabel: 'Open accessibility settings',
-        onTap: () => _open(context, const AccessibilityScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.shield_outlined,
-        label: strings.text('safe_support'),
-        onTap: () => _open(context, const SafetyCenterScreen()),
-      ),
+      YouthAppIcon(icon: Icons.event_outlined, label: strings.text('events'), onTap: () => _open(context, const EventsScreen())),
+      YouthAppIcon(icon: Icons.menu_book_outlined, label: strings.text('discipleship'), onTap: () => _open(context, const CoursesScreen())),
+      YouthAppIcon(icon: Icons.location_on_outlined, label: strings.text('church_locator'), onTap: () => _open(context, const ChurchLocatorScreen())),
+      YouthAppIcon(icon: Icons.groups_2_outlined, label: strings.text('life_groups'), onTap: () => _open(context, const LifeGroupsScreen())),
+      YouthAppIcon(icon: Icons.handshake_outlined, label: strings.text('donate'), onTap: () => _open(context, const DonationCheckoutScreen())),
+      YouthAppIcon(icon: Icons.volunteer_activism_outlined, label: strings.text('prayer'), onTap: () => _open(context, const PrayerScreen())),
+      YouthAppIcon(icon: Icons.smart_toy_outlined, label: strings.text('youth_assistant'), onTap: () => _open(context, const ChatbotScreen())),
+      YouthAppIcon(icon: Icons.notifications_active_outlined, label: strings.text('notifications'), onTap: () => _open(context, const NotificationsScreen())),
+      YouthAppIcon(icon: Icons.folder_open_outlined, label: strings.text('media_resources'), onTap: () => _open(context, const MediaResourcesScreen())),
+      YouthAppIcon(icon: Icons.work_outline, label: strings.text('opportunities'), onTap: () => _open(context, const OpportunitiesScreen())),
+      YouthAppIcon(icon: Icons.public_outlined, label: strings.text('missions'), onTap: () => _open(context, const YouthHubsScreen(initialType: 'mission'))),
+      YouthAppIcon(icon: Icons.auto_awesome_outlined, label: strings.text('talent_hub'), onTap: () => _open(context, const YouthHubsScreen(initialType: 'talent'))),
+      YouthAppIcon(icon: Icons.storefront_outlined, label: strings.text('youth_businesses'), onTap: () => _open(context, const YouthHubsScreen(initialType: 'youth_business'))),
+      YouthAppIcon(icon: Icons.accessibility_new_outlined, label: 'Accessibility', semanticLabel: 'Open accessibility settings', onTap: () => _open(context, const AccessibilityScreen())),
+      YouthAppIcon(icon: Icons.shield_outlined, label: strings.text('safe_support'), onTap: () => _open(context, const SafetyCenterScreen())),
     ];
 
     return Scaffold(
       appBar: AppBar(
+        leading: onOpenDrawer == null
+            ? null
+            : IconButton(
+                tooltip: 'Open menu',
+                onPressed: onOpenDrawer,
+                icon: const Icon(Icons.menu),
+              ),
         title: const Text('COU Youth Platform'),
         actions: [
           IconButton(
@@ -149,24 +92,14 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.church_outlined,
-                    color: Colors.white,
-                    size: 34,
-                  ),
+                  const Icon(Icons.church_outlined, color: Colors.white, size: 34),
                   const SizedBox(height: 12),
                   Text(
                     strings.text('welcome'),
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    strings.text('tagline'),
-                    style: const TextStyle(color: Colors.white, height: 1.45),
-                  ),
+                  Text(strings.text('tagline'), style: const TextStyle(color: Colors.white, height: 1.45)),
                 ],
               ),
             ),
@@ -177,9 +110,7 @@ class HomeScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   strings.text('quick_access'),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                 ),
               ),
               const SizedBox(width: 8),
@@ -207,9 +138,7 @@ class HomeScreen extends StatelessWidget {
             child: ListTile(
               leading: const CircleAvatar(child: Icon(Icons.shield_outlined)),
               title: const Text('Safe and inclusive youth community'),
-              subtitle: const Text(
-                'Prayer, pastoral support, safeguarding and accessibility are built into the platform.',
-              ),
+              subtitle: const Text('Prayer, pastoral support, safeguarding and accessibility are built into the platform.'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _open(context, const SafetyCenterScreen()),
             ),
