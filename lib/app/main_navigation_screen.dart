@@ -6,6 +6,7 @@ import '../screens/discover_screen.dart';
 import '../screens/events_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/profile_screen.dart';
+import '../widgets/youth_app_drawer.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key, required this.onExitSession});
@@ -17,26 +18,42 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
+
+  void _openDrawer() {
+    _scaffoldKey.currentState?.openDrawer();
+  }
+
+  void _selectTab(int index) {
+    if (_currentIndex == index) return;
+    setState(() => _currentIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final screens = <Widget>[
-      const HomeScreen(),
-      const DiscoverScreen(),
-      const CoursesScreen(),
-      const EventsScreen(),
-      ProfileScreen(onExitSession: widget.onExitSession),
+      HomeScreen(onOpenDrawer: _openDrawer),
+      DiscoverScreen(onOpenDrawer: _openDrawer),
+      CoursesScreen(onOpenDrawer: _openDrawer),
+      EventsScreen(onOpenDrawer: _openDrawer),
+      ProfileScreen(
+        onExitSession: widget.onExitSession,
+        onOpenDrawer: _openDrawer,
+      ),
     ];
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: YouthAppDrawer(
+        currentIndex: _currentIndex,
+        onSelectMainTab: _selectTab,
+      ),
       body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
-        },
+        onDestinationSelected: _selectTab,
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.home_outlined),
