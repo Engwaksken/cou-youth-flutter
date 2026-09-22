@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
+import '../core/theme/app_colors.dart';
 import '../services/auth_recovery_service.dart';
 import '../widgets/brand_header.dart';
 
@@ -160,197 +161,254 @@ class _AuthRecoveryScreenState extends State<AuthRecoveryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_otpMode ? 'Sign in with code' : 'Forgot password'),
-      ),
+      backgroundColor: AppColors.primary,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 540),
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(18, 16, 18, 28),
-              children: [
-                const BrandHeader(compact: true),
-                const SizedBox(height: 20),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
+              child: Row(
+                children: [
+                  IconButton(
+                    tooltip: 'Back',
+                    onPressed: () => Navigator.of(context).maybePop(),
+                    icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                  ),
+                  Expanded(
+                    child: Text(
+                      _otpMode ? 'Sign in with code' : 'Forgot password',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 48),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: AppColors.surfaceSoft,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 540),
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(18, 22, 18, 30),
                       children: [
-                        SegmentedButton<bool>(
-                          segments: const [
-                            ButtonSegment<bool>(
-                              value: false,
-                              icon: Icon(Icons.lock_reset_outlined),
-                              label: Text('Reset password'),
-                            ),
-                            ButtonSegment<bool>(
-                              value: true,
-                              icon: Icon(Icons.password_outlined),
-                              label: Text('OTP sign in'),
-                            ),
-                          ],
-                          selected: {_otpMode},
-                          onSelectionChanged: _busy
-                              ? null
-                              : (selection) => _switchMode(selection.first),
-                        ),
-                        const SizedBox(height: 22),
-                        Text(
-                          _otpMode
-                              ? 'Sign in with a one-time code'
-                              : 'Reset your password',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.w800),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _otpMode
-                              ? 'Request a secure one-time sign-in code sent to your registered email address.'
-                              : 'Enter your registered email. We will send a six-digit code so you can choose a new password.',
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 20),
-                        if (_error != null) ...[
-                          _StatusBox(text: _error!, error: true),
-                          const SizedBox(height: 12),
-                        ],
-                        if (_message != null) ...[
-                          _StatusBox(text: _message!),
-                          const SizedBox(height: 12),
-                        ],
-                        TextField(
-                          controller: _email,
-                          enabled: !_codeSent,
-                          keyboardType: TextInputType.emailAddress,
-                          autofillHints: const [AutofillHints.email],
-                          decoration: const InputDecoration(
-                            labelText: 'Email address',
-                            prefixIcon: Icon(Icons.email_outlined),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
                           ),
-                        ),
-                        if (_codeSent) ...[
-                          const SizedBox(height: 12),
-                          TextField(
-                            controller: _code,
-                            keyboardType: TextInputType.number,
-                            maxLength: 6,
-                            autofillHints: const [AutofillHints.oneTimeCode],
-                            decoration: const InputDecoration(
-                              labelText: 'Six-digit verification code',
-                              prefixIcon: Icon(Icons.pin_outlined),
-                              counterText: '',
-                            ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: AppColors.border),
                           ),
-                          if (!_otpMode) ...[
-                            const SizedBox(height: 12),
-                            TextField(
-                              controller: _password,
-                              obscureText: _obscurePassword,
-                              autofillHints: const [AutofillHints.newPassword],
-                              decoration: InputDecoration(
-                                labelText: 'New password',
-                                helperText:
-                                    '8+ characters, uppercase, lowercase and a number',
-                                prefixIcon: const Icon(Icons.lock_outline),
-                                suffixIcon: IconButton(
-                                  tooltip: _obscurePassword
-                                      ? 'Show password'
-                                      : 'Hide password',
-                                  onPressed: () => setState(
-                                    () => _obscurePassword =
-                                        !_obscurePassword,
-                                  ),
-                                  icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_outlined
-                                        : Icons.visibility_off_outlined,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            TextField(
-                              controller: _passwordConfirmation,
-                              obscureText: _obscureConfirmation,
-                              autofillHints: const [AutofillHints.newPassword],
-                              decoration: InputDecoration(
-                                labelText: 'Confirm new password',
-                                prefixIcon: const Icon(Icons.lock_outline),
-                                suffixIcon: IconButton(
-                                  tooltip: _obscureConfirmation
-                                      ? 'Show password'
-                                      : 'Hide password',
-                                  onPressed: () => setState(
-                                    () => _obscureConfirmation =
-                                        !_obscureConfirmation,
-                                  ),
-                                  icon: Icon(
-                                    _obscureConfirmation
-                                        ? Icons.visibility_outlined
-                                        : Icons.visibility_off_outlined,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          height: 50,
-                          child: FilledButton.icon(
-                            onPressed: _busy
-                                ? null
-                                : (_codeSent ? _verify : _requestCode),
-                            icon: _busy
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
+                          child: const BrandHeader(compact: true),
+                        ),
+                        const SizedBox(height: 18),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SegmentedButton<bool>(
+                                  segments: const [
+                                    ButtonSegment<bool>(
+                                      value: false,
+                                      icon: Icon(Icons.lock_reset_outlined),
+                                      label: Text('Reset password'),
                                     ),
-                                  )
-                                : Icon(
-                                    _codeSent
-                                        ? Icons.verified_outlined
-                                        : Icons.send_outlined,
+                                    ButtonSegment<bool>(
+                                      value: true,
+                                      icon: Icon(Icons.password_outlined),
+                                      label: Text('OTP sign in'),
+                                    ),
+                                  ],
+                                  selected: {_otpMode},
+                                  onSelectionChanged: _busy
+                                      ? null
+                                      : (selection) =>
+                                          _switchMode(selection.first),
+                                ),
+                                const SizedBox(height: 22),
+                                Text(
+                                  _otpMode
+                                      ? 'Sign in with a one-time code'
+                                      : 'Reset your password',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  _otpMode
+                                      ? 'Request a secure one-time sign-in code sent to your registered email address.'
+                                      : 'Enter your registered email. We will send a six-digit code so you can choose a new password.',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: AppColors.textSecondary,
+                                    height: 1.45,
                                   ),
-                            label: Text(
-                              _busy
-                                  ? 'Please wait...'
-                                  : _codeSent
-                                      ? (_otpMode
-                                          ? 'Verify and sign in'
-                                          : 'Update password')
-                                      : 'Send code',
+                                ),
+                                const SizedBox(height: 20),
+                                if (_error != null) ...[
+                                  _StatusBox(text: _error!, error: true),
+                                  const SizedBox(height: 12),
+                                ],
+                                if (_message != null) ...[
+                                  _StatusBox(text: _message!),
+                                  const SizedBox(height: 12),
+                                ],
+                                TextField(
+                                  controller: _email,
+                                  enabled: !_codeSent,
+                                  keyboardType: TextInputType.emailAddress,
+                                  autofillHints: const [AutofillHints.email],
+                                  decoration: const InputDecoration(
+                                    labelText: 'Email address',
+                                    prefixIcon: Icon(Icons.email_outlined),
+                                  ),
+                                ),
+                                if (_codeSent) ...[
+                                  const SizedBox(height: 12),
+                                  TextField(
+                                    controller: _code,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 6,
+                                    autofillHints: const [AutofillHints.oneTimeCode],
+                                    decoration: const InputDecoration(
+                                      labelText: 'Six-digit verification code',
+                                      prefixIcon: Icon(Icons.pin_outlined),
+                                      counterText: '',
+                                    ),
+                                  ),
+                                  if (!_otpMode) ...[
+                                    const SizedBox(height: 12),
+                                    TextField(
+                                      controller: _password,
+                                      obscureText: _obscurePassword,
+                                      autofillHints: const [AutofillHints.newPassword],
+                                      decoration: InputDecoration(
+                                        labelText: 'New password',
+                                        helperText:
+                                            '8+ characters, uppercase, lowercase and a number',
+                                        prefixIcon: const Icon(Icons.lock_outline),
+                                        suffixIcon: IconButton(
+                                          tooltip: _obscurePassword
+                                              ? 'Show password'
+                                              : 'Hide password',
+                                          onPressed: () => setState(
+                                            () => _obscurePassword =
+                                                !_obscurePassword,
+                                          ),
+                                          icon: Icon(
+                                            _obscurePassword
+                                                ? Icons.visibility_outlined
+                                                : Icons.visibility_off_outlined,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextField(
+                                      controller: _passwordConfirmation,
+                                      obscureText: _obscureConfirmation,
+                                      autofillHints: const [AutofillHints.newPassword],
+                                      decoration: InputDecoration(
+                                        labelText: 'Confirm new password',
+                                        prefixIcon: const Icon(Icons.lock_outline),
+                                        suffixIcon: IconButton(
+                                          tooltip: _obscureConfirmation
+                                              ? 'Show password'
+                                              : 'Hide password',
+                                          onPressed: () => setState(
+                                            () => _obscureConfirmation =
+                                                !_obscureConfirmation,
+                                          ),
+                                          icon: Icon(
+                                            _obscureConfirmation
+                                                ? Icons.visibility_outlined
+                                                : Icons.visibility_off_outlined,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                                const SizedBox(height: 20),
+                                SizedBox(
+                                  height: 50,
+                                  child: FilledButton.icon(
+                                    onPressed: _busy
+                                        ? null
+                                        : (_codeSent ? _verify : _requestCode),
+                                    icon: _busy
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : Icon(
+                                            _codeSent
+                                                ? Icons.verified_outlined
+                                                : Icons.send_outlined,
+                                          ),
+                                    label: Text(
+                                      _busy
+                                          ? 'Please wait...'
+                                          : _codeSent
+                                              ? (_otpMode
+                                                  ? 'Verify and sign in'
+                                                  : 'Update password')
+                                              : 'Send code',
+                                    ),
+                                  ),
+                                ),
+                                if (_codeSent)
+                                  TextButton(
+                                    onPressed: _busy
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              _codeSent = false;
+                                              _code.clear();
+                                              _password.clear();
+                                              _passwordConfirmation.clear();
+                                            });
+                                          },
+                                    child: const Text(
+                                      'Use a different email address',
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ),
-                        if (_codeSent)
-                          TextButton(
-                            onPressed: _busy
-                                ? null
-                                : () {
-                                    setState(() {
-                                      _codeSent = false;
-                                      _code.clear();
-                                      _password.clear();
-                                      _passwordConfirmation.clear();
-                                    });
-                                  },
-                            child: const Text('Use a different email address'),
-                          ),
                       ],
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -371,10 +429,19 @@ class _StatusBox extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: error ? scheme.errorContainer : scheme.primaryContainer,
+          color: error ? scheme.errorContainer : AppColors.primaryLight,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: error ? scheme.error : AppColors.primary,
+          ),
         ),
-        child: Text(text),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: error ? scheme.onErrorContainer : AppColors.primaryDark,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
