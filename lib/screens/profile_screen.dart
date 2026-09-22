@@ -4,7 +4,10 @@ import '../core/api/api_client.dart';
 import '../core/api/api_config.dart';
 import '../core/localization/app_locale_controller.dart';
 import '../core/localization/app_strings.dart';
+import '../core/theme/app_colors.dart';
 import '../widgets/youth_app_icon.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
 import 'accessibility_screen.dart';
 import 'certificates_screen.dart';
 import 'chatbot_screen.dart';
@@ -167,27 +170,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: widget.onOpenDrawer == null
-            ? null
-            : IconButton(
-                tooltip: 'Open menu',
-                onPressed: widget.onOpenDrawer,
-                icon: const Icon(Icons.menu),
-              ),
-        title: Text(strings.text('profile')),
-      ),
-      body: RefreshIndicator(
+    return YouthScreenScaffold(
+      title: strings.text('profile'),
+      subtitle: 'Manage your youth account, preferences and participation.',
+      leading: widget.onOpenDrawer == null
+          ? null
+          : IconButton(
+              tooltip: 'Open menu',
+              onPressed: widget.onOpenDrawer,
+              icon: const Icon(Icons.menu_rounded),
+            ),
+      child: RefreshIndicator(
         onRefresh: _refresh,
+        color: AppColors.primary,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
           children: [
             _buildProfileCard(context),
-            const SizedBox(height: 20),
+            const SizedBox(height: 22),
             Text(
               'My tools',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
             ),
@@ -203,7 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               itemCount: tools.length,
               itemBuilder: (context, index) => tools[index],
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -214,7 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 18,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Icon(_signedIn ? Icons.logout : Icons.login),
+                    : Icon(_signedIn ? Icons.logout_rounded : Icons.login_rounded),
                 label: Text(
                   _exiting
                       ? 'Please wait...'
@@ -240,6 +244,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               CircleAvatar(
                 radius: 28,
+                backgroundColor: AppColors.primaryLight,
+                foregroundColor: AppColors.primary,
                 child: Icon(Icons.person_outline, size: 30),
               ),
               SizedBox(width: 14),
@@ -250,13 +256,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       'Guest',
                       style: TextStyle(
+                        color: AppColors.textPrimary,
                         fontSize: 18,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     SizedBox(height: 4),
                     Text(
                       'Sign in to view your profile, progress and certificates.',
+                      style: TextStyle(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -272,10 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Card(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Center(child: CircularProgressIndicator()),
-            ),
+            child: SizedBox(height: 150, child: YouthLoading(label: 'Loading profile…')),
           );
         }
 
@@ -284,9 +289,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? (snapshot.error as ApiException).message
               : 'Your profile could not be loaded.';
           return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text(message),
+            child: SizedBox(
+              height: 220,
+              child: YouthErrorState(message: message, onRetry: _refresh),
             ),
           );
         }
@@ -302,10 +307,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ? Map<String, dynamic>.from(response['safeguarding'] as Map)
             : <String, dynamic>{};
 
-        final consentRequired =
-            safeguarding['guardian_consent_required'] == true;
-        final consentStatus = '${safeguarding['guardian_consent_status'] ?? ''}'
-            .trim();
+        final consentRequired = safeguarding['guardian_consent_required'] == true;
+        final consentStatus =
+            '${safeguarding['guardian_consent_status'] ?? ''}'.trim();
         final verified = safeguarding['safeguarding_verified'] == true;
 
         return Card(
@@ -315,7 +319,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  radius: 28,
+                  radius: 30,
+                  backgroundColor: AppColors.primaryLight,
+                  foregroundColor: AppColors.primary,
                   child: Text(
                     _initials('${user['name'] ?? 'Youth Member'}'),
                     style: const TextStyle(fontWeight: FontWeight.w800),
@@ -329,28 +335,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         '${user['name'] ?? 'Youth Member'}',
                         style: const TextStyle(
+                          color: AppColors.textPrimary,
                           fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(height: 4),
                       if (user['email'] != null)
                         Text(
                           '${user['email']}',
-                          softWrap: true,
-                          overflow: TextOverflow.visible,
+                          style: const TextStyle(color: AppColors.textSecondary),
                         ),
                       if (youthProfile['age_category'] != null) ...[
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 8),
                         Wrap(
                           children: [
                             Chip(
                               visualDensity: VisualDensity.compact,
                               label: Text(
-                                '${youthProfile['age_category']}'.replaceAll(
-                                  '_',
-                                  ' ',
-                                ),
+                                '${youthProfile['age_category']}'.replaceAll('_', ' '),
                               ),
                             ),
                           ],
