@@ -5,7 +5,9 @@ import '../core/localization/module_strings.dart';
 import '../services/course_service.dart';
 
 class CoursesScreen extends StatefulWidget {
-  const CoursesScreen({super.key});
+  const CoursesScreen({super.key, this.onOpenDrawer});
+
+  final VoidCallback? onOpenDrawer;
 
   @override
   State<CoursesScreen> createState() => _CoursesScreenState();
@@ -31,7 +33,16 @@ class _CoursesScreenState extends State<CoursesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(ModuleStrings.text(context, 'courses'))),
+      appBar: AppBar(
+        leading: widget.onOpenDrawer == null
+            ? null
+            : IconButton(
+                tooltip: 'Open menu',
+                onPressed: widget.onOpenDrawer,
+                icon: const Icon(Icons.menu),
+              ),
+        title: Text(ModuleStrings.text(context, 'courses')),
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -66,9 +77,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   const SizedBox(height: 120),
-                  Center(
-                    child: Text(ModuleStrings.text(context, 'no_courses')),
-                  ),
+                  Center(child: Text(ModuleStrings.text(context, 'no_courses'))),
                 ],
               );
             }
@@ -79,22 +88,12 @@ class _CoursesScreenState extends State<CoursesScreen> {
               separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final course = courses[index];
-                final title =
-                    (course['title'] ??
-                            ModuleStrings.text(context, 'discipleship_course'))
-                        .toString();
-                final description = (course['description'] ?? '')
-                    .toString()
-                    .trim();
-                final age = (course['age_category'] ?? 'all')
-                    .toString()
-                    .replaceAll('_', ' ');
+                final title = (course['title'] ?? ModuleStrings.text(context, 'discipleship_course')).toString();
+                final description = (course['description'] ?? '').toString().trim();
+                final age = (course['age_category'] ?? 'all').toString().replaceAll('_', ' ');
                 final audience = age == 'all'
                     ? ModuleStrings.text(context, 'for_all_ages')
-                    : ModuleStrings.text(
-                        context,
-                        'for_age',
-                      ).replaceFirst('{age}', age);
+                    : ModuleStrings.text(context, 'for_age').replaceFirst('{age}', age);
 
                 return Card(
                   child: Padding(
@@ -105,9 +104,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const CircleAvatar(
-                              child: Icon(Icons.menu_book_outlined),
-                            ),
+                            const CircleAvatar(child: Icon(Icons.menu_book_outlined)),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
@@ -115,18 +112,10 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                 children: [
                                   Text(
                                     title,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.w700),
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                                   ),
                                   const SizedBox(height: 6),
-                                  Text(
-                                    audience,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
+                                  Text(audience, style: Theme.of(context).textTheme.bodySmall),
                                 ],
                               ),
                             ),
