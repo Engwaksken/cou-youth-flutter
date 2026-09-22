@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../core/api/api_config.dart';
 import '../core/localization/module_strings.dart';
+import '../core/theme/app_colors.dart';
 import '../services/course_service.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
 
 class CoursesScreen extends StatefulWidget {
   const CoursesScreen({super.key, this.onOpenDrawer});
@@ -32,38 +35,37 @@ class _CoursesScreenState extends State<CoursesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: widget.onOpenDrawer == null
-            ? null
-            : IconButton(
-                tooltip: 'Open menu',
-                onPressed: widget.onOpenDrawer,
-                icon: const Icon(Icons.menu),
-              ),
-        title: Text(ModuleStrings.text(context, 'courses')),
-      ),
-      body: RefreshIndicator(
+    final title = ModuleStrings.text(context, 'courses');
+
+    return YouthScreenScaffold(
+      title: title,
+      subtitle: 'Grow in faith through youth discipleship and learning.',
+      leading: widget.onOpenDrawer == null
+          ? null
+          : IconButton(
+              tooltip: 'Open menu',
+              onPressed: widget.onOpenDrawer,
+              icon: const Icon(Icons.menu_rounded),
+            ),
+      child: RefreshIndicator(
         onRefresh: _refresh,
+        color: AppColors.primary,
         child: FutureBuilder<List<Map<String, dynamic>>>(
           future: _courses,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const YouthLoading(label: 'Loading courses…');
             }
 
             if (snapshot.hasError) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
-                  const SizedBox(height: 120),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        ModuleStrings.text(context, 'courses_load_failed'),
-                        textAlign: TextAlign.center,
-                      ),
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * .55,
+                    child: YouthErrorState(
+                      title: ModuleStrings.text(context, 'courses_load_failed'),
+                      onRetry: _refresh,
                     ),
                   ),
                 ],
@@ -71,61 +73,103 @@ class _CoursesScreenState extends State<CoursesScreen> {
             }
 
             final courses = snapshot.data ?? const <Map<String, dynamic>>[];
-
             if (courses.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
-                  const SizedBox(height: 120),
-                  Center(child: Text(ModuleStrings.text(context, 'no_courses'))),
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * .55,
+                    child: YouthEmptyState(
+                      icon: Icons.menu_book_outlined,
+                      title: ModuleStrings.text(context, 'no_courses'),
+                      message: 'Published discipleship courses will appear here.',
+                    ),
+                  ),
                 ],
               );
             }
 
             return ListView.separated(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
               itemCount: courses.length,
               separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final course = courses[index];
-                final title = (course['title'] ?? ModuleStrings.text(context, 'discipleship_course')).toString();
+                final courseTitle = (course['title'] ??
+                        ModuleStrings.text(context, 'discipleship_course'))
+                    .toString();
                 final description = (course['description'] ?? '').toString().trim();
-                final age = (course['age_category'] ?? 'all').toString().replaceAll('_', ' ');
+                final age = (course['age_category'] ?? 'all')
+                    .toString()
+                    .replaceAll('_', ' ');
                 final audience = age == 'all'
                     ? ModuleStrings.text(context, 'for_all_ages')
                     : ModuleStrings.text(context, 'for_age').replaceFirst('{age}', age);
 
                 return Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const CircleAvatar(child: Icon(Icons.menu_book_outlined)),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    title,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(audience, style: Theme.of(context).textTheme.bodySmall),
-                                ],
-                              ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () {},
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryLight,
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                          ],
-                        ),
-                        if (description.isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          Text(description),
+                            child: const Icon(
+                              Icons.menu_book_outlined,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  courseTitle,
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  audience,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                                if (description.isNotEmpty) ...[
+                                  const SizedBox(height: 9),
+                                  Text(
+                                    description,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Icon(
+                            Icons.chevron_right_rounded,
+                            color: AppColors.textMuted,
+                          ),
                         ],
-                      ],
+                      ),
                     ),
                   ),
                 );
