@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
+import '../core/theme/app_colors.dart';
 import '../services/chatbot_service.dart';
+import '../widgets/youth_screen_scaffold.dart';
 import 'accessibility_screen.dart';
 import 'church_locator_screen.dart';
 import 'courses_screen.dart';
@@ -103,7 +105,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       if (!_scrollController.hasClients) return;
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 250),
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 250),
         curve: Curves.easeOut,
       );
     });
@@ -115,34 +119,38 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Youth Assistant'),
-        actions: [
-          IconButton(
-            tooltip: 'Accessibility settings',
-            onPressed: () => _open(const AccessibilityScreen()),
-            icon: const Icon(Icons.accessibility_new_outlined),
-          ),
-        ],
+    return YouthScreenScaffold(
+      title: 'Youth Assistant',
+      subtitle: 'Ask about events, courses, churches, prayer and youth support.',
+      leading: IconButton(
+        tooltip: 'Back',
+        onPressed: () => Navigator.of(context).maybePop(),
+        icon: const Icon(Icons.arrow_back_rounded),
       ),
-      body: SafeArea(
+      actions: [
+        IconButton(
+          tooltip: 'Accessibility settings',
+          onPressed: () => _open(const AccessibilityScreen()),
+          icon: const Icon(Icons.accessibility_new_outlined, color: Colors.white),
+        ),
+      ],
+      child: SafeArea(
+        top: false,
         child: Column(
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              color: scheme.surface,
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+              color: AppColors.surfaceSoft,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Quick help',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w800,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   SingleChildScrollView(
@@ -159,7 +167,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -198,7 +206,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final message = _messages[index];
@@ -219,23 +227,28 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: message.fromUser
-                              ? scheme.primary
+                              ? AppColors.primary
                               : message.isError
-                              ? scheme.errorContainer
-                              : scheme.surface,
-                          borderRadius: BorderRadius.circular(14),
+                                  ? Theme.of(context).colorScheme.errorContainer
+                                  : AppColors.primaryLight,
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(16),
+                            topRight: const Radius.circular(16),
+                            bottomLeft: Radius.circular(message.fromUser ? 16 : 4),
+                            bottomRight: Radius.circular(message.fromUser ? 4 : 16),
+                          ),
                           border: message.fromUser
                               ? null
-                              : Border.all(color: scheme.outlineVariant),
+                              : Border.all(color: AppColors.border),
                         ),
                         child: Text(
                           message.text,
                           style: TextStyle(
                             color: message.fromUser
-                                ? scheme.onPrimary
+                                ? Colors.white
                                 : message.isError
-                                ? scheme.onErrorContainer
-                                : scheme.onSurface,
+                                    ? Theme.of(context).colorScheme.onErrorContainer
+                                    : AppColors.textPrimary,
                             height: 1.45,
                           ),
                         ),
@@ -246,23 +259,35 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               ),
             ),
             if (_busy)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Semantics(
-                    liveRegion: true,
-                    child: const Text(
-                      'Youth Assistant is preparing a response…',
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Youth Assistant is preparing a response…',
+                        style: TextStyle(color: AppColors.textSecondary),
+                      ),
+                    ],
                   ),
                 ),
               ),
             Container(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-              decoration: BoxDecoration(
-                color: scheme.surface,
-                border: Border(top: BorderSide(color: scheme.outlineVariant)),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(top: BorderSide(color: AppColors.border)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -275,7 +300,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       textInputAction: TextInputAction.newline,
                       decoration: const InputDecoration(
                         hintText: 'Ask the Youth Assistant…',
-                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.chat_bubble_outline_rounded),
                       ),
                     ),
                   ),
@@ -283,7 +308,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   IconButton.filled(
                     tooltip: 'Send message',
                     onPressed: _busy ? null : () => _send(),
-                    icon: const Icon(Icons.send_outlined),
+                    icon: const Icon(Icons.send_rounded),
                   ),
                 ],
               ),
