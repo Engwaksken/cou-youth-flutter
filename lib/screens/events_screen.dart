@@ -5,7 +5,9 @@ import '../core/localization/module_strings.dart';
 import '../features/events/data/event_service.dart';
 
 class EventsScreen extends StatefulWidget {
-  const EventsScreen({super.key});
+  const EventsScreen({super.key, this.onOpenDrawer});
+
+  final VoidCallback? onOpenDrawer;
 
   @override
   State<EventsScreen> createState() => _EventsScreenState();
@@ -54,7 +56,16 @@ class _EventsScreenState extends State<EventsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(ModuleStrings.text(context, 'events'))),
+      appBar: AppBar(
+        leading: widget.onOpenDrawer == null
+            ? null
+            : IconButton(
+                tooltip: 'Open menu',
+                onPressed: widget.onOpenDrawer,
+                icon: const Icon(Icons.menu),
+              ),
+        title: Text(ModuleStrings.text(context, 'events')),
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -107,14 +118,9 @@ class _EventsScreenState extends State<EventsScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(4),
                     child: ListTile(
-                      leading: const CircleAvatar(
-                        child: Icon(Icons.event_outlined),
-                      ),
+                      leading: const CircleAvatar(child: Icon(Icons.event_outlined)),
                       title: Text(
-                        (event['title'] ??
-                                event['name'] ??
-                                ModuleStrings.text(context, 'youth_event'))
-                            .toString(),
+                        (event['title'] ?? event['name'] ?? ModuleStrings.text(context, 'youth_event')).toString(),
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,10 +129,7 @@ class _EventsScreenState extends State<EventsScreen> {
                             const SizedBox(height: 6),
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.calendar_today_outlined,
-                                  size: 16,
-                                ),
+                                const Icon(Icons.calendar_today_outlined, size: 16),
                                 const SizedBox(width: 6),
                                 Flexible(child: Text(date)),
                               ],
@@ -136,10 +139,7 @@ class _EventsScreenState extends State<EventsScreen> {
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.location_on_outlined,
-                                  size: 16,
-                                ),
+                                const Icon(Icons.location_on_outlined, size: 16),
                                 const SizedBox(width: 6),
                                 Flexible(child: Text(venue)),
                               ],
