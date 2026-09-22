@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
+import '../core/theme/app_colors.dart';
 import '../services/media_service.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
 
 class MediaResourcesScreen extends StatefulWidget {
   const MediaResourcesScreen({super.key});
@@ -44,14 +47,20 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Media & Resources')),
-      body: Column(
+    return YouthScreenScaffold(
+      title: 'Media & Resources',
+      subtitle: 'Watch, listen and explore youth ministry resources.',
+      leading: IconButton(
+        tooltip: 'Back',
+        onPressed: () => Navigator.of(context).maybePop(),
+        icon: const Icon(Icons.arrow_back_rounded),
+      ),
+      child: Column(
         children: [
           SizedBox(
-            height: 64,
+            height: 66,
             child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               scrollDirection: Axis.horizontal,
               children: [
                 for (final item in _types.entries) ...[
@@ -68,11 +77,12 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refresh,
+              color: AppColors.primary,
               child: FutureBuilder<List<Map<String, dynamic>>>(
                 future: _future,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const YouthLoading(label: 'Loading media resources…');
                   }
 
                   if (snapshot.hasError) {
@@ -80,23 +90,11 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
                         ? (snapshot.error as ApiException).message
                         : 'Media resources could not be loaded.';
                     return ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       children: [
-                        const SizedBox(height: 120),
-                        Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            children: [
-                              const Icon(Icons.cloud_off_outlined, size: 44),
-                              const SizedBox(height: 12),
-                              Text(message, textAlign: TextAlign.center),
-                              const SizedBox(height: 12),
-                              FilledButton.icon(
-                                onPressed: _refresh,
-                                icon: const Icon(Icons.refresh),
-                                label: const Text('Try again'),
-                              ),
-                            ],
-                          ),
+                        SizedBox(
+                          height: MediaQuery.sizeOf(context).height * .55,
+                          child: YouthErrorState(message: message, onRetry: _refresh),
                         ),
                       ],
                     );
@@ -105,14 +103,14 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
                   final items = snapshot.data ?? const <Map<String, dynamic>>[];
                   if (items.isEmpty) {
                     return ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       children: const [
-                        SizedBox(height: 120),
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(24),
-                            child: Text(
-                              'No published media resources are available yet.',
-                            ),
+                        SizedBox(
+                          height: 420,
+                          child: YouthEmptyState(
+                            icon: Icons.folder_open_outlined,
+                            title: 'No published resources yet',
+                            message: 'New videos, audio, podcasts and documents will appear here.',
                           ),
                         ),
                       ],
@@ -120,7 +118,7 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
                   }
 
                   return ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
                     itemCount: items.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
@@ -129,30 +127,60 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
                       final title =
                           '${item['title'] ?? item['name'] ?? 'Youth resource'}';
                       final description =
-                          '${item['description'] ?? item['summary'] ?? ''}'
-                              .trim();
+                          '${item['description'] ?? item['summary'] ?? ''}'.trim();
 
                       return Card(
                         child: ListTile(
-                          leading: CircleAvatar(child: Icon(_icon(type))),
-                          title: Text(title),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 4),
-                              Text(_label(type)),
-                              if (description.isNotEmpty) ...[
-                                const SizedBox(height: 4),
+                          minVerticalPadding: 12,
+                          leading: Container(
+                            width: 48,
+                            height: 48,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryLight,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Icon(_icon(type), color: AppColors.primary),
+                          ),
+                          title: Text(
+                            title,
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  description,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                  _label(type),
+                                  style: const TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
+                                if (description.isNotEmpty) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    description,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      height: 1.35,
+                                    ),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                           isThreeLine: description.isNotEmpty,
-                          trailing: const Icon(Icons.chevron_right),
+                          trailing: const Icon(
+                            Icons.chevron_right_rounded,
+                            color: AppColors.textMuted,
+                          ),
                           onTap: () => _showDetails(item),
                         ),
                       );
@@ -169,8 +197,7 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
 
   void _showDetails(Map<String, dynamic> item) {
     final title = '${item['title'] ?? item['name'] ?? 'Resource'}';
-    final description = '${item['description'] ?? item['summary'] ?? ''}'
-        .trim();
+    final description = '${item['description'] ?? item['summary'] ?? ''}'.trim();
     final url = '${item['url'] ?? item['file_url'] ?? item['source_url'] ?? ''}'
         .trim();
 
@@ -185,24 +212,57 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+              Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      _icon('${item['type'] ?? 'resource'}'),
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                  ),
+                ],
               ),
               if (description.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Text(description),
+                const SizedBox(height: 14),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    height: 1.45,
+                  ),
+                ),
               ],
               if (url.isNotEmpty) ...[
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
                 const Text(
                   'Resource link',
-                  style: TextStyle(fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-                const SizedBox(height: 4),
-                SelectableText(url),
+                const SizedBox(height: 5),
+                SelectableText(
+                  url,
+                  style: const TextStyle(color: AppColors.primary),
+                ),
               ],
             ],
           ),
@@ -212,20 +272,20 @@ class _MediaResourcesScreenState extends State<MediaResourcesScreen> {
   }
 
   String _label(String type) => switch (type) {
-    'video' => 'Video',
-    'audio' => 'Audio',
-    'podcast' => 'Podcast',
-    'document' => 'Document',
-    'image' => 'Image',
-    _ => 'Resource',
-  };
+        'video' => 'Video',
+        'audio' => 'Audio',
+        'podcast' => 'Podcast',
+        'document' => 'Document',
+        'image' => 'Image',
+        _ => 'Resource',
+      };
 
   IconData _icon(String type) => switch (type) {
-    'video' => Icons.play_circle_outline,
-    'audio' => Icons.audiotrack_outlined,
-    'podcast' => Icons.podcasts_outlined,
-    'document' => Icons.description_outlined,
-    'image' => Icons.image_outlined,
-    _ => Icons.folder_open_outlined,
-  };
+        'video' => Icons.play_circle_outline,
+        'audio' => Icons.audiotrack_outlined,
+        'podcast' => Icons.podcasts_outlined,
+        'document' => Icons.description_outlined,
+        'image' => Icons.image_outlined,
+        _ => Icons.folder_open_outlined,
+      };
 }
