@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
 import '../core/localization/app_strings.dart';
+import '../core/theme/app_colors.dart';
 import '../services/content_service.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
 import 'content_detail_screen.dart';
 
 class OpportunitiesScreen extends StatefulWidget {
@@ -85,12 +88,19 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       'volunteer': strings.text('volunteering'),
     };
 
-    return Scaffold(
-      appBar: AppBar(title: Text(strings.text('opportunities'))),
-      body: RefreshIndicator(
+    return YouthScreenScaffold(
+      title: strings.text('opportunities'),
+      subtitle: 'Find jobs, training, scholarships and ways to serve.',
+      leading: IconButton(
+        tooltip: 'Back',
+        onPressed: () => Navigator.of(context).maybePop(),
+        icon: const Icon(Icons.arrow_back_rounded),
+      ),
+      child: RefreshIndicator(
         onRefresh: _refresh,
+        color: AppColors.primary,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
           children: [
             TextField(
               controller: _search,
@@ -98,11 +108,22 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
               onSubmitted: (_) => _searchNow(),
               decoration: InputDecoration(
                 hintText: strings.text('search_opportunities'),
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search_rounded),
                 suffixIcon: IconButton(
-                  tooltip: strings.text('opportunities'),
-                  onPressed: _searchNow,
-                  icon: const Icon(Icons.arrow_forward),
+                  tooltip: _search.text.isEmpty ? 'Search' : 'Clear',
+                  onPressed: () {
+                    if (_search.text.isEmpty) {
+                      _searchNow();
+                    } else {
+                      _search.clear();
+                      _searchNow();
+                    }
+                  },
+                  icon: Icon(
+                    _search.text.isEmpty
+                        ? Icons.arrow_forward_rounded
+                        : Icons.close_rounded,
+                  ),
                 ),
               ),
             ),
@@ -122,21 +143,22 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 22),
             Text(
               strings.text('latest_opportunities'),
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
             ),
             const SizedBox(height: 10),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: _future,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Padding(
-                    padding: EdgeInsets.all(36),
-                    child: Center(child: CircularProgressIndicator()),
+                  return const SizedBox(
+                    height: 280,
+                    child: YouthLoading(label: 'Loading opportunities…'),
                   );
                 }
 
@@ -144,19 +166,21 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                   final message = snapshot.error is ApiException
                       ? (snapshot.error as ApiException).message
                       : 'Opportunities could not be loaded.';
-                  return _StateMessage(
-                    icon: Icons.cloud_off_outlined,
-                    message: message,
-                    actionLabel: strings.text('try_again'),
-                    onAction: _refresh,
+                  return SizedBox(
+                    height: 320,
+                    child: YouthErrorState(message: message, onRetry: _refresh),
                   );
                 }
 
                 final items = snapshot.data ?? const <Map<String, dynamic>>[];
                 if (items.isEmpty) {
-                  return _StateMessage(
-                    icon: Icons.work_off_outlined,
-                    message: strings.text('no_opportunities'),
+                  return SizedBox(
+                    height: 320,
+                    child: YouthEmptyState(
+                      icon: Icons.work_off_outlined,
+                      title: strings.text('no_opportunities'),
+                      message: 'New youth opportunities will appear here when published.',
+                    ),
                   );
                 }
 
@@ -179,7 +203,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         },
                         plainText: _plainText,
                       ),
-                      if (index != items.length - 1) const SizedBox(height: 10),
+                      if (index != items.length - 1)
+                        const SizedBox(height: 10),
                     ],
                   ],
                 );
@@ -212,17 +237,23 @@ class _OpportunityCard extends StatelessWidget {
     return Card(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                child: Icon(
+              Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(
                   Icons.work_outline,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(width: 14),
@@ -232,7 +263,10 @@ class _OpportunityCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(fontWeight: FontWeight.w800),
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     if (summary.isNotEmpty) ...[
                       const SizedBox(height: 6),
@@ -240,18 +274,29 @@ class _OpportunityCard extends StatelessWidget {
                         summary,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          height: 1.4,
+                        ),
                       ),
                     ],
                     if (published.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(Icons.schedule_outlined, size: 16),
+                          const Icon(
+                            Icons.schedule_outlined,
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
                           const SizedBox(width: 5),
                           Expanded(
                             child: Text(
                               published,
-                              style: Theme.of(context).textTheme.bodySmall,
+                              style: const TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ],
@@ -260,46 +305,13 @@ class _OpportunityCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textMuted,
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _StateMessage extends StatelessWidget {
-  const _StateMessage({
-    required this.icon,
-    required this.message,
-    this.actionLabel,
-    this.onAction,
-  });
-
-  final IconData icon;
-  final String message;
-  final String? actionLabel;
-  final Future<void> Function()? onAction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 42),
-      child: Column(
-        children: [
-          Icon(icon, size: 48),
-          const SizedBox(height: 12),
-          Text(message, textAlign: TextAlign.center),
-          if (actionLabel != null && onAction != null) ...[
-            const SizedBox(height: 14),
-            FilledButton.icon(
-              onPressed: onAction,
-              icon: const Icon(Icons.refresh),
-              label: Text(actionLabel!),
-            ),
-          ],
-        ],
       ),
     );
   }
