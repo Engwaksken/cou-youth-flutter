@@ -6,6 +6,7 @@ import '../core/theme/app_colors.dart';
 import '../features/events/data/event_service.dart';
 import '../widgets/youth_screen_scaffold.dart';
 import '../widgets/youth_states.dart';
+import 'event_detail_screen.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key, this.onOpenDrawer});
@@ -33,6 +34,11 @@ class _EventsScreenState extends State<EventsScreen> {
     await future;
   }
 
+  int? _asInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse('${value ?? ''}');
+  }
+
   String _formatDate(dynamic value) {
     if (value == null) return '';
     final parsed = DateTime.tryParse(value.toString());
@@ -54,6 +60,25 @@ class _EventsScreenState extends State<EventsScreen> {
     ];
 
     return '${parsed.day.toString().padLeft(2, '0')} ${months[parsed.month - 1]} ${parsed.year}';
+  }
+
+  void _openEvent(Map<String, dynamic> event) {
+    final id = _asInt(event['id']);
+    if (id == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This event cannot be opened right now.')),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => EventDetailScreen(
+          eventId: id,
+          initialEvent: event,
+        ),
+      ),
+    );
   }
 
   @override
@@ -124,45 +149,58 @@ class _EventsScreenState extends State<EventsScreen> {
                     .toString();
 
                 return Card(
-                  child: ListTile(
-                    minVerticalPadding: 14,
-                    leading: Container(
-                      width: 48,
-                      height: 48,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(15),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () => _openEvent(event),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: ListTile(
+                        minVerticalPadding: 14,
+                        leading: Container(
+                          width: 48,
+                          height: 48,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: const Icon(
+                            Icons.event_outlined,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        title: Text(
+                          title,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 7),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (date.isNotEmpty)
+                                _MetaRow(
+                                  icon: Icons.calendar_today_outlined,
+                                  text: date,
+                                ),
+                              if (venue.isNotEmpty) ...[
+                                const SizedBox(height: 5),
+                                _MetaRow(
+                                  icon: Icons.location_on_outlined,
+                                  text: venue,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        trailing: const Icon(
+                          Icons.chevron_right_rounded,
+                          color: AppColors.primary,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.event_outlined,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    title: Text(
-                      title,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 7),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (date.isNotEmpty)
-                            _MetaRow(icon: Icons.calendar_today_outlined, text: date),
-                          if (venue.isNotEmpty) ...[
-                            const SizedBox(height: 5),
-                            _MetaRow(icon: Icons.location_on_outlined, text: venue),
-                          ],
-                        ],
-                      ),
-                    ),
-                    trailing: const Icon(
-                      Icons.chevron_right_rounded,
-                      color: AppColors.textMuted,
                     ),
                   ),
                 );
