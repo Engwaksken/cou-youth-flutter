@@ -42,6 +42,18 @@ class BrandingService {
     _cached = null;
   }
 
+  static String? resolveUrl(String? value) {
+    final text = (value ?? '').trim();
+    if (text.isEmpty) return null;
+
+    final uri = Uri.tryParse(text);
+    if (uri != null && uri.hasScheme) return text;
+
+    final api = Uri.parse(AppConfig.apiBaseUrl);
+    final origin = '${api.scheme}://${api.authority}';
+    return text.startsWith('/') ? '$origin$text' : '$origin/storage/$text';
+  }
+
   static Future<BrandingData> _fetch() async {
     try {
       final response = await ApiConfig.client.get('/branding');
@@ -49,7 +61,7 @@ class BrandingService {
       if (raw is! Map) return BrandingData.fallback;
 
       final data = Map<String, dynamic>.from(raw);
-      final logo = _resolveUrl('${data['logo_url'] ?? ''}'.trim());
+      final logo = resolveUrl('${data['logo_url'] ?? ''}'.trim());
 
       return BrandingData(
         name: _value(data['name'], BrandingData.fallback.name),
@@ -76,15 +88,5 @@ class BrandingService {
   static String _value(dynamic value, String fallback) {
     final text = '${value ?? ''}'.trim();
     return text.isEmpty ? fallback : text;
-  }
-
-  static String? _resolveUrl(String value) {
-    if (value.isEmpty) return null;
-    final uri = Uri.tryParse(value);
-    if (uri != null && uri.hasScheme) return value;
-
-    final api = Uri.parse(AppConfig.apiBaseUrl);
-    final origin = '${api.scheme}://${api.authority}';
-    return value.startsWith('/') ? '$origin$value' : '$origin/$value';
   }
 }
