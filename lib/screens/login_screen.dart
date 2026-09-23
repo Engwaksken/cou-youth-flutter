@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await widget.authService.login(
-        _emailController.text,
+        _emailController.text.trim(),
         _passwordController.text,
       );
       if (mounted) widget.onSignedIn();
@@ -100,189 +100,202 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 440),
-                  child: Column(
-                    children: [
-                      const BrandHeader(
-                        compact: true,
-                        showTagline: false,
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'Faith • Community • Opportunity',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Card(
-                        elevation: 3,
-                        shadowColor: Colors.black12,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Text(
-                                  'Youth Login',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(
-                                        color: AppColors.textPrimary,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                ),
-                                const SizedBox(height: 6),
-                                const Text(
-                                  'Sign in to continue.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 13.5,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 430),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Center(
+                    child: BrandHeader(
+                      compact: true,
+                      showTagline: false,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Card(
+                    elevation: 2,
+                    shadowColor: Colors.black12,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'Welcome back',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Sign in to your COU Youth account.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 13.5,
+                              ),
+                            ),
+                            const SizedBox(height: 22),
+                            if (_error != null) ...[
+                              Semantics(
+                                liveRegion: true,
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: scheme.errorContainer,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    _error!,
+                                    style: TextStyle(
+                                      color: scheme.onErrorContainer,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 20),
-                                if (_error != null) ...[
-                                  Semantics(
-                                    liveRegion: true,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: scheme.errorContainer,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        _error!,
-                                        style: TextStyle(
-                                          color: scheme.onErrorContainer,
+                              ),
+                              const SizedBox(height: 14),
+                            ],
+                            TextFormField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              autofillHints: const [AutofillHints.email],
+                              decoration: InputDecoration(
+                                labelText: strings.text('email_address'),
+                                hintText: 'name@example.com',
+                                prefixIcon: const Icon(Icons.email_outlined),
+                              ),
+                              validator: (value) {
+                                final text = value?.trim() ?? '';
+                                if (text.isEmpty) {
+                                  return strings.text('enter_email');
+                                }
+                                if (!text.contains('@')) {
+                                  return strings.text('valid_email');
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 14),
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: _obscurePassword,
+                              autofillHints: const [AutofillHints.password],
+                              onFieldSubmitted: (_) {
+                                if (!_loading) _submit();
+                              },
+                              decoration: InputDecoration(
+                                labelText: strings.text('password'),
+                                prefixIcon: const Icon(Icons.lock_outline),
+                                suffixIcon: IconButton(
+                                  tooltip: _obscurePassword
+                                      ? strings.text('show_password')
+                                      : strings.text('hide_password'),
+                                  onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  ),
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                  ),
+                                ),
+                              ),
+                              validator: (value) => (value ?? '').isEmpty
+                                  ? strings.text('enter_password')
+                                  : null,
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: _loading ? null : _openRecovery,
+                                child: Text(
+                                  strings.text('forgot_password_otp'),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            SizedBox(
+                              height: 50,
+                              child: FilledButton.icon(
+                                onPressed: _loading ? null : _submit,
+                                icon: _loading
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 14),
-                                ],
-                                TextFormField(
-                                  controller: _emailController,
-                                  keyboardType: TextInputType.emailAddress,
-                                  autofillHints: const [AutofillHints.email],
-                                  decoration: InputDecoration(
-                                    labelText: strings.text('email_address'),
-                                    prefixIcon: const Icon(Icons.email_outlined),
-                                  ),
-                                  validator: (value) {
-                                    final text = value?.trim() ?? '';
-                                    if (text.isEmpty) {
-                                      return strings.text('enter_email');
-                                    }
-                                    if (!text.contains('@')) {
-                                      return strings.text('valid_email');
-                                    }
-                                    return null;
-                                  },
+                                      )
+                                    : const Icon(Icons.login_rounded),
+                                label: Text(
+                                  _loading
+                                      ? strings.text('signing_in')
+                                      : strings.text('sign_in'),
                                 ),
-                                const SizedBox(height: 14),
-                                TextFormField(
-                                  controller: _passwordController,
-                                  obscureText: _obscurePassword,
-                                  autofillHints: const [AutofillHints.password],
-                                  onFieldSubmitted: (_) {
-                                    if (!_loading) _submit();
-                                  },
-                                  decoration: InputDecoration(
-                                    labelText: strings.text('password'),
-                                    prefixIcon: const Icon(Icons.lock_outline),
-                                    suffixIcon: IconButton(
-                                      tooltip: _obscurePassword
-                                          ? strings.text('show_password')
-                                          : strings.text('hide_password'),
-                                      onPressed: () => setState(
-                                        () => _obscurePassword = !_obscurePassword,
-                                      ),
-                                      icon: Icon(
-                                        _obscurePassword
-                                            ? Icons.visibility_outlined
-                                            : Icons.visibility_off_outlined,
-                                      ),
-                                    ),
+                              ),
+                            ),
+                            const SizedBox(height: 18),
+                            Row(
+                              children: [
+                                const Expanded(child: Divider()),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
                                   ),
-                                  validator: (value) => (value ?? '').isEmpty
-                                      ? strings.text('enter_password')
-                                      : null,
-                                ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: _loading ? null : _openRecovery,
-                                    child: Text(
-                                      strings.text('forgot_password_otp'),
-                                    ),
+                                  child: Text(
+                                    'New to COU Youth?',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                   ),
                                 ),
-                                const SizedBox(height: 2),
-                                SizedBox(
-                                  height: 50,
-                                  child: FilledButton.icon(
-                                    onPressed: _loading ? null : _submit,
-                                    icon: _loading
-                                        ? const SizedBox(
-                                            width: 18,
-                                            height: 18,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        : const Icon(Icons.login_rounded),
-                                    label: Text(
-                                      _loading
-                                          ? strings.text('signing_in')
-                                          : strings.text('sign_in'),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                SizedBox(
-                                  height: 50,
-                                  child: OutlinedButton.icon(
-                                    onPressed: _loading ? null : _openRegister,
-                                    icon: const Icon(Icons.person_add_alt_1),
-                                    label: Text(
-                                      strings.text('create_youth_account'),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                TextButton(
-                                  onPressed: _loading
-                                      ? null
-                                      : widget.onContinueAsGuest,
-                                  child: Text(strings.text('continue_guest')),
-                                ),
+                                const Expanded(child: Divider()),
                               ],
                             ),
-                          ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              height: 50,
+                              child: OutlinedButton.icon(
+                                onPressed: _loading ? null : _openRegister,
+                                icon: const Icon(Icons.person_add_alt_1_rounded),
+                                label: Text(
+                                  strings.text('create_youth_account'),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: _loading
+                                  ? null
+                                  : widget.onContinueAsGuest,
+                              child: Text(strings.text('continue_guest')),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
