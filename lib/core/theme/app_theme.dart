@@ -53,15 +53,17 @@ ThemeData buildYouthTheme(AccessibilitySettings accessibility) {
     ),
     cardTheme: CardThemeData(
       margin: EdgeInsets.zero,
-      elevation: 1,
-      shadowColor: Colors.black.withValues(alpha: .06),
+      elevation: accessibility.highContrast ? 1 : 2.5,
+      shadowColor: AppColors.primary.withValues(alpha: .12),
       color: AppColors.surface,
       surfaceTintColor: Colors.transparent,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         side: BorderSide(
-          color: accessibility.highContrast ? Colors.black : AppColors.border,
+          color: accessibility.highContrast
+              ? Colors.black
+              : AppColors.borderStrong,
         ),
       ),
     ),
@@ -178,12 +180,14 @@ ThemeData buildYouthTheme(AccessibilitySettings accessibility) {
       suffixIconColor: AppColors.textSecondary,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: const BorderSide(color: AppColors.borderStrong),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
-          color: accessibility.highContrast ? Colors.black : AppColors.borderStrong,
+          color: accessibility.highContrast
+              ? Colors.black
+              : AppColors.borderStrong,
         ),
       ),
       focusedBorder: OutlineInputBorder(
