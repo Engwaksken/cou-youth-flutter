@@ -144,8 +144,8 @@ class HomeScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
         children: [
-          _WelcomePanel(strings: strings),
-          const SizedBox(height: 22),
+          const _WelcomePanel(),
+          const SizedBox(height: 24),
           Text(
             'Quick Access',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -155,13 +155,13 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           const Text(
-            'Choose what you would like to explore today.',
+            'Explore the platform.',
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 13.5,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -169,8 +169,9 @@ class HomeScreen extends StatelessWidget {
             itemCount: shortcuts.length,
             itemBuilder: (context, index) => shortcuts[index],
           ),
-          const SizedBox(height: 22),
+          const SizedBox(height: 24),
           Card(
+            elevation: 2,
             child: ListTile(
               leading: const CircleAvatar(
                 backgroundColor: AppColors.primaryLight,
@@ -178,14 +179,14 @@ class HomeScreen extends StatelessWidget {
                 child: Icon(Icons.shield_outlined),
               ),
               title: const Text(
-                'Safe and inclusive community',
+                'Safe community',
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               subtitle: const Text(
-                'Prayer, pastoral support, safeguarding and accessibility are always available.',
+                'Prayer, safeguarding and accessibility support.',
                 style: TextStyle(color: AppColors.textSecondary),
               ),
               trailing: const Icon(Icons.chevron_right),
@@ -199,9 +200,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _WelcomePanel extends StatelessWidget {
-  const _WelcomePanel({required this.strings});
-
-  final AppStrings strings;
+  const _WelcomePanel();
 
   @override
   Widget build(BuildContext context) {
@@ -212,23 +211,23 @@ class _WelcomePanel extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderStrong),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: .05),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
+              color: AppColors.primary.withValues(alpha: .09),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: Stack(
           children: [
             Positioned(
-              right: -18,
-              top: -24,
+              right: -20,
+              top: -26,
               child: Container(
-                width: 110,
-                height: 110,
+                width: 116,
+                height: 116,
                 decoration: const BoxDecoration(
                   color: AppColors.primaryFaint,
                   shape: BoxShape.circle,
@@ -236,11 +235,11 @@ class _WelcomePanel extends StatelessWidget {
               ),
             ),
             Positioned(
-              right: 26,
-              bottom: -30,
+              right: 24,
+              bottom: -34,
               child: Container(
-                width: 72,
-                height: 72,
+                width: 78,
+                height: 78,
                 decoration: const BoxDecoration(
                   color: AppColors.secondaryLight,
                   shape: BoxShape.circle,
@@ -251,20 +250,20 @@ class _WelcomePanel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 54,
-                  height: 54,
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(17),
+                    borderRadius: BorderRadius.circular(18),
                   ),
                   alignment: Alignment.center,
                   child: const Icon(
                     Icons.church_outlined,
                     color: AppColors.primary,
-                    size: 28,
+                    size: 29,
                   ),
                 ),
-                const SizedBox(width: 15),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,7 +277,7 @@ class _WelcomePanel extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        strings.text('tagline'),
+                        'Connecting young people to faith and opportunity.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppColors.textSecondary,
                               height: 1.45,
