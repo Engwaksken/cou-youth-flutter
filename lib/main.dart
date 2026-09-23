@@ -7,6 +7,7 @@ import 'core/accessibility/accessibility_controller.dart';
 import 'core/localization/app_locale_controller.dart';
 import 'core/localization/app_strings.dart';
 import 'core/theme/app_theme.dart';
+import 'widgets/youth_decorated_background.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,7 +54,9 @@ class CouYouthApp extends StatelessWidget {
                   disableAnimations: accessibility.reduceMotion,
                 );
 
-                Widget result = MediaQuery(data: mediaQuery, child: child);
+                Widget result = YouthDecoratedBackground(
+                  child: MediaQuery(data: mediaQuery, child: child),
+                );
 
                 if (accessibility.grayscale) {
                   result = ColorFiltered(
