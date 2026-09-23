@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/api/api_config.dart';
 import '../core/localization/app_strings.dart';
 import '../core/theme/app_colors.dart';
 import '../widgets/youth_app_icon.dart';
@@ -18,10 +19,43 @@ import 'prayer_screen.dart';
 import 'safety_center_screen.dart';
 import 'youth_hubs_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.onOpenDrawer});
 
   final VoidCallback? onOpenDrawer;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String? _firstName;
+
+  bool get _signedIn =>
+      ApiConfig.client.authToken != null &&
+      ApiConfig.client.authToken!.trim().isNotEmpty;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMemberName();
+  }
+
+  Future<void> _loadMemberName() async {
+    if (!_signedIn) return;
+    try {
+      final response = await ApiConfig.client.get('/me');
+      final user = response['user'] is Map
+          ? Map<String, dynamic>.from(response['user'] as Map)
+          : <String, dynamic>{};
+      final fullName = '${user['name'] ?? ''}'.trim();
+      if (fullName.isEmpty || !mounted) return;
+      final first = fullName.split(RegExp(r'\s+')).first;
+      setState(() => _firstName = first);
+    } catch (_) {
+      // Personalisation is optional; keep Home usable if profile loading fails.
+    }
+  }
 
   void _open(BuildContext context, Widget screen) {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
@@ -122,11 +156,11 @@ class HomeScreen extends StatelessWidget {
     return YouthScreenScaffold(
       title: 'COU Youth',
       subtitle: 'Faith • Community • Opportunity',
-      leading: onOpenDrawer == null
+      leading: widget.onOpenDrawer == null
           ? null
           : IconButton(
               tooltip: 'Open menu',
-              onPressed: onOpenDrawer,
+              onPressed: widget.onOpenDrawer,
               icon: const Icon(Icons.menu_rounded),
             ),
       actions: [
@@ -144,7 +178,7 @@ class HomeScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
         children: [
-          const _WelcomePanel(),
+          _WelcomePanel(firstName: _firstName),
           const SizedBox(height: 24),
           Text(
             'Quick Access',
@@ -200,10 +234,55 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _WelcomePanel extends StatelessWidget {
-  const _WelcomePanel();
+  const _WelcomePanel({this.firstName});
+
+  final String? firstName;
+
+  static const _verses = <({String text, String reference})>[
+    (
+      text: 'Let no man despise thy youth; but be thou an example of the believers.',
+      reference: '1 Timothy 4:12',
+    ),
+    (
+      text: 'Trust in the Lord with all thine heart; and lean not unto thine own understanding.',
+      reference: 'Proverbs 3:5',
+    ),
+    (
+      text: 'I can do all things through Christ which strengtheneth me.',
+      reference: 'Philippians 4:13',
+    ),
+    (
+      text: 'Thy word is a lamp unto my feet, and a light unto my path.',
+      reference: 'Psalm 119:105',
+    ),
+    (
+      text: 'Be strong and of a good courage; be not afraid.',
+      reference: 'Joshua 1:9',
+    ),
+    (
+      text: 'Rejoice evermore. Pray without ceasing.',
+      reference: '1 Thessalonians 5:16–17',
+    ),
+    (
+      text: 'We walk by faith, not by sight.',
+      reference: '2 Corinthians 5:7',
+    ),
+  ];
+
+  ({String text, String reference}) get _todayVerse {
+    final now = DateTime.now();
+    final day = DateTime(now.year, now.month, now.day)
+        .difference(DateTime(now.year, 1, 1))
+        .inDays;
+    return _verses[day % _verses.length];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final verse = _todayVerse;
+    final name = firstName?.trim();
+    final welcome = name == null || name.isEmpty ? 'Welcome' : 'Welcome, $name';
+
     return Semantics(
       header: true,
       child: Container(
@@ -258,7 +337,7 @@ class _WelcomePanel extends StatelessWidget {
                   ),
                   alignment: Alignment.center,
                   child: const Icon(
-                    Icons.church_outlined,
+                    Icons.auto_stories_outlined,
                     color: AppColors.primary,
                     size: 29,
                   ),
@@ -269,19 +348,39 @@ class _WelcomePanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Welcome',
+                        welcome,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w800,
                             ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Daily Bible Verse',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: .3,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
                       Text(
-                        'Connecting young people to faith and opportunity.',
+                        '“${verse.text}”',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppColors.textSecondary,
-                              height: 1.45,
+                              height: 1.5,
+                              fontStyle: FontStyle.italic,
                             ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        verse.reference,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ],
                   ),
