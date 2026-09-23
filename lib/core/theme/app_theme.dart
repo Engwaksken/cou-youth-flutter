@@ -33,8 +33,7 @@ ThemeData buildYouthTheme(AccessibilitySettings accessibility) {
   var theme = ThemeData(
     useMaterial3: true,
     colorScheme: scheme,
-    scaffoldBackgroundColor:
-        accessibility.highContrast ? Colors.white : AppColors.primary,
+    scaffoldBackgroundColor: Colors.transparent,
     appBarTheme: AppBarTheme(
       centerTitle: false,
       elevation: 0,
@@ -54,7 +53,8 @@ ThemeData buildYouthTheme(AccessibilitySettings accessibility) {
     ),
     cardTheme: CardThemeData(
       margin: EdgeInsets.zero,
-      elevation: accessibility.highContrast ? 1 : 0,
+      elevation: 1,
+      shadowColor: Colors.black.withValues(alpha: .06),
       color: AppColors.surface,
       surfaceTintColor: Colors.transparent,
       clipBehavior: Clip.antiAlias,
@@ -67,7 +67,7 @@ ThemeData buildYouthTheme(AccessibilitySettings accessibility) {
     ),
     navigationBarTheme: NavigationBarThemeData(
       height: 70,
-      elevation: 6,
+      elevation: 8,
       backgroundColor: Colors.white,
       indicatorColor: accessibility.highContrast
           ? const Color(0xFFD1C4E9)
@@ -144,6 +144,7 @@ ThemeData buildYouthTheme(AccessibilitySettings accessibility) {
       style: ButtonStyle(
         minimumSize: const WidgetStatePropertyAll(Size(44, 48)),
         foregroundColor: const WidgetStatePropertyAll(AppColors.primary),
+        backgroundColor: const WidgetStatePropertyAll(Colors.white),
         side: const WidgetStatePropertyAll(
           BorderSide(color: AppColors.primary),
         ),
@@ -173,6 +174,8 @@ ThemeData buildYouthTheme(AccessibilitySettings accessibility) {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
       hintStyle: const TextStyle(color: AppColors.textMuted),
       labelStyle: const TextStyle(color: AppColors.textSecondary),
+      prefixIconColor: AppColors.primary,
+      suffixIconColor: AppColors.textSecondary,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: AppColors.border),
@@ -180,7 +183,7 @@ ThemeData buildYouthTheme(AccessibilitySettings accessibility) {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
-          color: accessibility.highContrast ? Colors.black : AppColors.border,
+          color: accessibility.highContrast ? Colors.black : AppColors.borderStrong,
         ),
       ),
       focusedBorder: OutlineInputBorder(
@@ -195,7 +198,7 @@ ThemeData buildYouthTheme(AccessibilitySettings accessibility) {
     listTileTheme: const ListTileThemeData(
       iconColor: AppColors.primary,
       textColor: AppColors.textPrimary,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: AppColors.primaryLight,
