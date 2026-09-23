@@ -103,38 +103,32 @@ class _LoginScreenState extends State<LoginScreen> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 460),
+                  constraints: const BoxConstraints(maxWidth: 440),
                   child: Column(
                     children: [
-                      const SizedBox(height: 4),
-                      const BrandHeader(compact: true),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Welcome to COU Youth',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w800,
-                            ),
+                      const BrandHeader(
+                        compact: true,
+                        showTagline: false,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 10),
                       const Text(
-                        'Connect with faith, community and opportunity.',
+                        'Faith • Community • Opportunity',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 14,
-                          height: 1.4,
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 20),
                       Card(
-                        elevation: 2,
+                        elevation: 3,
+                        shadowColor: Colors.black12,
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
+                          padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
                           child: Form(
                             key: _formKey,
                             child: Column(
@@ -143,22 +137,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Text(
                                   'Youth Login',
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
                                         color: AppColors.textPrimary,
                                         fontWeight: FontWeight.w800,
                                       ),
                                 ),
-                                const SizedBox(height: 5),
+                                const SizedBox(height: 6),
                                 const Text(
-                                  'Sign in to continue to your youth account.',
+                                  'Sign in to continue.',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: AppColors.textSecondary,
                                     fontSize: 13.5,
-                                    height: 1.35,
                                   ),
                                 ),
-                                const SizedBox(height: 18),
+                                const SizedBox(height: 20),
                                 if (_error != null) ...[
                                   Semantics(
                                     liveRegion: true,
@@ -197,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     return null;
                                   },
                                 ),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 14),
                                 TextFormField(
                                   controller: _passwordController,
                                   obscureText: _obscurePassword,
@@ -230,37 +226,46 @@ class _LoginScreenState extends State<LoginScreen> {
                                   alignment: Alignment.centerRight,
                                   child: TextButton(
                                     onPressed: _loading ? null : _openRecovery,
-                                    child: Text(strings.text('forgot_password_otp')),
+                                    child: Text(
+                                      strings.text('forgot_password_otp'),
+                                    ),
                                   ),
                                 ),
-                                FilledButton.icon(
-                                  onPressed: _loading ? null : _submit,
-                                  icon: _loading
-                                      ? const SizedBox(
-                                          width: 18,
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      : const Icon(Icons.login_rounded),
-                                  label: Text(
-                                    _loading
-                                        ? strings.text('signing_in')
-                                        : strings.text('sign_in'),
+                                const SizedBox(height: 2),
+                                SizedBox(
+                                  height: 50,
+                                  child: FilledButton.icon(
+                                    onPressed: _loading ? null : _submit,
+                                    icon: _loading
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : const Icon(Icons.login_rounded),
+                                    label: Text(
+                                      _loading
+                                          ? strings.text('signing_in')
+                                          : strings.text('sign_in'),
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 10),
-                                OutlinedButton.icon(
-                                  onPressed: _loading ? null : _openRegister,
-                                  icon: const Icon(Icons.person_add_alt_1),
-                                  label: Text(
-                                    strings.text('create_youth_account'),
-                                    textAlign: TextAlign.center,
+                                const SizedBox(height: 12),
+                                SizedBox(
+                                  height: 50,
+                                  child: OutlinedButton.icon(
+                                    onPressed: _loading ? null : _openRegister,
+                                    icon: const Icon(Icons.person_add_alt_1),
+                                    label: Text(
+                                      strings.text('create_youth_account'),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 8),
                                 TextButton(
                                   onPressed: _loading
                                       ? null
@@ -270,16 +275,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ],
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      const Text(
-                        'Safe • Accessible • Youth-focused',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
