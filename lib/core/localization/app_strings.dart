@@ -1,14 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'app_locale_controller.dart';
+
 class AppStrings {
   AppStrings(this.locale);
 
   final Locale locale;
 
   static AppStrings of(BuildContext context) =>
-      Localizations.of<AppStrings>(context, AppStrings) ??
-      AppStrings(const Locale('en'));
+      AppStrings(AppLocaleController.instance.value);
 
   static const delegate = _AppStringsDelegate();
 
@@ -21,8 +22,7 @@ class AppStrings {
       'events': 'Events',
       'profile': 'Profile',
       'welcome': 'Welcome',
-      'tagline':
-          'Connecting Young People. Growing Disciples. Transforming Nations.',
+      'tagline': 'Connecting Young People. Growing Disciples. Transforming Nations.',
       'quick_access': 'Quick Access',
       'prayer': 'Prayer',
       'church_locator': 'Church Locator',
@@ -38,12 +38,9 @@ class AppStrings {
       'youth_businesses': 'Youth Business Directory',
       'youth_hubs': 'Youth Hubs',
       'search_youth_hubs': 'Search missions, talents and youth businesses',
-      'missions_description':
-          'Discover mission activities, evangelism opportunities and outreach stories.',
-      'talent_description':
-          'Celebrate and discover youth talent in music, arts, sports, media and technology.',
-      'business_description':
-          'Discover youth-led businesses, enterprises and entrepreneurship stories.',
+      'missions_description': 'Discover mission activities, evangelism opportunities and outreach stories.',
+      'talent_description': 'Celebrate and discover youth talent in music, arts, sports, media and technology.',
+      'business_description': 'Discover youth-led businesses, enterprises and entrepreneurship stories.',
       'no_youth_hub_items': 'No matching items are available yet.',
       'youth_hubs_load_failed': 'Youth hub content could not be loaded.',
       'search': 'Search',
@@ -55,8 +52,7 @@ class AppStrings {
       'notification_preferences': 'Notification preferences',
       'sign_out': 'Sign out',
       'sign_in_create': 'Sign in / create account',
-      'search_opportunities':
-          'Search jobs, scholarships, training and volunteering',
+      'search_opportunities': 'Search jobs, scholarships, training and volunteering',
       'no_opportunities': 'No matching opportunities are available yet.',
       'try_again': 'Try again',
       'latest_opportunities': 'Latest opportunities',
@@ -68,8 +64,7 @@ class AppStrings {
       'language_updated': 'Language updated.',
       'sign_in': 'Sign in',
       'signing_in': 'Signing in...',
-      'sign_in_intro':
-          'Sign in to access your discipleship progress, notifications, prayer requests and youth community.',
+      'sign_in_intro': 'Sign in to access your discipleship progress, notifications, prayer requests and youth community.',
       'email_address': 'Email address',
       'password': 'Password',
       'show_password': 'Show password',
@@ -80,17 +75,14 @@ class AppStrings {
       'enter_email': 'Enter your email address.',
       'valid_email': 'Enter a valid email address.',
       'enter_password': 'Enter your password.',
-      'login_failed':
-          'We could not sign you in. Please check your connection and try again.',
+      'login_failed': 'We could not sign you in. Please check your connection and try again.',
       'create_account': 'Create account',
       'creating_account': 'Creating account...',
       'join_youth_community': 'Join the COU Youth community',
-      'registration_intro':
-          'Create your youth profile. Guardian details are required for minors so safeguarding rules can be applied.',
+      'registration_intro': 'Create your youth profile. Guardian details are required for minors so safeguarding rules can be applied.',
       'full_name': 'Full name',
       'enter_full_name': 'Enter your full name.',
-      'password_help':
-          'At least 8 characters with upper/lower case and a number.',
+      'password_help': 'At least 8 characters with upper/lower case and a number.',
       'password_min': 'Use a password of at least 8 characters.',
       'select_date_birth': 'Select date of birth',
       'date_of_birth': 'Date of birth',
@@ -103,12 +95,10 @@ class AppStrings {
       'enter_guardian_name': 'Enter the guardian name.',
       'enter_relationship': 'Enter the relationship.',
       'enter_guardian_phone': 'Enter the guardian phone number.',
-      'guardian_confirmation':
-          'I confirm that the guardian details provided are correct and that consent has been given.',
+      'guardian_confirmation': 'I confirm that the guardian details provided are correct and that consent has been given.',
       'guardian_confirmation_required': 'Guardian confirmation is required.',
       'select_birth_error': 'Select your date of birth.',
-      'registration_failed':
-          'We could not create your account. Please try again.',
+      'registration_failed': 'We could not create your account. Please try again.',
       'age_range': 'Registration is available for ages 12–35.',
       'prayer_support': 'Prayer & Pastoral Support',
       'prayer_request': 'Prayer request',
@@ -121,13 +111,11 @@ class AppStrings {
       'private': 'Private',
       'pastoral_team': 'Pastoral team',
       'public_anonymous': 'Public, anonymous',
-      'prayer_safeguarding_note':
-          'Sensitive requests may be flagged for safeguarding review so the right support can be provided.',
+      'prayer_safeguarding_note': 'Sensitive requests may be flagged for safeguarding review so the right support can be provided.',
       'submitting': 'Submitting...',
       'submit_request': 'Submit request',
       'prayer_submitted': 'Your prayer request has been submitted safely.',
-      'prayer_load_failed':
-          'Prayer requests could not be loaded. Pull down to try again.',
+      'prayer_load_failed': 'Prayer requests could not be loaded. Pull down to try again.',
       'no_prayer_requests': 'You have not submitted any prayer requests yet.',
     },
     'lg': {
@@ -153,17 +141,12 @@ class AppStrings {
       'talent_hub': 'Ekifo ky’Ebitone',
       'youth_businesses': 'Bizineesi z’Abavubuka',
       'youth_hubs': 'Ebifo by’Abavubuka',
-      'search_youth_hubs':
-          'Noonya obuminsani, ebitone ne bizineesi z’abavubuka',
-      'missions_description':
-          'Zuula emirimu gy’obuminsani, okubuulira Enjiri n’emboozi z’okutuuka ku bantu.',
-      'talent_description':
-          'Zuula era okuza ebitone by’abavubuka mu muziki, eby’emikono, emizannyo, amawulire ne tekinologiya.',
-      'business_description':
-          'Zuula bizineesi ezikulemberwa abavubuka n’emboozi z’obusuubuzi.',
+      'search_youth_hubs': 'Noonya obuminsani, ebitone ne bizineesi z’abavubuka',
+      'missions_description': 'Zuula emirimu gy’obuminsani, okubuulira Enjiri n’emboozi z’okutuuka ku bantu.',
+      'talent_description': 'Zuula era okuza ebitone by’abavubuka mu muziki, eby’emikono, emizannyo, amawulire ne tekinologiya.',
+      'business_description': 'Zuula bizineesi ezikulemberwa abavubuka n’emboozi z’obusuubuzi.',
       'no_youth_hub_items': 'Tewali bintu bituukana n’okunoonya kuno kati.',
-      'youth_hubs_load_failed':
-          'Ebiri mu bifo by’abavubuka tebisobodde kutikkibwa.',
+      'youth_hubs_load_failed': 'Ebiri mu bifo by’abavubuka tebisobodde kutikkibwa.',
       'search': 'Noonya',
       'language': 'Olulimi',
       'english': 'Olungereza',
@@ -173,8 +156,7 @@ class AppStrings {
       'notification_preferences': 'Enteekateeka z’Obubaka',
       'sign_out': 'Fuluma',
       'sign_in_create': 'Yingira / kola akawunti',
-      'search_opportunities':
-          'Noonya emirimu, scholarship, okutendekebwa n’obwannakyewa',
+      'search_opportunities': 'Noonya emirimu, scholarship, okutendekebwa n’obwannakyewa',
       'no_opportunities': 'Tewali mikisa gituukana n’okunoonya kuno kati.',
       'try_again': 'Ddamu ogezeeko',
       'latest_opportunities': 'Emikisa emipya',
@@ -186,8 +168,7 @@ class AppStrings {
       'language_updated': 'Olulimi lukyusiddwa.',
       'sign_in': 'Yingira',
       'signing_in': 'Oyingira...',
-      'sign_in_intro':
-          'Yingira olabe entambula yo ey’okuyigirizibwa, obubaka, okusaba n’ekibiina ky’abavubuka.',
+      'sign_in_intro': 'Yingira olabe entambula yo ey’okuyigirizibwa, obubaka, okusaba n’ekibiina ky’abavubuka.',
       'email_address': 'Email',
       'password': 'Ekigambo ky’ekyama',
       'show_password': 'Laga ekigambo ky’ekyama',
@@ -198,17 +179,14 @@ class AppStrings {
       'enter_email': 'Teekamu email yo.',
       'valid_email': 'Teekamu email entuufu.',
       'enter_password': 'Teekamu ekigambo ky’ekyama.',
-      'login_failed':
-          'Tetusobodde kukuyingiza. Kebera yintaneeti yo oddemu ogezeeko.',
+      'login_failed': 'Tetusobodde kukuyingiza. Kebera yintaneeti yo oddemu ogezeeko.',
       'create_account': 'Kola akawunti',
       'creating_account': 'Akawunti ekolebwa...',
       'join_youth_community': 'Yeegatte ku kibiina ky’abavubuka ba COU',
-      'registration_intro':
-          'Kola ebikukwatako. Ebikwata ku muzadde oba omukuumi byetaagibwa eri abaana olw’obukuumi.',
+      'registration_intro': 'Kola ebikukwatako. Ebikwata ku muzadde oba omukuumi byetaagibwa eri abaana olw’obukuumi.',
       'full_name': 'Amannya gonna',
       'enter_full_name': 'Teekamu amannya go gonna.',
-      'password_help':
-          'Waakiri ennukuta 8, ennukuta ennene n’entono awamu n’ennamba.',
+      'password_help': 'Waakiri ennukuta 8, ennukuta ennene n’entono awamu n’ennamba.',
       'password_min': 'Kozesa ekigambo ky’ekyama eky’ennukuta waakiri 8.',
       'select_date_birth': 'Londa olunaku lw’okuzaalibwa',
       'date_of_birth': 'Olunaku lw’okuzaalibwa',
@@ -221,10 +199,8 @@ class AppStrings {
       'enter_guardian_name': 'Teekamu erinnya ly’omukuumi.',
       'enter_relationship': 'Teekamu enkolagana.',
       'enter_guardian_phone': 'Teekamu ennamba y’essimu y’omukuumi.',
-      'guardian_confirmation':
-          'Nkakasa nti ebikwata ku mukuumi bituufu era nti olukusa luweddwa.',
-      'guardian_confirmation_required':
-          'Okukakasa olukusa lw’omukuumi kyetaagisa.',
+      'guardian_confirmation': 'Nkakasa nti ebikwata ku mukuumi bituufu era nti olukusa luweddwa.',
+      'guardian_confirmation_required': 'Okukakasa olukusa lw’omukuumi kyetaagisa.',
       'select_birth_error': 'Londa olunaku lw’okuzaalibwa.',
       'registration_failed': 'Tetusobodde kukola akawunti yo. Ddamu ogezeeko.',
       'age_range': 'Okwewandiisa kwa myaka 12–35.',
@@ -239,13 +215,11 @@ class AppStrings {
       'private': 'Kyama',
       'pastoral_team': 'Abasumba bokka',
       'public_anonymous': 'Bonna, naye nga erinnya likwekeddwa',
-      'prayer_safeguarding_note':
-          'Okusaba okulina ebikulu ku bukuumi kuyinza okutwalibwa eri abakola ku bukuumi okusobola okuwa obuyambi obutuufu.',
+      'prayer_safeguarding_note': 'Okusaba okulina ebikulu ku bukuumi kuyinza okutwalibwa eri abakola ku bukuumi okusobola okuwa obuyambi obutuufu.',
       'submitting': 'Kiweerezebwa...',
       'submit_request': 'Weereza okusaba',
       'prayer_submitted': 'Okusaba kwo kuweerezeddwa bulungi.',
-      'prayer_load_failed':
-          'Okusaba kwo tekusobodde kutikkibwa. Sika wansi oddemu ogezeeko.',
+      'prayer_load_failed': 'Okusaba kwo tekusobodde kutikkibwa. Sika wansi oddemu ogezeeko.',
       'no_prayer_requests': 'Tonnaba kuweereza kusaba kwonna.',
     },
   };
@@ -258,8 +232,7 @@ class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
   const _AppStringsDelegate();
 
   @override
-  bool isSupported(Locale locale) =>
-      const ['en', 'lg'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => locale.languageCode == 'en';
 
   @override
   Future<AppStrings> load(Locale locale) =>
