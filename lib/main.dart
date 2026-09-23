@@ -24,28 +24,19 @@ class CouYouthApp extends StatelessWidget {
       builder: (context, accessibility, _) {
         return ValueListenableBuilder<Locale>(
           valueListenable: AppLocaleController.instance,
-          builder: (context, locale, _) {
+          builder: (context, _, _) {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Church of Uganda Youth Platform',
               theme: buildYouthTheme(accessibility),
-              locale: locale,
-              supportedLocales: AppLocaleController.supportedLocales,
+              locale: const Locale('en'),
+              supportedLocales: const [Locale('en')],
               localizationsDelegates: const [
                 AppStrings.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              localeResolutionCallback: (deviceLocale, supportedLocales) {
-                if (deviceLocale == null) return locale;
-                for (final supported in supportedLocales) {
-                  if (supported.languageCode == deviceLocale.languageCode) {
-                    return supported;
-                  }
-                }
-                return locale;
-              },
               builder: (context, child) {
                 if (child == null) return const SizedBox.shrink();
 
@@ -61,26 +52,10 @@ class CouYouthApp extends StatelessWidget {
                 if (accessibility.grayscale) {
                   result = ColorFiltered(
                     colorFilter: const ColorFilter.matrix(<double>[
-                      0.2126,
-                      0.7152,
-                      0.0722,
-                      0,
-                      0,
-                      0.2126,
-                      0.7152,
-                      0.0722,
-                      0,
-                      0,
-                      0.2126,
-                      0.7152,
-                      0.0722,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
+                      0.2126, 0.7152, 0.0722, 0, 0,
+                      0.2126, 0.7152, 0.0722, 0, 0,
+                      0.2126, 0.7152, 0.0722, 0, 0,
+                      0, 0, 0, 1, 0,
                     ]),
                     child: result,
                   );
