@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/localization/app_strings.dart';
-import '../core/theme/app_colors.dart';
 import '../screens/courses_screen.dart';
 import '../screens/discover_screen.dart';
 import '../screens/events_screen.dart';
@@ -47,7 +46,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: AppColors.primary,
+      backgroundColor: Colors.transparent,
       drawer: YouthAppDrawer(
         currentIndex: _currentIndex,
         onSelectMainTab: _selectTab,
