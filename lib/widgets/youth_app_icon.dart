@@ -19,20 +19,32 @@ class YouthAppIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final compact = textScale > 1.35;
-    final iconExtent = compact ? 48.0 : 52.0;
-    final iconSize = compact ? 24.0 : 26.0;
+    final compact = textScale > 1.30;
+    final iconExtent = compact ? 44.0 : 48.0;
+    final iconSize = compact ? 22.0 : 24.0;
 
     return Semantics(
       button: true,
       label: semanticLabel ?? label,
       child: Material(
-        color: Colors.transparent,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(18),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.border),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: .035),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -44,9 +56,8 @@ class YouthAppIcon extends StatelessWidget {
                   height: iconExtent,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(15),
                     color: AppColors.primaryLight,
-                    border: Border.all(color: AppColors.border),
                   ),
                   child: Icon(icon, size: iconSize, color: AppColors.primary),
                 ),
@@ -59,6 +70,7 @@ class YouthAppIcon extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           color: AppColors.textPrimary,
+                          fontSize: compact ? 10.5 : 11.5,
                           fontWeight: FontWeight.w700,
                           height: 1.15,
                         ),
@@ -76,19 +88,20 @@ class YouthAppIcon extends StatelessWidget {
 int youthShortcutColumnCount(BuildContext context) {
   final width = MediaQuery.sizeOf(context).width;
   final textScale = MediaQuery.textScalerOf(context).scale(1);
-  if (width < 360 || textScale > 1.25) return 3;
+
+  if (width < 390 || textScale > 1.18) return 3;
   return 4;
 }
 
 double youthShortcutTileHeight(BuildContext context) {
   final textScale = MediaQuery.textScalerOf(context).scale(1);
-  return (108 + ((textScale - 1).clamp(0, 2) * 44)).clamp(108, 190).toDouble();
+  return (112 + ((textScale - 1).clamp(0, 2) * 50)).clamp(112, 196).toDouble();
 }
 
 SliverGridDelegateWithFixedCrossAxisCount youthShortcutGridDelegate(
   BuildContext context, {
-  double mainAxisSpacing = 8,
-  double crossAxisSpacing = 6,
+  double mainAxisSpacing = 10,
+  double crossAxisSpacing = 10,
 }) {
   return SliverGridDelegateWithFixedCrossAxisCount(
     crossAxisCount: youthShortcutColumnCount(context),
