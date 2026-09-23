@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 
 import '../core/api/api_config.dart';
 import '../core/auth/session_store.dart';
+import '../core/theme/app_colors.dart';
 import '../screens/login_screen.dart';
 import '../services/auth_service.dart';
 import '../services/push_notification_service.dart';
+import '../widgets/brand_header.dart';
 
 typedef AuthenticatedBuilder =
     Widget Function(BuildContext context, Future<void> Function() exitSession);
@@ -87,7 +89,7 @@ class _AuthGateState extends State<AuthGate> {
   @override
   Widget build(BuildContext context) {
     if (_checkingSession) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const _AppSplash();
     }
 
     if (_signedIn || _guest) {
@@ -103,6 +105,55 @@ class _AuthGateState extends State<AuthGate> {
           _signedIn = false;
         });
       },
+    );
+  }
+}
+
+class _AppSplash extends StatelessWidget {
+  const _AppSplash();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const BrandHeader(
+                    compact: false,
+                    showTagline: false,
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Faith • Community • Opportunity',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
