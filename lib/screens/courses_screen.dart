@@ -6,6 +6,7 @@ import '../core/theme/app_colors.dart';
 import '../services/course_service.dart';
 import '../widgets/youth_screen_scaffold.dart';
 import '../widgets/youth_states.dart';
+import 'course_detail_screen.dart';
 
 class CoursesScreen extends StatefulWidget {
   const CoursesScreen({super.key, this.onOpenDrawer});
@@ -31,6 +32,30 @@ class _CoursesScreenState extends State<CoursesScreen> {
     final future = _service.list();
     setState(() => _courses = future);
     await future;
+  }
+
+  int? _asInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse('${value ?? ''}');
+  }
+
+  void _openCourse(Map<String, dynamic> course) {
+    final id = _asInt(course['id']);
+    if (id == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This course cannot be opened right now.')),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CourseDetailScreen(
+          courseId: id,
+          initialCourse: course,
+        ),
+      ),
+    );
   }
 
   @override
@@ -109,7 +134,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                 return Card(
                   child: InkWell(
                     borderRadius: BorderRadius.circular(20),
-                    onTap: () {},
+                    onTap: () => _openCourse(course),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
@@ -166,7 +191,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                           const SizedBox(width: 8),
                           const Icon(
                             Icons.chevron_right_rounded,
-                            color: AppColors.textMuted,
+                            color: AppColors.primary,
                           ),
                         ],
                       ),
