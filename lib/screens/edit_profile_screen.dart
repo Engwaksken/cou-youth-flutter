@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -28,6 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _profilePublic = false;
   String? _profilePhotoUrl;
   XFile? _pickedPhoto;
+  Uint8List? _pickedBytes;
   String? _error;
 
   @override
@@ -53,6 +55,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final profile = response['youth_profile'] is Map
           ? Map<String, dynamic>.from(response['youth_profile'] as Map)
           : <String, dynamic>{};
+
       if (!mounted) return;
       _name.text = '${user['name'] ?? ''}';
       _email.text = '${user['email'] ?? ''}';
@@ -76,13 +79,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       maxHeight: 1200,
       imageQuality: 82,
     );
-    if (photo == null || !mounted) return;
-    setState(() => _pickedPhoto = photo);
+    if (photo == null) return;
+    final bytes = await photo.readAsBytes();
+    if (!mounted) return;
+    setState(() {
+      _pickedPhoto = photo;
+      _pickedBytes = bytes;
+    });
   }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate() || _saving) return;
     setState(() { _saving = true; _error = null; });
+
     try {
       final body = <String, dynamic>{
         'name': _name.text.trim(),
@@ -91,14 +100,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'profile_public': _profilePublic,
       };
 
-      if (_pickedPhoto != null) {
-        final bytes = await _pickedPhoto!.readAsBytes();
-        body['profile_photo_base64'] = base64Encode(bytes);
+      if (_pickedPhoto != null && _pickedBytes != null) {
+        body['profile_photo_base64'] = base64Encode(_pickedBytes!);
         body['profile_photo_name'] = _pickedPhoto!.name;
       }
 
       await ApiConfig.client.patch('/me', body);
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile updated successfully.')),
       );
@@ -139,6 +148,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             future: BrandingService.load(),
                             builder: (context, snapshot) {
                               final logoUrl = snapshot.data?.logoUrl;
+                              ImageProvider<Object>? imageProvider;
+                              if (_pickedBytes != null) {
+                                imageProvider = MemoryImage(_pickedBytes!);
+                              } else if (_profilePhotoUrl != null) {
+                                imageProvider = NetworkImage(_profilePhotoUrl!);
+                              } else if (logoUrl != null) {
+                                imageProvider = NetworkImage(logoUrl);
+                              }
+
                               return Center(
                                 child: Stack(
                                   clipBehavior: Clip.none,
@@ -146,12 +164,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     CircleAvatar(
                                       radius: 46,
                                       backgroundColor: AppColors.primaryLight,
-                                      backgroundImage: _pickedPhoto != null
-                                          ? FileImageFromXFile(_pickedPhoto!)
-                                          : (_profilePhotoUrl != null
-                                              ? NetworkImage(_profilePhotoUrl!)
-                                              : (logoUrl != null ? NetworkImage(logoUrl) : null)) as ImageProvider<Object>?,
-                                      child: _pickedPhoto == null && _profilePhotoUrl == null && logoUrl == null
+                                      backgroundImage: imageProvider,
+                                      child: imageProvider == null
                                           ? const Icon(Icons.person_outline, size: 42, color: AppColors.primary)
                                           : null,
                                     ),
@@ -176,14 +190,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ],
                           TextFormField(
                             controller: _name,
-                            decoration: const InputDecoration(labelText: 'Full name', prefixIcon: Icon(Icons.person_outline)),
+                            decoration: const InputDecoration(
+                              labelText: 'Full name',
+                              prefixIcon: Icon(Icons.person_outline),
+                            ),
                             validator: (value) => (value ?? '').trim().isEmpty ? 'Enter your full name.' : null,
                           ),
                           const SizedBox(height: 14),
                           TextFormField(
                             controller: _email,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(labelText: 'Email address', prefixIcon: Icon(Icons.email_outlined)),
+                            decoration: const InputDecoration(
+                              labelText: 'Email address',
+                              prefixIcon: Icon(Icons.email_outlined),
+                            ),
                             validator: (value) {
                               final text = (value ?? '').trim();
                               if (text.isEmpty) return 'Enter your email address.';
@@ -194,21 +214,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           const SizedBox(height: 14),
                           TextFormField(
                             controller: _school,
-                            decoration: const InputDecoration(labelText: 'School / institution', prefixIcon: Icon(Icons.school_outlined)),
+                            decoration: const InputDecoration(
+                              labelText: 'School / institution',
+                              prefixIcon: Icon(Icons.school_outlined),
+                            ),
                           ),
                           const SizedBox(height: 8),
                           SwitchListTile.adaptive(
                             contentPadding: EdgeInsets.zero,
                             value: _profilePublic,
                             title: const Text('Public youth profile'),
-                            subtitle: const Text('Allow approved platform users to see your public profile information.'),
+                            subtitle: const Text(
+                              'Allow approved platform users to see your public profile information.',
+                            ),
                             onChanged: _saving ? null : (value) => setState(() => _profilePublic = value),
                           ),
                           const SizedBox(height: 18),
                           FilledButton.icon(
                             onPressed: _saving ? null : _save,
                             icon: _saving
-                                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
                                 : const Icon(Icons.save_outlined),
                             label: Text(_saving ? 'Saving...' : 'Save changes'),
                           ),
@@ -219,22 +251,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ],
             ),
-    );
-  }
-}
-
-class FileImageFromXFile extends ImageProvider<FileImageFromXFile> {
-  const FileImageFromXFile(this.file);
-  final XFile file;
-
-  @override
-  Future<FileImageFromXFile> obtainKey(ImageConfiguration configuration) => SynchronousFuture<FileImageFromXFile>(this);
-
-  @override
-  ImageStreamCompleter loadImage(FileImageFromXFile key, ImageDecoderCallback decode) {
-    return MultiFrameImageStreamCompleter(
-      codec: file.readAsBytes().then((bytes) => decode(await ImmutableBuffer.fromUint8List(bytes))),
-      scale: 1.0,
     );
   }
 }
