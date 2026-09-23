@@ -43,17 +43,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadMemberName() async {
     if (!_signedIn) return;
+
     try {
       final response = await ApiConfig.client.get('/me');
       final user = response['user'] is Map
           ? Map<String, dynamic>.from(response['user'] as Map)
           : <String, dynamic>{};
       final fullName = '${user['name'] ?? ''}'.trim();
+
       if (fullName.isEmpty || !mounted) return;
+
       final first = fullName.split(RegExp(r'\s+')).first;
       setState(() => _firstName = first);
     } catch (_) {
-      // Personalisation is optional; keep Home usable if profile loading fails.
+      // Home personalisation is optional.
     }
   }
 
@@ -131,25 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       YouthAppIcon(
-        icon: Icons.shield_outlined,
-        label: 'Safety',
-        onTap: () => _open(context, const SafetyCenterScreen()),
-      ),
-      YouthAppIcon(
         icon: Icons.smart_toy_outlined,
         label: 'Youth Assistant',
         onTap: () => _open(context, const ChatbotScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.notifications_active_outlined,
-        label: 'Notifications',
-        onTap: () => _open(context, const NotificationsScreen()),
-      ),
-      YouthAppIcon(
-        icon: Icons.accessibility_new_outlined,
-        label: 'Accessibility',
-        semanticLabel: 'Open accessibility settings',
-        onTap: () => _open(context, const AccessibilityScreen()),
       ),
     ];
 
@@ -167,7 +154,10 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           tooltip: 'Accessibility',
           onPressed: () => _open(context, const AccessibilityScreen()),
-          icon: const Icon(Icons.accessibility_new_outlined, color: Colors.white),
+          icon: const Icon(
+            Icons.accessibility_new_outlined,
+            color: Colors.white,
+          ),
         ),
         IconButton(
           tooltip: strings.text('notifications'),
@@ -240,11 +230,13 @@ class _WelcomePanel extends StatelessWidget {
 
   static const _verses = <({String text, String reference})>[
     (
-      text: 'Let no man despise thy youth; but be thou an example of the believers.',
+      text:
+          'Let no man despise thy youth; but be thou an example of the believers.',
       reference: '1 Timothy 4:12',
     ),
     (
-      text: 'Trust in the Lord with all thine heart; and lean not unto thine own understanding.',
+      text:
+          'Trust in the Lord with all thine heart; and lean not unto thine own understanding.',
       reference: 'Proverbs 3:5',
     ),
     (
