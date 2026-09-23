@@ -20,30 +20,25 @@ class YouthAppIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final compact = textScale > 1.30;
-    final iconExtent = compact ? 44.0 : 48.0;
-    final iconSize = compact ? 22.0 : 24.0;
+    final iconExtent = compact ? 44.0 : 50.0;
+    final iconSize = compact ? 22.0 : 25.0;
 
     return Semantics(
       button: true,
       label: semanticLabel ?? label,
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        elevation: 2,
+        shadowColor: AppColors.primary.withValues(alpha: .10),
+        borderRadius: BorderRadius.circular(19),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(19),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 11),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: .035),
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(19),
+              border: Border.all(color: AppColors.borderStrong),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -56,12 +51,12 @@ class YouthAppIcon extends StatelessWidget {
                   height: iconExtent,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(16),
                     color: AppColors.primaryLight,
                   ),
                   child: Icon(icon, size: iconSize, color: AppColors.primary),
                 ),
-                const SizedBox(height: 7),
+                const SizedBox(height: 8),
                 Flexible(
                   child: Text(
                     label,
@@ -72,7 +67,7 @@ class YouthAppIcon extends StatelessWidget {
                           color: AppColors.textPrimary,
                           fontSize: compact ? 10.5 : 11.5,
                           fontWeight: FontWeight.w700,
-                          height: 1.15,
+                          height: 1.18,
                         ),
                   ),
                 ),
@@ -95,13 +90,13 @@ int youthShortcutColumnCount(BuildContext context) {
 
 double youthShortcutTileHeight(BuildContext context) {
   final textScale = MediaQuery.textScalerOf(context).scale(1);
-  return (112 + ((textScale - 1).clamp(0, 2) * 50)).clamp(112, 196).toDouble();
+  return (114 + ((textScale - 1).clamp(0, 2) * 50)).clamp(114, 198).toDouble();
 }
 
 SliverGridDelegateWithFixedCrossAxisCount youthShortcutGridDelegate(
   BuildContext context, {
-  double mainAxisSpacing = 10,
-  double crossAxisSpacing = 10,
+  double mainAxisSpacing = 12,
+  double crossAxisSpacing = 12,
 }) {
   return SliverGridDelegateWithFixedCrossAxisCount(
     crossAxisCount: youthShortcutColumnCount(context),
