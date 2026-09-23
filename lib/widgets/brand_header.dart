@@ -19,6 +19,19 @@ class BrandHeader extends StatelessWidget {
     return FutureBuilder<BrandingData>(
       future: BrandingService.load(),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return SizedBox(
+            height: compact ? 92 : 124,
+            child: const Center(
+              child: SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+
         final brand = snapshot.data ?? BrandingData.fallback;
         final scale = MediaQuery.textScalerOf(context).scale(1);
         final logoHeight = compact ? 58.0 : (scale > 1.2 ? 72.0 : 86.0);
