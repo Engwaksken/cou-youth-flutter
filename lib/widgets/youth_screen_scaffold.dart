@@ -34,8 +34,9 @@ class YouthScreenScaffold extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (showHeader)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
+          Container(
+            color: AppColors.primary,
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 14),
             child: _Header(
               title: title,
               subtitle: subtitle,
@@ -47,20 +48,16 @@ class YouthScreenScaffold extends StatelessWidget {
           child: Container(
             width: double.infinity,
             decoration: const BoxDecoration(
-              color: AppColors.surfaceSoft,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              color: Colors.transparent,
             ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-              child: child,
-            ),
+            child: child,
           ),
         ),
       ],
     );
 
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: Colors.transparent,
       drawer: drawer,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,
@@ -92,7 +89,7 @@ class _Header extends StatelessWidget {
             data: const IconThemeData(color: Colors.white),
             child: leading!,
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
         ],
         Expanded(
           child: Column(
@@ -104,21 +101,21 @@ class _Header extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 22,
+                  fontSize: 21,
                   fontWeight: FontWeight.w800,
                   height: 1.15,
                 ),
               ),
               if (subtitle != null && subtitle!.trim().isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.only(top: 4),
+                  padding: const EdgeInsets.only(top: 3),
                   child: Text(
                     subtitle!,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: .82),
-                      fontSize: 13,
+                    style: const TextStyle(
+                      color: Color(0xFFEDE7F6),
+                      fontSize: 12.5,
                       height: 1.35,
                     ),
                   ),
@@ -127,7 +124,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         if (actions != null) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           ...actions!,
         ],
       ],
