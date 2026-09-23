@@ -20,7 +20,6 @@ class YouthHubsScreen extends StatefulWidget {
 class _YouthHubsScreenState extends State<YouthHubsScreen> {
   final ContentService _service = ContentService();
   final TextEditingController _search = TextEditingController();
-
   late String _type;
   late Future<List<Map<String, dynamic>>> _future;
 
@@ -29,9 +28,7 @@ class _YouthHubsScreenState extends State<YouthHubsScreen> {
   @override
   void initState() {
     super.initState();
-    _type = _types.contains(widget.initialType)
-        ? widget.initialType
-        : 'mission';
+    _type = _types.contains(widget.initialType) ? widget.initialType : 'mission';
     _future = _load();
   }
 
@@ -66,6 +63,8 @@ class _YouthHubsScreenState extends State<YouthHubsScreen> {
     FocusScope.of(context).unfocus();
     setState(() => _future = _load());
   }
+
+  int? _asInt(dynamic value) => value is int ? value : int.tryParse(value?.toString() ?? '');
 
   @override
   Widget build(BuildContext context) {
@@ -102,11 +101,7 @@ class _YouthHubsScreenState extends State<YouthHubsScreen> {
                       _searchNow();
                     }
                   },
-                  icon: Icon(
-                    _search.text.isEmpty
-                        ? Icons.arrow_forward_rounded
-                        : Icons.close_rounded,
-                  ),
+                  icon: Icon(_search.text.isEmpty ? Icons.arrow_forward_rounded : Icons.close_rounded),
                 ),
               ),
             ),
@@ -145,22 +140,14 @@ class _YouthHubsScreenState extends State<YouthHubsScreen> {
               future: _future,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const SizedBox(
-                    height: 280,
-                    child: YouthLoading(label: 'Loading youth hub content…'),
-                  );
+                  return const SizedBox(height: 280, child: YouthLoading(label: 'Loading youth hub content…'));
                 }
-
                 if (snapshot.hasError) {
                   final message = snapshot.error is ApiException
                       ? (snapshot.error as ApiException).message
                       : strings.text('youth_hubs_load_failed');
-                  return SizedBox(
-                    height: 320,
-                    child: YouthErrorState(message: message, onRetry: _refresh),
-                  );
+                  return SizedBox(height: 320, child: YouthErrorState(message: message, onRetry: _refresh));
                 }
-
                 final items = snapshot.data ?? const <Map<String, dynamic>>[];
                 if (items.isEmpty) {
                   return SizedBox(
@@ -172,7 +159,6 @@ class _YouthHubsScreenState extends State<YouthHubsScreen> {
                     ),
                   );
                 }
-
                 return Column(
                   children: [
                     for (var index = 0; index < items.length; index++) ...[
@@ -184,16 +170,12 @@ class _YouthHubsScreenState extends State<YouthHubsScreen> {
                           if (id == null) return;
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
-                              builder: (_) => ContentDetailScreen(
-                                contentId: id,
-                                initialContent: items[index],
-                              ),
+                              builder: (_) => ContentDetailScreen(contentId: id, initialContent: items[index]),
                             ),
                           );
                         },
                       ),
-                      if (index != items.length - 1)
-                        const SizedBox(height: 10),
+                      if (index != items.length - 1) const SizedBox(height: 10),
                     ],
                   ],
                 );
@@ -205,24 +187,16 @@ class _YouthHubsScreenState extends State<YouthHubsScreen> {
     );
   }
 
-  int? _asInt(dynamic value) {
-    if (value is int) return value;
-    return int.tryParse(value?.toString() ?? '');
-  }
-
-  static IconData _iconFor(String type) {
-    return switch (type) {
-      'mission' => Icons.public_outlined,
-      'talent' => Icons.auto_awesome_outlined,
-      'youth_business' => Icons.storefront_outlined,
-      _ => Icons.article_outlined,
-    };
-  }
+  static IconData _iconFor(String type) => switch (type) {
+        'mission' => Icons.public_outlined,
+        'talent' => Icons.auto_awesome_outlined,
+        'youth_business' => Icons.storefront_outlined,
+        _ => Icons.article_outlined,
+      };
 }
 
 class _Header extends StatelessWidget {
   const _Header({required this.type});
-
   final String type;
 
   @override
@@ -248,36 +222,18 @@ class _Header extends StatelessWidget {
           width: 48,
           height: 48,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.primaryLight,
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Icon(
-            _YouthHubsScreenState._iconFor(type),
-            color: AppColors.primary,
-          ),
+          decoration: BoxDecoration(color: AppColors.primaryLight, borderRadius: BorderRadius.circular(15)),
+          child: Icon(_YouthHubsScreenState._iconFor(type), color: AppColors.primary),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                    ),
-              ),
+              Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w800)),
               if (subtitle.isNotEmpty) ...[
                 const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
+                Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, height: 1.4)),
               ],
             ],
           ),
@@ -288,13 +244,7 @@ class _Header extends StatelessWidget {
 }
 
 class _HubChip extends StatelessWidget {
-  const _HubChip({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onSelected,
-  });
-
+  const _HubChip({required this.label, required this.icon, required this.selected, required this.onSelected});
   final String label;
   final IconData icon;
   final bool selected;
@@ -302,10 +252,16 @@ class _HubChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final foreground = selected ? Colors.white : AppColors.primaryDark;
     return ChoiceChip(
-      avatar: Icon(icon, size: 18),
-      label: Text(label),
+      avatar: Icon(icon, size: 18, color: foreground),
+      label: Text(
+        label,
+        style: TextStyle(color: foreground, fontWeight: FontWeight.w700),
+      ),
       selected: selected,
+      selectedColor: AppColors.primary,
+      checkmarkColor: Colors.white,
       onSelected: (_) => onSelected(),
     );
   }
@@ -313,7 +269,6 @@ class _HubChip extends StatelessWidget {
 
 class _HubCard extends StatelessWidget {
   const _HubCard({required this.item, required this.type, required this.onTap});
-
   final Map<String, dynamic> item;
   final String type;
   final VoidCallback onTap;
@@ -322,7 +277,6 @@ class _HubCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = '${item['title'] ?? 'Youth resource'}';
     final summary = _plainText(item['summary'] ?? item['body']);
-
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -336,46 +290,23 @@ class _HubCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Icon(
-                  _YouthHubsScreenState._iconFor(type),
-                  color: AppColors.primary,
-                ),
+                decoration: BoxDecoration(color: AppColors.primaryLight, borderRadius: BorderRadius.circular(15)),
+                child: Icon(_YouthHubsScreenState._iconFor(type), color: AppColors.primary),
               ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+                    Text(title, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w800)),
                     if (summary.isNotEmpty) ...[
                       const SizedBox(height: 6),
-                      Text(
-                        summary,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          height: 1.4,
-                        ),
-                      ),
+                      Text(summary, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textSecondary, height: 1.4)),
                     ],
                   ],
                 ),
               ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: AppColors.textMuted,
-              ),
+              const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
             ],
           ),
         ),
@@ -383,11 +314,9 @@ class _HubCard extends StatelessWidget {
     );
   }
 
-  String _plainText(dynamic value) {
-    return '${value ?? ''}'
-        .replaceAll(RegExp(r'<[^>]*>'), '')
-        .replaceAll('&nbsp;', ' ')
-        .replaceAll('&amp;', '&')
-        .trim();
-  }
+  String _plainText(dynamic value) => '${value ?? ''}'
+      .replaceAll(RegExp(r'<[^>]*>'), '')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&amp;', '&')
+      .trim();
 }
