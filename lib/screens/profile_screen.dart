@@ -5,12 +5,14 @@ import '../core/api/api_config.dart';
 import '../core/localization/app_locale_controller.dart';
 import '../core/localization/app_strings.dart';
 import '../core/theme/app_colors.dart';
+import '../services/branding_service.dart';
 import '../widgets/youth_app_icon.dart';
 import '../widgets/youth_screen_scaffold.dart';
 import '../widgets/youth_states.dart';
 import 'accessibility_screen.dart';
 import 'certificates_screen.dart';
 import 'chatbot_screen.dart';
+import 'edit_profile_screen.dart';
 import 'guardian_consent_screen.dart';
 import 'notification_preferences_screen.dart';
 import 'opportunities_screen.dart';
@@ -57,6 +59,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _open(screen);
   }
 
+  Future<void> _openEditProfile() async {
+    if (!_signedIn) {
+      _openSignedInOnly(const EditProfileScreen());
+      return;
+    }
+
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(builder: (_) => const EditProfileScreen()),
+    );
+    if (changed == true && mounted) {
+      await _refresh();
+    }
+  }
+
   Future<void> _refresh() async {
     if (!_signedIn) return;
     setState(() => _profileFuture = ApiConfig.client.get('/me'));
@@ -87,21 +103,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               leading: const Icon(Icons.language),
               title: Text(strings.text('language')),
             ),
-            RadioGroup<String>(
+            RadioListTile<String>(
+              value: 'en',
               groupValue: current,
               onChanged: (value) => Navigator.of(context).pop(value),
-              child: Column(
-                children: [
-                  RadioListTile<String>(
-                    value: 'en',
-                    title: Text(strings.text('english')),
-                  ),
-                  RadioListTile<String>(
-                    value: 'lg',
-                    title: Text(strings.text('luganda')),
-                  ),
-                ],
-              ),
+              title: Text(strings.text('english')),
+            ),
+            RadioListTile<String>(
+              value: 'lg',
+              groupValue: current,
+              onChanged: (value) => Navigator.of(context).pop(value),
+              title: Text(strings.text('luganda')),
             ),
             const SizedBox(height: 8),
           ],
@@ -111,8 +123,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (selected == null || !mounted) return;
     AppLocaleController.instance.setLocale(Locale(selected));
+    if (!mounted) return;
+    final updatedStrings = AppStrings.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(strings.text('language_updated'))),
+      SnackBar(content: Text(updatedStrings.text('language_updated'))),
     );
   }
 
@@ -120,6 +134,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final tools = <Widget>[
+      YouthAppIcon(
+        icon: Icons.edit_outlined,
+        label: 'Edit Profile',
+        onTap: _openEditProfile,
+      ),
       YouthAppIcon(
         icon: Icons.smart_toy_outlined,
         label: strings.text('youth_assistant'),
@@ -140,9 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return;
           }
           await Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const GuardianConsentScreen(),
-            ),
+            MaterialPageRoute<void>(builder: (_) => const GuardianConsentScreen()),
           );
           if (mounted) await _refresh();
         },
@@ -225,7 +242,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       : _signedIn
                           ? strings.text('sign_out')
                           : strings.text('sign_in_create'),
-                  textAlign: TextAlign.center,
                 ),
               ),
             ),
@@ -263,7 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Sign in to view your profile, progress and certificates.',
+                      'Sign in to view and update your profile.',
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
                   ],
@@ -280,7 +296,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Card(
-            child: SizedBox(height: 150, child: YouthLoading(label: 'Loading profile…')),
+            child: SizedBox(
+              height: 150,
+              child: YouthLoading(label: 'Loading profile…'),
+            ),
           );
         }
 
@@ -303,53 +322,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final youthProfile = response['youth_profile'] is Map
             ? Map<String, dynamic>.from(response['youth_profile'] as Map)
             : <String, dynamic>{};
-        final safeguarding = response['safeguarding'] is Map
-            ? Map<String, dynamic>.from(response['safeguarding'] as Map)
-            : <String, dynamic>{};
 
-        final consentRequired = safeguarding['guardian_consent_required'] == true;
-        final consentStatus =
-            '${safeguarding['guardian_consent_status'] ?? ''}'.trim();
-        final verified = safeguarding['safeguarding_verified'] == true;
+        final profilePhoto = BrandingService.resolveUrl(
+          '${youthProfile['profile_photo'] ?? ''}',
+        );
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: AppColors.primaryLight,
-                  foregroundColor: AppColors.primary,
-                  child: Text(
-                    _initials('${user['name'] ?? 'Youth Member'}'),
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${user['name'] ?? 'Youth Member'}',
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      if (user['email'] != null)
-                        Text(
-                          '${user['email']}',
-                          style: const TextStyle(color: AppColors.textSecondary),
-                        ),
-                      if (youthProfile['age_category'] != null) ...[
-                        const SizedBox(height: 8),
-                        Wrap(
-                          children: [
+        return FutureBuilder<BrandingData>(
+          future: BrandingService.load(),
+          builder: (context, brandSnapshot) {
+            final fallbackLogo = brandSnapshot.data?.logoUrl;
+            final avatarUrl = profilePhoto ?? fallbackLogo;
+
+            return Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 32,
+                      backgroundColor: AppColors.primaryLight,
+                      backgroundImage: avatarUrl == null ? null : NetworkImage(avatarUrl),
+                      child: avatarUrl == null
+                          ? Text(
+                              _initials('${user['name'] ?? 'Youth Member'}'),
+                              style: const TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            )
+                          : null,
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${user['name'] ?? 'Youth Member'}',
+                                  style: const TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                tooltip: 'Edit profile',
+                                onPressed: _openEditProfile,
+                                icon: const Icon(Icons.edit_outlined),
+                              ),
+                            ],
+                          ),
+                          if (user['email'] != null)
+                            Text(
+                              '${user['email']}',
+                              style: const TextStyle(color: AppColors.textSecondary),
+                            ),
+                          if ('${youthProfile['school_institution'] ?? ''}'.trim().isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              '${youthProfile['school_institution']}',
+                              style: const TextStyle(color: AppColors.textSecondary),
+                            ),
+                          ],
+                          if (youthProfile['age_category'] != null) ...[
+                            const SizedBox(height: 8),
                             Chip(
                               visualDensity: VisualDensity.compact,
                               label: Text(
@@ -357,43 +398,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ],
-                        ),
-                      ],
-                      if (consentRequired || verified || consentStatus.isNotEmpty) ...[
-                        const SizedBox(height: 6),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: [
-                            if (consentRequired)
-                              Chip(
-                                avatar: const Icon(
-                                  Icons.family_restroom_outlined,
-                                  size: 16,
-                                ),
-                                label: Text(
-                                  consentStatus.isEmpty
-                                      ? 'Guardian consent required'
-                                      : 'Consent: ${consentStatus.replaceAll('_', ' ')}',
-                                ),
-                              ),
-                            if (verified)
-                              const Chip(
-                                avatar: Icon(
-                                  Icons.verified_user_outlined,
-                                  size: 16,
-                                ),
-                                label: Text('Safeguarding verified'),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
