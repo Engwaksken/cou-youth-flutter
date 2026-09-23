@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../core/theme/app_colors.dart';
 
-/// A subtle, non-interactive background used across the youth experience.
+/// Soft, non-interactive artwork behind the youth experience.
 ///
-/// The decoration intentionally stays very light so text and controls always
-/// retain strong contrast. It also contains no animation, so it is safe for
-/// users who prefer reduced motion.
+/// Decoration is intentionally low-contrast so content stays easy to read,
+/// while the tinted canvas gives white cards clear separation.
 class YouthDecoratedBackground extends StatelessWidget {
   const YouthDecoratedBackground({
     super.key,
@@ -20,7 +19,7 @@ class YouthDecoratedBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.surfaceSoft,
+      color: AppColors.background,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -46,63 +45,75 @@ class _YouthBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final primarySoft = Paint()
-      ..color = AppColors.primary.withValues(alpha: .045)
+      ..color = AppColors.primary.withValues(alpha: .055)
+      ..style = PaintingStyle.fill;
+
+    final primaryFainter = Paint()
+      ..color = AppColors.primary.withValues(alpha: .028)
       ..style = PaintingStyle.fill;
 
     final secondarySoft = Paint()
-      ..color = AppColors.secondary.withValues(alpha: .035)
+      ..color = AppColors.secondary.withValues(alpha: .045)
       ..style = PaintingStyle.fill;
 
-    final outline = Paint()
-      ..color = AppColors.primary.withValues(alpha: .055)
+    final linePaint = Paint()
+      ..color = AppColors.primary.withValues(alpha: .065)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.4;
+      ..strokeWidth = 1.2;
 
     if (includeTopAccent) {
       canvas.drawCircle(
-        Offset(size.width * .90, -20),
-        size.width * .34,
+        Offset(size.width * .93, -26),
+        size.width * .31,
         primarySoft,
       );
+
       canvas.drawCircle(
-        Offset(-20, size.height * .24),
-        size.width * .22,
+        Offset(-34, size.height * .28),
+        size.width * .24,
         secondarySoft,
       );
     }
 
     canvas.drawCircle(
-      Offset(size.width * .82, size.height * .68),
-      size.width * .18,
-      primarySoft,
+      Offset(size.width * .84, size.height * .67),
+      size.width * .20,
+      primaryFainter,
     );
 
     canvas.drawCircle(
-      Offset(size.width * .16, size.height * .91),
-      size.width * .12,
+      Offset(size.width * .12, size.height * .88),
+      size.width * .15,
       secondarySoft,
     );
 
-    final arcRect = Rect.fromCenter(
-      center: Offset(size.width * .92, size.height * .40),
-      width: size.width * .34,
-      height: size.width * .34,
+    final topArc = Rect.fromCenter(
+      center: Offset(size.width * .92, size.height * .34),
+      width: size.width * .42,
+      height: size.width * .42,
     );
-    canvas.drawArc(arcRect, .8, 3.9, false, outline);
+    canvas.drawArc(topArc, .75, 3.7, false, linePaint);
+
+    final bottomArc = Rect.fromCenter(
+      center: Offset(size.width * .06, size.height * .72),
+      width: size.width * .32,
+      height: size.width * .32,
+    );
+    canvas.drawArc(bottomArc, 4.1, 2.5, false, linePaint);
 
     final dotPaint = Paint()
-      ..color = AppColors.primary.withValues(alpha: .07)
+      ..color = AppColors.primary.withValues(alpha: .085)
       ..style = PaintingStyle.fill;
 
-    const spacing = 18.0;
+    const spacing = 17.0;
     for (var row = 0; row < 4; row++) {
       for (var column = 0; column < 5; column++) {
         canvas.drawCircle(
           Offset(
-            22 + (column * spacing),
-            size.height * .56 + (row * spacing),
+            20 + (column * spacing),
+            size.height * .53 + (row * spacing),
           ),
-          1.7,
+          1.55,
           dotPaint,
         );
       }
