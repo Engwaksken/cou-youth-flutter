@@ -8,7 +8,6 @@ import '../core/theme/app_colors.dart';
 import '../screens/login_screen.dart';
 import '../services/auth_service.dart';
 import '../services/push_notification_service.dart';
-import '../widgets/brand_header.dart';
 
 typedef AuthenticatedBuilder =
     Widget Function(BuildContext context, Future<void> Function() exitSession);
@@ -115,21 +114,42 @@ class _AppSplash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 360),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const BrandHeader(
-                    compact: false,
-                    showTagline: false,
+                  Image.asset(
+                    'assets/branding/splash_logo.png',
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/branding/logo.png',
+                        width: 132,
+                        height: 132,
+                        fit: BoxFit.contain,
+                      );
+                    },
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 18),
+                  const Text(
+                    'COU Youth Platform',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 22,
+                      height: 1.2,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
                   const Text(
                     'Faith • Community • Opportunity',
                     textAlign: TextAlign.center,
@@ -139,7 +159,7 @@ class _AppSplash extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 26),
                   const SizedBox(
                     width: 24,
                     height: 24,
