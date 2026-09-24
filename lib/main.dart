@@ -7,6 +7,7 @@ import 'core/accessibility/accessibility_controller.dart';
 import 'core/localization/app_locale_controller.dart';
 import 'core/localization/app_strings.dart';
 import 'core/theme/app_theme.dart';
+import 'widgets/connectivity_gate.dart';
 import 'widgets/youth_decorated_background.dart';
 
 void main() {
@@ -63,7 +64,11 @@ class CouYouthApp extends StatelessWidget {
 
                 return result;
               },
-              home: const AuthGate(authenticatedBuilder: _buildMainNavigation),
+              home: const ConnectivityGate(
+                child: AuthGate(
+                  authenticatedBuilder: _buildMainNavigation,
+                ),
+              ),
             );
           },
         );
