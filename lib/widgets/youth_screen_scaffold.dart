@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_colors.dart';
+import '../services/connectivity_service.dart';
 
 class YouthScreenScaffold extends StatelessWidget {
   const YouthScreenScaffold({
@@ -44,12 +45,11 @@ class YouthScreenScaffold extends StatelessWidget {
               actions: actions,
             ),
           ),
+        const _OfflineBanner(),
         Expanded(
           child: Container(
             width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Colors.transparent,
-            ),
+            decoration: const BoxDecoration(color: Colors.transparent),
             child: child,
           ),
         ),
@@ -62,6 +62,47 @@ class YouthScreenScaffold extends StatelessWidget {
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,
       body: useSafeArea ? SafeArea(child: content) : content,
+    );
+  }
+}
+
+class _OfflineBanner extends StatelessWidget {
+  const _OfflineBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<bool>(
+      stream: ConnectivityService.instance.statusChanges.handleError((_) {}),
+      initialData: true,
+      builder: (context, snapshot) {
+        if (snapshot.data != false) return const SizedBox.shrink();
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+          color: const Color(0xFFFFF3CD),
+          child: const Row(
+            children: [
+              Icon(
+                Icons.cloud_off_rounded,
+                size: 18,
+                color: Color(0xFF7A5200),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Offline mode — cached information remains available. Connect to mobile data or Wi-Fi to sync updates and use online actions.',
+                  style: TextStyle(
+                    color: Color(0xFF654600),
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.3,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
