@@ -9,9 +9,10 @@ import '../widgets/youth_states.dart';
 import 'event_detail_screen.dart';
 
 class EventsScreen extends StatefulWidget {
-  const EventsScreen({super.key, this.onOpenDrawer});
+  const EventsScreen({super.key, this.onOpenDrawer, this.onBack});
 
   final VoidCallback? onOpenDrawer;
+  final VoidCallback? onBack;
 
   @override
   State<EventsScreen> createState() => _EventsScreenState();
@@ -62,6 +63,15 @@ class _EventsScreenState extends State<EventsScreen> {
     return '${parsed.day.toString().padLeft(2, '0')} ${months[parsed.month - 1]} ${parsed.year}';
   }
 
+  void _handleBack() {
+    if (widget.onBack != null) {
+      widget.onBack!();
+      return;
+    }
+
+    Navigator.of(context).maybePop();
+  }
+
   void _openEvent(Map<String, dynamic> event) {
     final id = _asInt(event['id']);
     if (id == null) {
@@ -86,13 +96,20 @@ class _EventsScreenState extends State<EventsScreen> {
     return YouthScreenScaffold(
       title: ModuleStrings.text(context, 'events'),
       subtitle: 'Join worship, fellowship, mission and youth activities.',
-      leading: widget.onOpenDrawer == null
+      leading: IconButton(
+        tooltip: 'Back to Home',
+        onPressed: _handleBack,
+        icon: const Icon(Icons.arrow_back_rounded),
+      ),
+      actions: widget.onOpenDrawer == null
           ? null
-          : IconButton(
-              tooltip: 'Open menu',
-              onPressed: widget.onOpenDrawer,
-              icon: const Icon(Icons.menu_rounded),
-            ),
+          : [
+              IconButton(
+                tooltip: 'Open menu',
+                onPressed: widget.onOpenDrawer,
+                icon: const Icon(Icons.menu_rounded),
+              ),
+            ],
       child: RefreshIndicator(
         onRefresh: _refresh,
         color: AppColors.primary,
