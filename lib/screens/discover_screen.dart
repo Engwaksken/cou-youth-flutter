@@ -168,7 +168,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             }
                           },
                           icon: Icon(
-                            _search.text.isEmpty ? Icons.arrow_forward_rounded : Icons.close_rounded,
+                            _search.text.isEmpty
+                                ? Icons.arrow_forward_rounded
+                                : Icons.close_rounded,
                           ),
                         ),
                       ),
@@ -179,10 +181,31 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       child: Row(
                         children: [
                           for (final filter in _filters.entries) ...[
-                            ChoiceChip(
-                              label: Text(filter.value),
-                              selected: _type == filter.key,
-                              onSelected: (_) => _applyFilter(filter.key),
+                            Builder(
+                              builder: (context) {
+                                final selected = _type == filter.key;
+                                return ChoiceChip(
+                                  label: Text(
+                                    filter.value,
+                                    style: TextStyle(
+                                      color: selected
+                                          ? Colors.white
+                                          : AppColors.primary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  selected: selected,
+                                  selectedColor: AppColors.primary,
+                                  backgroundColor: AppColors.primaryLight,
+                                  checkmarkColor: Colors.white,
+                                  side: BorderSide(
+                                    color: selected
+                                        ? AppColors.primary
+                                        : Colors.transparent,
+                                  ),
+                                  onSelected: (_) => _applyFilter(filter.key),
+                                );
+                              },
                             ),
                             const SizedBox(width: 8),
                           ],
@@ -207,7 +230,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     ),
                     const SizedBox(height: 22),
                     Text(
-                      _type == null ? 'Latest resources' : _filters[_type] ?? 'Resources',
+                      _type == null
+                          ? 'Latest resources'
+                          : _filters[_type] ?? 'Resources',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w800,
@@ -245,7 +270,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     child: YouthEmptyState(
                       icon: Icons.explore_outlined,
                       title: 'No matching resources',
-                      message: 'New youth content and opportunities will appear here when available.',
+                      message:
+                          'New youth content and opportunities will appear here when available.',
                     ),
                   );
                 }
