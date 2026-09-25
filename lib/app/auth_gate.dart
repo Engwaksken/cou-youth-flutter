@@ -126,19 +126,19 @@ class _AppSplash extends StatelessWidget {
                 children: [
                   Image.asset(
                     'assets/branding/splash_logo.png',
-                    width: 150,
-                    height: 150,
+                    width: 96,
+                    height: 96,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
                         'assets/branding/logo.png',
-                        width: 132,
-                        height: 132,
+                        width: 88,
+                        height: 88,
                         fit: BoxFit.contain,
                       );
                     },
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 14),
                   const Text(
                     'COU Youth Platform',
                     textAlign: TextAlign.center,
@@ -159,7 +159,7 @@ class _AppSplash extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 26),
+                  const SizedBox(height: 24),
                   const SizedBox(
                     width: 24,
                     height: 24,
