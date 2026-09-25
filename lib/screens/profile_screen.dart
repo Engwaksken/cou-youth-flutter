@@ -10,6 +10,7 @@ import '../widgets/youth_app_icon.dart';
 import '../widgets/youth_screen_scaffold.dart';
 import '../widgets/youth_states.dart';
 import 'accessibility_screen.dart';
+import 'biometric_settings_screen.dart';
 import 'certificates_screen.dart';
 import 'chatbot_screen.dart';
 import 'edit_profile_screen.dart';
@@ -138,6 +139,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         icon: Icons.edit_outlined,
         label: 'Edit Profile',
         onTap: _openEditProfile,
+      ),
+      YouthAppIcon(
+        icon: Icons.fingerprint_rounded,
+        label: 'Fingerprint',
+        semanticLabel: 'Fingerprint login settings',
+        onTap: () => _openSignedInOnly(const BiometricSettingsScreen()),
       ),
       YouthAppIcon(
         icon: Icons.smart_toy_outlined,
