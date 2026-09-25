@@ -30,14 +30,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     setState(() => _currentIndex = index);
   }
 
+  void _goHome() {
+    _selectTab(0);
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final screens = <Widget>[
       HomeScreen(onOpenDrawer: _openDrawer),
       DiscoverScreen(onOpenDrawer: _openDrawer),
-      CoursesScreen(onOpenDrawer: _openDrawer),
-      EventsScreen(onOpenDrawer: _openDrawer),
+      CoursesScreen(onOpenDrawer: _openDrawer, onBack: _goHome),
+      EventsScreen(onOpenDrawer: _openDrawer, onBack: _goHome),
       ProfileScreen(
         onExitSession: widget.onExitSession,
         onOpenDrawer: _openDrawer,
