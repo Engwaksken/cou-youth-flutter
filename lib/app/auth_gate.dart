@@ -7,6 +7,7 @@ import '../core/auth/session_store.dart';
 import '../core/theme/app_colors.dart';
 import '../screens/login_screen.dart';
 import '../services/auth_service.dart';
+import '../services/biometric_auth_service.dart';
 import '../services/push_notification_service.dart';
 
 typedef AuthenticatedBuilder =
@@ -24,6 +25,7 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   late final AuthService _authService;
   late final PushNotificationService _pushNotifications;
+  late final BiometricAuthService _biometrics;
   bool _checkingSession = true;
   bool _signedIn = false;
   bool _guest = false;
@@ -33,10 +35,26 @@ class _AuthGateState extends State<AuthGate> {
     super.initState();
     _authService = AuthService(ApiConfig.client, SessionStore());
     _pushNotifications = PushNotificationService();
+    _biometrics = BiometricAuthService();
     _restore();
   }
 
   Future<void> _restore() async {
+    final biometricEnabled = await _biometrics.isEnabled();
+    final savedToken = await _authService.sessionStore.readToken();
+
+    if (biometricEnabled && savedToken != null && savedToken.trim().isNotEmpty) {
+      final unlocked = await _biometrics.authenticate(
+        reason: 'Use your fingerprint or biometrics to sign in to COU Youth.',
+      );
+      if (!unlocked) {
+        ApiConfig.client.clearAuthToken();
+        if (!mounted) return;
+        setState(() => _checkingSession = false);
+        return;
+      }
+    }
+
     final restored = await _authService.restoreSession();
 
     if (restored) {
