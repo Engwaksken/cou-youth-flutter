@@ -9,9 +9,10 @@ import '../widgets/youth_states.dart';
 import 'course_detail_screen.dart';
 
 class CoursesScreen extends StatefulWidget {
-  const CoursesScreen({super.key, this.onOpenDrawer});
+  const CoursesScreen({super.key, this.onOpenDrawer, this.onBack});
 
   final VoidCallback? onOpenDrawer;
+  final VoidCallback? onBack;
 
   @override
   State<CoursesScreen> createState() => _CoursesScreenState();
@@ -37,6 +38,15 @@ class _CoursesScreenState extends State<CoursesScreen> {
   int? _asInt(dynamic value) {
     if (value is int) return value;
     return int.tryParse('${value ?? ''}');
+  }
+
+  void _handleBack() {
+    if (widget.onBack != null) {
+      widget.onBack!();
+      return;
+    }
+
+    Navigator.of(context).maybePop();
   }
 
   void _openCourse(Map<String, dynamic> course) {
@@ -65,13 +75,20 @@ class _CoursesScreenState extends State<CoursesScreen> {
     return YouthScreenScaffold(
       title: title,
       subtitle: 'Grow in faith through youth discipleship and learning.',
-      leading: widget.onOpenDrawer == null
+      leading: IconButton(
+        tooltip: 'Back to Home',
+        onPressed: _handleBack,
+        icon: const Icon(Icons.arrow_back_rounded),
+      ),
+      actions: widget.onOpenDrawer == null
           ? null
-          : IconButton(
-              tooltip: 'Open menu',
-              onPressed: widget.onOpenDrawer,
-              icon: const Icon(Icons.menu_rounded),
-            ),
+          : [
+              IconButton(
+                tooltip: 'Open menu',
+                onPressed: widget.onOpenDrawer,
+                icon: const Icon(Icons.menu_rounded),
+              ),
+            ],
       child: RefreshIndicator(
         onRefresh: _refresh,
         color: AppColors.primary,
