@@ -33,6 +33,7 @@ class AuthService {
     String? guardianRelationship,
     String? guardianPhone,
     String? guardianEmail,
+    bool guardianConfirmed = false,
   }) async {
     final response = await api.post('/register', {
       'name': name.trim(),
@@ -53,10 +54,16 @@ class AuthService {
         'guardian_phone': guardianPhone.trim(),
       if (guardianEmail != null && guardianEmail.trim().isNotEmpty)
         'guardian_email': guardianEmail.trim(),
+      if (guardianName != null ||
+          guardianRelationship != null ||
+          guardianPhone != null)
+        'guardian_confirmed': guardianConfirmed,
     });
 
     final data = response['data'];
-    if (data is Map) {
+    if (data is Map &&
+        data['token'] is String &&
+        '${data['token']}'.trim().isNotEmpty) {
       await _persistToken(data['token']);
     }
 

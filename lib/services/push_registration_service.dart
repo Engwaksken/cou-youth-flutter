@@ -5,7 +5,8 @@ import '../core/config/app_config.dart';
 /// Obtain the platform token using firebase_messaging in the host Flutter app,
 /// then pass it to [registerToken]. Firebase server credentials stay on Laravel.
 class PushRegistrationService {
-  PushRegistrationService([ApiClient? api]) : _api = api ?? ApiClient(baseUrl: AppConfig.apiBaseUrl);
+  PushRegistrationService([ApiClient? api])
+    : _api = api ?? ApiClient(baseUrl: AppConfig.apiBaseUrl);
   final ApiClient _api;
 
   Future<void> registerToken({

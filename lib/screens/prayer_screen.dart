@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
+import '../core/localization/app_strings.dart';
+import '../core/theme/app_colors.dart';
 import '../services/prayer_service.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
 
 class PrayerScreen extends StatefulWidget {
   const PrayerScreen({super.key});
@@ -55,11 +59,11 @@ class _PrayerScreenState extends State<PrayerScreen> {
       _subject.clear();
       _message.clear();
 
+      final strings = AppStrings.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            response['message']?.toString() ??
-                'Your prayer request has been submitted safely.',
+            response['message']?.toString() ?? strings.text('prayer_submitted'),
           ),
         ),
       );
@@ -76,6 +80,14 @@ class _PrayerScreenState extends State<PrayerScreen> {
     }
   }
 
+  String _visibilityLabel(AppStrings strings, String visibility) {
+    return switch (visibility) {
+      'pastoral_team' => strings.text('pastoral_team'),
+      'public_anonymous' => strings.text('public_anonymous'),
+      _ => strings.text('private'),
+    };
+  }
+
   void _openForm() {
     showModalBottomSheet<void>(
       context: context,
@@ -84,6 +96,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
+            final strings = AppStrings.of(context);
             return Padding(
               padding: EdgeInsets.fromLTRB(
                 16,
@@ -97,21 +110,42 @@ class _PrayerScreenState extends State<PrayerScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        'Submit a prayer request',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
+                      Row(
+                        children: [
+                          Container(
+                            width: 46,
+                            height: 46,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryLight,
+                              borderRadius: BorderRadius.circular(14),
                             ),
+                            child: const Icon(
+                              Icons.volunteer_activism_outlined,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              strings.text('submit_prayer_request'),
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 18),
                       TextFormField(
                         controller: _subject,
-                        decoration: const InputDecoration(
-                          labelText: 'Subject',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: strings.text('subject'),
+                          prefixIcon: const Icon(Icons.title_rounded),
                         ),
                         validator: (value) => (value ?? '').trim().isEmpty
-                            ? 'Enter a subject.'
+                            ? strings.text('enter_subject')
                             : null,
                       ),
                       const SizedBox(height: 12),
@@ -119,34 +153,37 @@ class _PrayerScreenState extends State<PrayerScreen> {
                         controller: _message,
                         minLines: 5,
                         maxLines: 8,
-                        decoration: const InputDecoration(
-                          labelText: 'Prayer request',
+                        decoration: InputDecoration(
+                          labelText: strings.text('prayer_request_label'),
                           alignLabelWithHint: true,
-                          border: OutlineInputBorder(),
+                          prefixIcon: const Padding(
+                            padding: EdgeInsets.only(bottom: 92),
+                            child: Icon(Icons.edit_note_rounded),
+                          ),
                         ),
                         validator: (value) => (value ?? '').trim().isEmpty
-                            ? 'Enter your prayer request.'
+                            ? strings.text('enter_prayer_request')
                             : null,
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
                         initialValue: _visibility,
-                        decoration: const InputDecoration(
-                          labelText: 'Who can see this?',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: strings.text('who_can_see'),
+                          prefixIcon: const Icon(Icons.visibility_outlined),
                         ),
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'private',
-                            child: Text('Private'),
+                            child: Text(strings.text('private')),
                           ),
                           DropdownMenuItem(
                             value: 'pastoral_team',
-                            child: Text('Pastoral team'),
+                            child: Text(strings.text('pastoral_team')),
                           ),
                           DropdownMenuItem(
                             value: 'public_anonymous',
-                            child: Text('Public, anonymous'),
+                            child: Text(strings.text('public_anonymous')),
                           ),
                         ],
                         onChanged: (value) {
@@ -155,8 +192,19 @@ class _PrayerScreenState extends State<PrayerScreen> {
                         },
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        'Sensitive requests may be flagged for safeguarding review so the right support can be provided.',
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondaryLight,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Text(
+                          strings.text('prayer_safeguarding_note'),
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            height: 1.4,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 18),
                       FilledButton.icon(
@@ -172,11 +220,16 @@ class _PrayerScreenState extends State<PrayerScreen> {
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
                               )
                             : const Icon(Icons.send_outlined),
                         label: Text(
-                          _submitting ? 'Submitting...' : 'Submit request',
+                          _submitting
+                              ? strings.text('submitting')
+                              : strings.text('submit_request'),
                         ),
                       ),
                     ],
@@ -192,34 +245,40 @@ class _PrayerScreenState extends State<PrayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Prayer & Pastoral Support'),
+    final strings = AppStrings.of(context);
+
+    return YouthScreenScaffold(
+      title: strings.text('prayer_support'),
+      subtitle: 'Share a prayer request privately or with pastoral support.',
+      leading: IconButton(
+        tooltip: 'Back',
+        onPressed: () => Navigator.of(context).maybePop(),
+        icon: const Icon(Icons.arrow_back_rounded),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openForm,
-        icon: const Icon(Icons.add),
-        label: const Text('Prayer request'),
+        icon: const Icon(Icons.add_rounded),
+        label: Text(strings.text('prayer_request')),
       ),
-      body: RefreshIndicator(
+      child: RefreshIndicator(
         onRefresh: _refresh,
+        color: AppColors.primary,
         child: FutureBuilder<List<Map<String, dynamic>>>(
           future: _requests,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const YouthLoading(label: 'Loading prayer requests…');
             }
 
             if (snapshot.hasError) {
               return ListView(
-                children: const [
-                  SizedBox(height: 120),
-                  Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Center(
-                      child: Text(
-                        'Prayer requests could not be loaded. Pull down to try again.',
-                      ),
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * .55,
+                    child: YouthErrorState(
+                      title: strings.text('prayer_load_failed'),
+                      onRetry: _refresh,
                     ),
                   ),
                 ],
@@ -230,37 +289,78 @@ class _PrayerScreenState extends State<PrayerScreen> {
 
             if (requests.isEmpty) {
               return ListView(
-                padding: const EdgeInsets.all(24),
-                children: const [
-                  SizedBox(height: 80),
-                  Icon(Icons.volunteer_activism_outlined, size: 48),
-                  SizedBox(height: 16),
-                  Text(
-                    'You have not submitted any prayer requests yet.',
-                    textAlign: TextAlign.center,
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * .55,
+                    child: YouthEmptyState(
+                      icon: Icons.volunteer_activism_outlined,
+                      title: strings.text('no_prayer_requests'),
+                      message: 'Your prayer requests will appear here after you submit them.',
+                      actionLabel: strings.text('prayer_request'),
+                      onAction: _openForm,
+                    ),
                   ),
                 ],
               );
             }
 
             return ListView.separated(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 90),
               itemCount: requests.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final request = requests[index];
+                final visibility = request['visibility']?.toString() ?? 'private';
+
                 return Card(
-                  child: ListTile(
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.volunteer_activism_outlined),
-                    ),
-                    title: Text(request['subject']?.toString() ?? 'Prayer request'),
-                    subtitle: Text(request['message']?.toString() ?? ''),
-                    trailing: Chip(
-                      label: Text(
-                        (request['visibility']?.toString() ?? 'private')
-                            .replaceAll('_', ' '),
-                      ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 46,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: const Icon(
+                            Icons.volunteer_activism_outlined,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                request['subject']?.toString() ??
+                                    strings.text('prayer_request'),
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                request['message']?.toString() ?? '',
+                                style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                  height: 1.4,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Chip(
+                                label: Text(_visibilityLabel(strings, visibility)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );

@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../core/api/api_config.dart';
+import '../core/localization/module_strings.dart';
+import '../core/theme/app_colors.dart';
 import '../features/events/data/event_service.dart';
+import '../widgets/youth_screen_scaffold.dart';
+import '../widgets/youth_states.dart';
+import 'event_detail_screen.dart';
 
 class EventsScreen extends StatefulWidget {
-  const EventsScreen({super.key});
+  const EventsScreen({super.key, this.onOpenDrawer, this.onBack});
+
+  final VoidCallback? onOpenDrawer;
+  final VoidCallback? onBack;
 
   @override
   State<EventsScreen> createState() => _EventsScreenState();
@@ -27,46 +35,100 @@ class _EventsScreenState extends State<EventsScreen> {
     await future;
   }
 
+  int? _asInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse('${value ?? ''}');
+  }
+
   String _formatDate(dynamic value) {
     if (value == null) return '';
     final parsed = DateTime.tryParse(value.toString());
     if (parsed == null) return value.toString();
 
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
 
     return '${parsed.day.toString().padLeft(2, '0')} ${months[parsed.month - 1]} ${parsed.year}';
   }
 
+  void _handleBack() {
+    if (widget.onBack != null) {
+      widget.onBack!();
+      return;
+    }
+
+    Navigator.of(context).maybePop();
+  }
+
+  void _openEvent(Map<String, dynamic> event) {
+    final id = _asInt(event['id']);
+    if (id == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This event cannot be opened right now.')),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => EventDetailScreen(
+          eventId: id,
+          initialEvent: event,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Events'),
+    return YouthScreenScaffold(
+      title: ModuleStrings.text(context, 'events'),
+      subtitle: 'Join worship, fellowship, mission and youth activities.',
+      leading: IconButton(
+        tooltip: 'Back to Home',
+        onPressed: _handleBack,
+        icon: const Icon(Icons.arrow_back_rounded),
       ),
-      body: RefreshIndicator(
+      actions: widget.onOpenDrawer == null
+          ? null
+          : [
+              IconButton(
+                tooltip: 'Open menu',
+                onPressed: widget.onOpenDrawer,
+                icon: const Icon(Icons.menu_rounded),
+              ),
+            ],
+      child: RefreshIndicator(
         onRefresh: _refresh,
+        color: AppColors.primary,
         child: FutureBuilder<List<Map<String, dynamic>>>(
           future: _events,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const YouthLoading(label: 'Loading events…');
             }
 
             if (snapshot.hasError) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 120),
-                  Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Text(
-                        'Events could not be loaded. Pull down to try again.',
-                        textAlign: TextAlign.center,
-                      ),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * .55,
+                    child: YouthErrorState(
+                      title: ModuleStrings.text(context, 'events_load_failed'),
+                      onRetry: _refresh,
                     ),
                   ),
                 ],
@@ -74,61 +136,87 @@ class _EventsScreenState extends State<EventsScreen> {
             }
 
             final events = snapshot.data ?? const <Map<String, dynamic>>[];
-
             if (events.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 120),
-                  Center(child: Text('No upcoming events are available.')),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * .55,
+                    child: YouthEmptyState(
+                      icon: Icons.event_outlined,
+                      title: ModuleStrings.text(context, 'no_events'),
+                      message: 'Upcoming youth activities will appear here when published.',
+                    ),
+                  ),
                 ],
               );
             }
 
             return ListView.separated(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
               itemCount: events.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final event = events[index];
                 final venue = (event['venue'] ?? '').toString().trim();
                 final date = _formatDate(event['starts_at']);
+                final title = (event['title'] ??
+                        event['name'] ??
+                        ModuleStrings.text(context, 'youth_event'))
+                    .toString();
 
                 return Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        child: const Icon(Icons.event_outlined),
-                      ),
-                      title: Text(
-                        (event['title'] ?? event['name'] ?? 'Youth event')
-                            .toString(),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (date.isNotEmpty) ...[
-                            const SizedBox(height: 6),
-                            Row(
-                              children: [
-                                const Icon(Icons.calendar_today_outlined, size: 16),
-                                const SizedBox(width: 6),
-                                Flexible(child: Text(date)),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () => _openEvent(event),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: ListTile(
+                        minVerticalPadding: 14,
+                        leading: Container(
+                          width: 48,
+                          height: 48,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: const Icon(
+                            Icons.event_outlined,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        title: Text(
+                          title,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 7),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (date.isNotEmpty)
+                                _MetaRow(
+                                  icon: Icons.calendar_today_outlined,
+                                  text: date,
+                                ),
+                              if (venue.isNotEmpty) ...[
+                                const SizedBox(height: 5),
+                                _MetaRow(
+                                  icon: Icons.location_on_outlined,
+                                  text: venue,
+                                ),
                               ],
-                            ),
-                          ],
-                          if (venue.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on_outlined, size: 16),
-                                const SizedBox(width: 6),
-                                Flexible(child: Text(venue)),
-                              ],
-                            ),
-                          ],
-                        ],
+                            ],
+                          ),
+                        ),
+                        trailing: const Icon(
+                          Icons.chevron_right_rounded,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                   ),
@@ -138,6 +226,29 @@ class _EventsScreenState extends State<EventsScreen> {
           },
         ),
       ),
+    );
+  }
+}
+
+class _MetaRow extends StatelessWidget {
+  const _MetaRow({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: AppColors.primary),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(color: AppColors.textSecondary),
+          ),
+        ),
+      ],
     );
   }
 }

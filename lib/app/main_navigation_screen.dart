@@ -1,66 +1,89 @@
 import 'package:flutter/material.dart';
 
+import '../core/localization/app_strings.dart';
 import '../screens/courses_screen.dart';
 import '../screens/discover_screen.dart';
 import '../screens/events_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/profile_screen.dart';
+import '../widgets/youth_app_drawer.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  const MainNavigationScreen({super.key, required this.onExitSession});
+
+  final Future<void> Function() onExitSession;
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    DiscoverScreen(),
-    CoursesScreen(),
-    EventsScreen(),
-    ProfileScreen(),
-  ];
+  void _openDrawer() {
+    _scaffoldKey.currentState?.openDrawer();
+  }
+
+  void _selectTab(int index) {
+    if (_currentIndex == index) return;
+    setState(() => _currentIndex = index);
+  }
+
+  void _goHome() {
+    _selectTab(0);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+    final strings = AppStrings.of(context);
+    final screens = <Widget>[
+      HomeScreen(onOpenDrawer: _openDrawer),
+      DiscoverScreen(onOpenDrawer: _openDrawer),
+      CoursesScreen(onOpenDrawer: _openDrawer, onBack: _goHome),
+      EventsScreen(onOpenDrawer: _openDrawer, onBack: _goHome),
+      ProfileScreen(
+        onExitSession: widget.onExitSession,
+        onOpenDrawer: _openDrawer,
       ),
+    ];
+
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: Colors.transparent,
+      drawer: YouthAppDrawer(
+        currentIndex: _currentIndex,
+        onSelectMainTab: _selectTab,
+      ),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
-        },
-        destinations: const [
+        onDestinationSelected: _selectTab,
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home_rounded),
+            label: strings.text('home'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.explore_outlined),
-            selectedIcon: Icon(Icons.explore),
-            label: 'Discover',
+            icon: const Icon(Icons.explore_outlined),
+            selectedIcon: const Icon(Icons.explore_rounded),
+            label: strings.text('discover'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'Discipleship',
+            icon: const Icon(Icons.menu_book_outlined),
+            selectedIcon: const Icon(Icons.menu_book_rounded),
+            label: strings.text('discipleship'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.event_outlined),
-            selectedIcon: Icon(Icons.event),
-            label: 'Events',
+            icon: const Icon(Icons.event_outlined),
+            selectedIcon: const Icon(Icons.event_rounded),
+            label: strings.text('events'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person_rounded),
+            label: strings.text('profile'),
           ),
         ],
       ),
