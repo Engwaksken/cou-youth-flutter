@@ -6,9 +6,9 @@ import '../core/theme/app_colors.dart';
 import '../widgets/youth_app_icon.dart';
 import '../widgets/youth_screen_scaffold.dart';
 import 'accessibility_screen.dart';
+import 'annual_theme_screen.dart';
 import 'chatbot_screen.dart';
 import 'church_locator_screen.dart';
-import 'courses_screen.dart';
 import 'donation_checkout_screen.dart';
 import 'events_screen.dart';
 import 'life_groups_screen.dart';
@@ -70,9 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final shortcuts = <Widget>[
       YouthAppIcon(
-        icon: Icons.menu_book_outlined,
-        label: 'Discipleship',
-        onTap: () => _open(context, const CoursesScreen()),
+        icon: Icons.auto_stories_outlined,
+        label: 'Annual Theme',
+        onTap: () => _open(context, const AnnualThemeScreen()),
       ),
       YouthAppIcon(
         icon: Icons.event_outlined,
