@@ -46,9 +46,9 @@ class _AnnualThemeScreenState extends State<AnnualThemeScreen> {
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const ListView(
-                physics: AlwaysScrollableScrollPhysics(),
-                children: [
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
                   SizedBox(height: 260),
                   YouthLoading(label: 'Loading annual theme…'),
                 ],
@@ -71,9 +71,9 @@ class _AnnualThemeScreenState extends State<AnnualThemeScreen> {
 
             final content = snapshot.data;
             if (content == null) {
-              return const ListView(
-                physics: AlwaysScrollableScrollPhysics(),
-                children: [
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
                   SizedBox(height: 140),
                   YouthEmptyState(
                     icon: Icons.auto_stories_outlined,
