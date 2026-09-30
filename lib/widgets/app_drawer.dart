@@ -7,7 +7,6 @@ import '../screens/courses_screen.dart';
 import '../screens/events_screen.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/prayer_screen.dart';
-import '../screens/profile_screen.dart';
 import '../services/annual_theme_service.dart';
 
 class AppDrawer extends StatefulWidget {
@@ -35,7 +34,9 @@ class _AppDrawerState extends State<AppDrawer> {
 
     try {
       final live = await _service.fetch();
-      if (mounted) setState(() => _branding = live.branding);
+      if (mounted) {
+        setState(() => _branding = live.branding);
+      }
     } catch (_) {
       // Keep the default or cached branding when offline.
     }
@@ -89,7 +90,7 @@ class _AppDrawerState extends State<AppDrawer> {
                         ? Image.network(
                             _branding.logoUrl!,
                             fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => Icon(
+                            errorBuilder: (_, _, _) => Icon(
                               Icons.church_outlined,
                               color: primary,
                               size: 30,
@@ -158,11 +159,6 @@ class _AppDrawerState extends State<AppDrawer> {
                     leading: const Icon(Icons.notifications_outlined),
                     title: const Text('Notifications'),
                     onTap: () => _open(context, const NotificationsScreen()),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.person_outline),
-                    title: const Text('Profile'),
-                    onTap: () => _open(context, const ProfileScreen()),
                   ),
                 ],
               ),
