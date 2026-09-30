@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/api/api_config.dart';
 import '../core/theme/app_colors.dart';
 import '../screens/accessibility_screen.dart';
+import '../screens/annual_theme_screen.dart';
 import '../screens/chatbot_screen.dart';
 import '../screens/church_locator_screen.dart';
 import '../screens/donation_checkout_screen.dart';
@@ -120,6 +121,7 @@ class YouthAppDrawer extends StatelessWidget {
                   _DrawerItem(icon: Icons.home_outlined, label: 'Home', selected: currentIndex == 0, onTap: () => _selectMain(context, 0)),
                   _DrawerItem(icon: Icons.explore_outlined, label: 'Discover', selected: currentIndex == 1, onTap: () => _selectMain(context, 1)),
                   const _SectionLabel('Faith'),
+                  _DrawerItem(icon: Icons.auto_stories_outlined, label: 'Annual Theme', onTap: () => _open(context, const AnnualThemeScreen())),
                   _DrawerItem(icon: Icons.menu_book_outlined, label: 'Discipleship', selected: currentIndex == 2, onTap: () => _selectMain(context, 2)),
                   _DrawerItem(icon: Icons.groups_2_outlined, label: 'Life Groups', onTap: () => _open(context, const LifeGroupsScreen())),
                   _DrawerItem(icon: Icons.volunteer_activism_outlined, label: 'Prayer & Support', onTap: () => _open(context, const PrayerScreen())),
