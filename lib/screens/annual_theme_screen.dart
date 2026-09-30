@@ -90,9 +90,9 @@ class _AnnualThemeScreenState extends State<AnnualThemeScreen> {
       body: RefreshIndicator(
         onRefresh: () => _load(refresh: true),
         child: _loading && content == null
-            ? const ListView(
-                physics: AlwaysScrollableScrollPhysics(),
-                children: [
+            ? ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
                   SizedBox(height: 220),
                   Center(child: CircularProgressIndicator()),
                 ],
@@ -219,7 +219,7 @@ class _BrandHeader extends StatelessWidget {
                 ? Image.network(
                     branding.logoUrl!,
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => Icon(
+                    errorBuilder: (_, _, _) => Icon(
                       Icons.church_outlined,
                       color: primary,
                       size: 34,
@@ -350,7 +350,7 @@ class _ThemeCard extends StatelessWidget {
               child: Image.network(
                 theme!.imageUrl!,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   color: primary.withValues(alpha: .08),
                   alignment: Alignment.center,
                   child: Icon(
