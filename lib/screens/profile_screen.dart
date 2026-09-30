@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({
+    super.key,
+    this.onExitSession,
+  });
+
+  final Future<void> Function()? onExitSession;
 
   @override
   Widget build(BuildContext context) {
@@ -40,24 +45,34 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 16),
           Card(
             child: Column(
-              children: const [
-                ListTile(
+              children: [
+                const ListTile(
                   leading: Icon(Icons.workspace_premium_outlined),
                   title: Text('Certificates'),
                   trailing: Icon(Icons.chevron_right),
                 ),
-                Divider(height: 1),
-                ListTile(
+                const Divider(height: 1),
+                const ListTile(
                   leading: Icon(Icons.notifications_outlined),
                   title: Text('Notification preferences'),
                   trailing: Icon(Icons.chevron_right),
                 ),
-                Divider(height: 1),
-                ListTile(
+                const Divider(height: 1),
+                const ListTile(
                   leading: Icon(Icons.accessibility_new_outlined),
                   title: Text('Accessibility'),
                   trailing: Icon(Icons.chevron_right),
                 ),
+                if (onExitSession != null) ...[
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.logout),
+                    title: const Text('Sign out'),
+                    onTap: () async {
+                      await onExitSession!();
+                    },
+                  ),
+                ],
               ],
             ),
           ),
