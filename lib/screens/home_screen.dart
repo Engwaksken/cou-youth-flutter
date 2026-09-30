@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/app_drawer.dart';
+import 'annual_theme_screen.dart';
 import 'church_locator_screen.dart';
-import 'courses_screen.dart';
 import 'events_screen.dart';
 import 'notifications_screen.dart';
 import 'prayer_screen.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text('COU Youth Platform'),
         actions: [
@@ -76,9 +78,9 @@ class HomeScreen extends StatelessWidget {
             childAspectRatio: 1.35,
             children: [
               _QuickAccessCard(
-                icon: Icons.menu_book_outlined,
-                title: 'Discipleship',
-                onTap: () => _open(context, const CoursesScreen()),
+                icon: Icons.auto_stories_outlined,
+                title: 'Annual Theme',
+                onTap: () => _open(context, const AnnualThemeScreen()),
               ),
               _QuickAccessCard(
                 icon: Icons.event_outlined,
