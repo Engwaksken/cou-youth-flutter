@@ -8,7 +8,12 @@ import 'notifications_screen.dart';
 import 'prayer_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({
+    super.key,
+    this.onOpenDrawer,
+  });
+
+  final VoidCallback? onOpenDrawer;
 
   void _open(BuildContext context, Widget screen) {
     Navigator.of(context).push(
@@ -19,8 +24,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const AppDrawer(),
+      drawer: onOpenDrawer == null ? const AppDrawer() : null,
       appBar: AppBar(
+        leading: onOpenDrawer == null
+            ? null
+            : IconButton(
+                tooltip: 'Menu',
+                onPressed: onOpenDrawer,
+                icon: const Icon(Icons.menu),
+              ),
         title: const Text('COU Youth Platform'),
         actions: [
           IconButton(
