@@ -221,13 +221,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           ),
                     ),
                     const SizedBox(height: 8),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: youthShortcutGridDelegate(context),
-                      itemCount: modules.length,
-                      itemBuilder: (context, index) => modules[index],
-                    ),
+                    YouthExpandableGrid(children: modules),
                     const SizedBox(height: 22),
                     Text(
                       _type == null

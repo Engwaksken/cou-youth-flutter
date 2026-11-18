@@ -105,3 +105,74 @@ SliverGridDelegateWithFixedCrossAxisCount youthShortcutGridDelegate(
     mainAxisExtent: youthShortcutTileHeight(context),
   );
 }
+
+/// Shortcut grid that shows the first [initialCount] tiles and a
+/// "See More" / "See Less" toggle when there are more.
+class YouthExpandableGrid extends StatefulWidget {
+  const YouthExpandableGrid({
+    super.key,
+    required this.children,
+    this.initialCount = 6,
+    this.mainAxisSpacing = 12,
+    this.crossAxisSpacing = 12,
+  });
+
+  final List<Widget> children;
+  final int initialCount;
+  final double mainAxisSpacing;
+  final double crossAxisSpacing;
+
+  @override
+  State<YouthExpandableGrid> createState() => _YouthExpandableGridState();
+}
+
+class _YouthExpandableGridState extends State<YouthExpandableGrid> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final total = widget.children.length;
+    final canExpand = total > widget.initialCount;
+    final visible =
+        _expanded || !canExpand ? total : widget.initialCount;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        GridView.builder(
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: youthShortcutGridDelegate(
+            context,
+            mainAxisSpacing: widget.mainAxisSpacing,
+            crossAxisSpacing: widget.crossAxisSpacing,
+          ),
+          itemCount: visible,
+          itemBuilder: (context, index) => widget.children[index],
+        ),
+        if (canExpand) ...[
+          const SizedBox(height: 6),
+          Align(
+            alignment: Alignment.center,
+            child: TextButton.icon(
+              onPressed: () => setState(() => _expanded = !_expanded),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                textStyle: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              icon: Icon(
+                _expanded
+                    ? Icons.keyboard_arrow_up_rounded
+                    : Icons.keyboard_arrow_down_rounded,
+              ),
+              label: Text(
+                _expanded ? 'See Less' : 'See More (${total - visible})',
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}

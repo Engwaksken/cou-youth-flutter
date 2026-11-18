@@ -186,13 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 14),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: youthShortcutGridDelegate(context),
-            itemCount: shortcuts.length,
-            itemBuilder: (context, index) => shortcuts[index],
-          ),
+          YouthExpandableGrid(children: shortcuts),
           const SizedBox(height: 24),
           Card(
             elevation: 2,

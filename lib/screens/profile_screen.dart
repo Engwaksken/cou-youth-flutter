@@ -220,16 +220,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
             ),
             const SizedBox(height: 10),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: youthShortcutGridDelegate(
-                context,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-              ),
-              itemCount: tools.length,
-              itemBuilder: (context, index) => tools[index],
+            YouthExpandableGrid(
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              children: tools,
             ),
             const SizedBox(height: 20),
             SizedBox(
